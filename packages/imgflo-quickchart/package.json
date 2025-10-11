@@ -1,0 +1,53 @@
+{
+  "name": "imgflo-quickchart",
+  "version": "0.1.0",
+  "description": "QuickChart.io generator for imgflo - create charts using Chart.js",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "imgflo",
+    "quickchart",
+    "chart",
+    "chartjs",
+    "graph",
+    "visualization",
+    "image-generation"
+  ],
+  "author": "Brett Cooke",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bcooke/imgflo.git",
+    "directory": "packages/imgflo-quickchart"
+  },
+  "peerDependencies": {
+    "imgflo": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "imgflo": "workspace:*",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

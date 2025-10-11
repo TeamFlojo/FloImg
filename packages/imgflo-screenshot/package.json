@@ -1,0 +1,56 @@
+{
+  "name": "imgflo-screenshot",
+  "version": "0.1.0",
+  "description": "Screenshot generator for imgflo using Playwright headless browser",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "postinstall": "playwright install chromium",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "imgflo",
+    "screenshot",
+    "playwright",
+    "headless-browser",
+    "web-capture",
+    "image-generation"
+  ],
+  "author": "Brett Cooke",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bcooke/imgflo.git",
+    "directory": "packages/imgflo-screenshot"
+  },
+  "peerDependencies": {
+    "imgflo": "workspace:*"
+  },
+  "dependencies": {
+    "playwright": "^1.48.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "imgflo": "workspace:*",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

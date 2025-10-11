@@ -7,35 +7,37 @@
 
 ## What is imgflo?
 
-`imgflo` is a convenience library that wraps common image generation and manipulation workflows into a simple, unified API. It's useful for both developers and AI agents who need to generate images, convert formats, and upload to storage without writing the same boilerplate code every time.
+`imgflo` is a convenience library that wraps common image generation and manipulation workflows into a simple, unified API. Perfect for AI agents and developers who need to generate images, convert formats, and upload to storage without writing boilerplate.
 
 ### Why imgflo?
 
-Instead of juggling multiple libraries (Sharp, Resvg, AWS SDK, etc.) and writing the same conversion and upload logic repeatedly, you get:
 - **One simple API** for the complete workflow (generate → transform → upload)
-- **Sensible defaults** that work out of the box
-- **Persistent configuration** so you don't re-specify buckets/regions every time
-- **CLI and library** options for different use cases
+- **Plugin architecture** - only install generators you need
+- **Pass-through pattern** - use native library formats (Chart.js, etc.)
+- **MCP Server** - direct integration with Claude Code
+- **TypeScript** - full type safety
 
-### Built on Great Tools
+## Packages
 
-imgflo stands on the shoulders of:
-- [Sharp](https://sharp.pixelplumbing.com/) for fast image processing
-- [Resvg](https://github.com/RazrFalcon/resvg) for quality SVG rendering
-- [AWS SDK](https://aws.amazon.com/sdk-for-javascript/) for cloud uploads
-- And more
+| Package | Description | Size |
+|---------|-------------|------|
+| [imgflo](./packages/imgflo) | Core library with shapes & OpenAI generators | ~5MB |
+| [imgflo-quickchart](./packages/imgflo-quickchart) | Chart.js charts via QuickChart.io | ~0KB |
+| [imgflo-screenshot](./packages/imgflo-screenshot) | Playwright browser screenshots | ~200MB |
 
-It just makes them easier to use together.
+## Quick Start
+
+### Installation
 
 ```bash
-# Generate gradient → Convert to PNG → Upload to S3 → Get URL
-imgflo generate --provider svg --params '{"type":"gradient","width":1200,"height":630}' --out bg.svg
-imgflo transform --in bg.svg --op convert --to image/png --out bg.png
-imgflo upload --in bg.png --key slides/background.png
-# Returns: https://your-bucket.s3.amazonaws.com/slides/background.png
+# Core library
+npm install imgflo
+
+# With plugins
+npm install imgflo imgflo-quickchart imgflo-screenshot
 ```
 
-Or use it programmatically:
+### Basic Usage
 
 ```typescript
 import createClient from 'imgflo';
@@ -47,7 +49,7 @@ const imgflo = createClient({
   }
 });
 
-// Generate SVG → Convert to PNG → Upload to S3
+// Generate → Transform → Upload
 const svg = await imgflo.generate({
   generator: 'shapes',
   params: { type: 'gradient', width: 1200, height: 630 }
@@ -61,79 +63,114 @@ const png = await imgflo.transform({
 
 const result = await imgflo.upload({
   blob: png,
-  key: 'slides/background.png'
+  key: 'images/gradient.png'
 });
 
-console.log(result.url); // Use in Google Slides, websites, etc.!
+console.log(result.url); // Use anywhere!
 ```
 
-## Installation
-
-```bash
-npm install imgflo
-```
-
-Or install globally for CLI use:
-
-```bash
-npm install -g imgflo
-```
-
-## Quick Start
-
-### Generate Your First Image
-
-```bash
-# 1. Install and configure
-npm install -g imgflo
-imgflo config init  # Set up S3 bucket, region, etc.
-
-# 2. Generate a gradient SVG
-imgflo generate \
-  --generator shapes \
-  --params '{"type":"gradient","width":1200,"height":630,"color1":"#667eea","color2":"#764ba2"}' \
-  --out gradient.svg
-
-# 3. Convert to PNG
-imgflo transform --in gradient.svg --op convert --to image/png --out gradient.png
-
-# 4. Upload to S3 (uses your saved config)
-imgflo upload --in gradient.png --key images/gradient.png
-```
-
-### Use in Code
+### With Plugins
 
 ```typescript
 import createClient from 'imgflo';
+import quickchart from 'imgflo-quickchart';
+import screenshot from 'imgflo-screenshot';
 
 const imgflo = createClient();
 
-// Generate a circle
-const svg = await imgflo.generate({
-  generator: 'shapes',
+// Register plugins
+imgflo.registerGenerator(quickchart());
+imgflo.registerGenerator(screenshot());
+
+// Generate a chart
+const chart = await imgflo.generate({
+  generator: 'quickchart',
   params: {
-    type: 'circle',
-    width: 500,
-    height: 500,
-    fill: '#f59e0b'
+    type: 'bar',
+    data: {
+      labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+      datasets: [{ label: 'Revenue', data: [12, 19, 3, 5] }]
+    }
   }
 });
 
-// Convert to PNG
-const png = await imgflo.transform({
-  blob: svg,
-  op: 'convert',
-  to: 'image/png'
+// Take a screenshot
+const site = await imgflo.generate({
+  generator: 'screenshot',
+  params: {
+    url: 'https://example.com',
+    width: 1920,
+    height: 1080
+  }
 });
-
-// Upload (uses configured storage)
-const result = await imgflo.upload({
-  blob: png,
-  key: 'circle.png'
-});
-
-console.log(`Saved to: ${result.url}`);
 ```
+
+## Built-In Generators
+
+### Shapes
+
+Simple SVG shapes - gradients, circles, rectangles, patterns:
+
+```typescript
+await imgflo.generate({
+  generator: 'shapes',
+  params: { type: 'gradient', width: 1200, height: 630 }
+});
+```
+
+### OpenAI DALL-E
+
+AI-powered image generation:
+
+```typescript
+await imgflo.generate({
+  generator: 'openai',
+  params: {
+    prompt: 'A futuristic city at sunset',
+    model: 'dall-e-3',
+    size: '1024x1024'
+  }
+});
+```
+
+## Plugin Generators
+
+### QuickChart (Charts)
+
+Generate charts using Chart.js configuration:
+
+```typescript
+await imgflo.generate({
+  generator: 'quickchart',
+  params: {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar'],
+      datasets: [{ label: 'Sales', data: [10, 15, 13] }]
+    }
+  }
+});
+```
+
+**[Full documentation →](./packages/imgflo-quickchart)**
+
+### Screenshot (Websites & HTML)
+
+Headless browser screenshots:
+
+```typescript
+await imgflo.generate({
+  generator: 'screenshot',
+  params: {
+    url: 'https://example.com',
+    width: 1920,
+    height: 1080,
+    fullPage: true
+  }
+});
+```
+
+**[Full documentation →](./packages/imgflo-screenshot)**
 
 ## Features
 
@@ -141,254 +178,109 @@ console.log(`Saved to: ${result.url}`);
 
 - ✅ **SVG Generation**: Built-in shapes (gradients, circles, rectangles, patterns)
 - ✅ **AI Image Generation**: OpenAI DALL-E 2 & 3 support
+- ✅ **Charts**: QuickChart.io integration (Chart.js)
+- ✅ **Screenshots**: Playwright browser automation
 - ✅ **Image Transformation**: Convert SVG → PNG/JPEG/WebP/AVIF using Sharp + Resvg
-- ✅ **Cloud Storage**: Upload to S3 with automatic URL generation
+- ✅ **Cloud Storage**: Upload to S3, R2, Tigris, etc.
 - ✅ **Local Storage**: Save to filesystem
 - ✅ **CLI Tool**: Easy command-line interface
-- ✅ **MCP Server**: Direct integration with Claude Code and other AI assistants
-- ✅ **TypeScript**: Full type safety and IntelliSense
-- ✅ **Extensible**: Plugin architecture for custom providers
+- ✅ **MCP Server**: Direct integration with Claude Code
+- ✅ **Plugin System**: Extensible architecture
+- ✅ **TypeScript**: Full type safety
 
 ### Coming Soon
 
-- 🔄 **More AI Providers**: Stable Diffusion, Midjourney
-- 🔄 **More SVG Providers**: Charts, diagrams, Trianglify, Satori
-- 🔄 **Image Optimization**: Compression and optimization
-- 🔄 **Pipeline System**: Declarative YAML/JSON workflows
+- 🔄 **Mermaid Diagrams**: `imgflo-mermaid`
+- 🔄 **Satori HTML**: `imgflo-satori` (React/JSX to image)
+- 🔄 **Vega Visualizations**: `imgflo-vega`
 
-## Use Cases
+## Philosophy
 
-### Google Slides Workflow
+imgflo is **glue, not the engine**. We orchestrate existing libraries rather than reimplementing them.
 
-Perfect for AI agents creating presentation images:
+### Core Principles
 
-```typescript
-// Generate slide backgrounds
-const titleBg = await imgflo.generate({
-  generator: 'shapes',
-  params: { type: 'gradient', width: 1920, height: 1080 }
-});
+1. **Pass-Through Pattern** - Generators accept native library formats
+2. **Minimal Abstraction** - Thin wrappers around existing tools
+3. **Opt-In Complexity** - Users only install what they need
+4. **Full Capabilities** - No neutering of underlying libraries
 
-const titlePng = await imgflo.transform({
-  blob: titleBg,
-  op: 'convert',
-  to: 'image/png'
-});
-
-const result = await imgflo.upload({
-  blob: titlePng,
-  key: 'slides/title-bg.png'
-});
-
-// Use result.url with Google Slides MCP to insert image
-```
-
-### Social Media Graphics
-
-Generate and upload social media assets:
-
-```typescript
-// Generate OG image
-const ogImage = await imgflo.generate({
-  generator: 'shapes',
-  params: { type: 'gradient', width: 1200, height: 630 }
-});
-
-// Convert and upload
-const png = await imgflo.transform({ blob: ogImage, op: 'convert', to: 'image/png' });
-const result = await imgflo.upload({ blob: png, key: 'og/homepage.png' });
-
-// Use result.url in your <meta> tags
-```
-
-### Automated Image Pipelines
-
-Build image processing workflows:
-
-```typescript
-// Batch process multiple images
-const images = await Promise.all(
-  ['gradient', 'circle', 'pattern'].map(type =>
-    imgflo.generate({ generator: 'shapes', params: { type } })
-  )
-);
-
-// Convert all to PNG
-const pngs = await Promise.all(
-  images.map(img => imgflo.transform({ blob: img, op: 'convert', to: 'image/png' }))
-);
-
-// Upload all to S3
-const results = await Promise.all(
-  pngs.map((png, i) => imgflo.upload({ blob: png, key: `batch/${i}.png` }))
-);
-```
-
-## CLI Commands
-
-### `imgflo generate`
-
-Generate an image using SVG or AI providers.
-
-```bash
-imgflo generate \
-  --provider svg \
-  --name shapes \
-  --params '{"type":"gradient","width":1200,"height":630}' \
-  --out output.svg
-```
-
-**Available shapes:**
-- `gradient` - Linear gradient
-- `circle` - Solid circle
-- `rectangle` - Rounded rectangle
-- `pattern` - Dots, stripes, or grid patterns
-
-### `imgflo transform`
-
-Transform an image (convert format, resize, etc.).
-
-```bash
-imgflo transform \
-  --in input.svg \
-  --op convert \
-  --to image/png \
-  --out output.png
-```
-
-**Operations:**
-- `convert` - Change image format
-- `resize` - Resize image
-- `composite` - Combine multiple images
-- `optimizeSvg` - Optimize SVG file size
-
-### `imgflo upload`
-
-Upload an image to cloud storage.
-
-```bash
-imgflo upload \
-  --in image.png \
-  --key path/to/image.png \
-  --provider s3
-```
-
-### `imgflo doctor`
-
-Check imgflo configuration and environment.
-
-```bash
-imgflo doctor
-```
-
-## Configuration
-
-Create `imgflo.config.ts` in your project root:
-
-```typescript
-import { defineConfig } from 'imgflo/config';
-
-export default defineConfig({
-  verbose: true,
-  cacheDir: '.imgflo',
-
-  store: {
-    default: 's3',
-    s3: {
-      region: process.env.AWS_REGION || 'us-east-1',
-      bucket: process.env.S3_BUCKET,
-    },
-    fs: {
-      basePath: './output',
-      baseUrl: 'https://example.com/images'
-    }
-  },
-
-  // Future: AI provider configuration
-  ai: {
-    default: 'openai',
-    openai: {
-      apiKey: process.env.OPENAI_API_KEY
-    }
-  }
-});
-```
-
-## Environment Variables
-
-```bash
-# AWS Configuration for S3 uploads
-AWS_REGION=us-east-1
-S3_BUCKET=your-bucket-name
-
-# Optional: AWS credentials (if not using IAM roles)
-AWS_ACCESS_KEY_ID=...
-AWS_SECRET_ACCESS_KEY=...
-
-# Future: OpenAI API key for AI image generation
-OPENAI_API_KEY=sk-...
-```
+**[Read the full strategy →](./docs/development/GENERATOR_STRATEGY.md)**
 
 ## Documentation
 
-- **[Quick Start Guide](./docs/guides/QUICK_START.md)** - Fast reference for common tasks
-- **[OpenAI DALL-E Guide](./docs/guides/OPENAI_GENERATOR.md)** - AI image generation
-- **[MCP Server Guide](./docs/guides/MCP_SERVER.md)** - Use with Claude Code and AI assistants
-- **[Getting Started](./docs/guides/GETTING_STARTED.md)** - Step-by-step tutorial
-- **[Project Status](./docs/development/STATUS.md)** - Current status and roadmap
-- **[Examples](./examples/)** - Code examples and use cases
+- **[Quick Start Guide](./packages/imgflo/docs/guides/QUICK_START.md)** - Fast reference
+- **[OpenAI DALL-E Guide](./packages/imgflo/docs/guides/OPENAI_GENERATOR.md)** - AI images
+- **[MCP Server Guide](./packages/imgflo/docs/guides/MCP_SERVER.md)** - Claude Code integration
+- **[S3 Providers Guide](./packages/imgflo/docs/guides/S3_PROVIDERS.md)** - Cloud storage
+- **[Generator Strategy](./docs/development/GENERATOR_STRATEGY.md)** - Architecture
 
-## Architecture
+## CLI
 
-imgflo uses a provider-based architecture:
+```bash
+# Generate an image
+imgflo generate --generator shapes --params '{"type":"gradient"}' --out bg.svg
 
-- **Image Generators**: Generate images from parameters or prompts
-  - SVG generators (shapes, patterns, gradients)
-  - AI generators (OpenAI DALL-E 2/3, and more coming)
-- **Transform Providers**: Convert and manipulate images
-- **Store Providers**: Upload images to storage
+# Transform it
+imgflo transform --in bg.svg --op convert --to image/png --out bg.png
 
-Each provider is pluggable and extensible.
+# Upload it
+imgflo upload --in bg.png --key images/bg.png
 
-## Extending imgflo
+# Check configuration
+imgflo doctor
+```
 
-Add custom providers:
+## MCP Server
 
-```typescript
-import { Imgflo } from 'imgflo';
+Use imgflo directly from Claude Code:
 
-const client = new Imgflo();
+```bash
+npm install -g imgflo
+imgflo-mcp
+```
 
-// Register custom generator
-client.registerGenerator({
-  name: 'my-generator',
-  async generate(params) {
-    return {
-      bytes: Buffer.from('<svg>...</svg>'),
-      mime: 'image/svg+xml',
-      width: params.width,
-      height: params.height
-    };
-  }
-});
+Configure in Claude Code settings to enable natural language image generation.
 
-// Use it
-const image = await client.generate({
-  generator: 'my-generator',
-  params: { width: 800, height: 600 }
-});
+## Monorepo Structure
+
+```
+imgflo/
+├── packages/
+│   ├── imgflo/              # Core library
+│   ├── imgflo-quickchart/   # Chart.js charts
+│   └── imgflo-screenshot/   # Browser screenshots
+├── docs/                     # Shared documentation
+└── pnpm-workspace.yaml      # Workspace config
 ```
 
 ## Contributing
 
-We welcome contributions! This is an MVP and there's lots to build:
+We welcome contributions! Areas we'd love help with:
 
-- More SVG generators (charts, diagrams, icons)
-- AI image providers (OpenAI, Stability AI, etc.)
-- Additional storage backends (Cloudflare R2, DigitalOcean Spaces)
-- Image optimization features
-- Better error handling and validation
+- More generators (Mermaid, Satori, Vega, PlantUML)
+- Additional storage backends
 - Tests and documentation
+- Performance improvements
+
+## Development
+
+```bash
+# Install pnpm
+npm install -g pnpm
+
+# Install dependencies
+pnpm install
+
+# Build all packages
+pnpm build
+
+# Dev mode (watch)
+pnpm dev
+
+# Run tests
+pnpm test
+```
 
 ## License
 
@@ -397,12 +289,13 @@ MIT
 ## Credits
 
 Built with:
-- [Sharp](https://sharp.pixelplumbing.com/) - High-performance image processing
+- [Sharp](https://sharp.pixelplumbing.com/) - Image processing
 - [Resvg](https://github.com/RazrFalcon/resvg) - SVG rendering
-- [OpenAI](https://openai.com/) - DALL-E AI image generation
+- [OpenAI](https://openai.com/) - DALL-E AI generation
+- [QuickChart](https://quickchart.io) - Chart rendering
+- [Playwright](https://playwright.dev) - Browser automation
 - [AWS SDK](https://aws.amazon.com/sdk-for-javascript/) - S3 uploads
-- [Commander.js](https://github.com/tj/commander.js) - CLI framework
-- [Model Context Protocol](https://modelcontextprotocol.io) - AI assistant integration
+- [MCP](https://modelcontextprotocol.io) - AI assistant integration
 
 ---
 

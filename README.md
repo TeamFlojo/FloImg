@@ -138,9 +138,10 @@ console.log(`Saved to: ${result.url}`);
 
 ## Features
 
-### Current Features (MVP v0.1.0)
+### Current Features
 
 - ✅ **SVG Generation**: Built-in shapes (gradients, circles, rectangles, patterns)
+- ✅ **AI Image Generation**: OpenAI DALL-E 2 & 3 support
 - ✅ **Image Transformation**: Convert SVG → PNG/JPEG/WebP/AVIF using Sharp + Resvg
 - ✅ **Cloud Storage**: Upload to S3 with automatic URL generation
 - ✅ **Local Storage**: Save to filesystem
@@ -151,7 +152,7 @@ console.log(`Saved to: ${result.url}`);
 
 ### Coming Soon
 
-- 🔄 **AI Image Generation**: OpenAI DALL-E, Stable Diffusion
+- 🔄 **More AI Providers**: Stable Diffusion, Midjourney
 - 🔄 **More SVG Providers**: Charts, diagrams, Trianglify, Satori
 - 🔄 **Image Optimization**: Compression and optimization
 - 🔄 **Pipeline System**: Declarative YAML/JSON workflows
@@ -332,6 +333,7 @@ OPENAI_API_KEY=sk-...
 ## Documentation
 
 - **[Quick Start Guide](./docs/guides/QUICK_START.md)** - Fast reference for common tasks
+- **[OpenAI DALL-E Guide](./docs/guides/OPENAI_GENERATOR.md)** - AI image generation
 - **[MCP Server Guide](./docs/guides/MCP_SERVER.md)** - Use with Claude Code and AI assistants
 - **[Getting Started](./docs/guides/GETTING_STARTED.md)** - Step-by-step tutorial
 - **[Project Status](./docs/development/STATUS.md)** - Current status and roadmap
@@ -341,8 +343,9 @@ OPENAI_API_KEY=sk-...
 
 imgflo uses a provider-based architecture:
 
-- **SVG Providers**: Generate SVG images from parameters
-- **AI Providers**: Generate images using AI models (coming soon)
+- **Image Generators**: Generate images from parameters or prompts
+  - SVG generators (shapes, patterns, gradients)
+  - AI generators (OpenAI DALL-E 2/3, and more coming)
 - **Transform Providers**: Convert and manipulate images
 - **Store Providers**: Upload images to storage
 
@@ -398,8 +401,10 @@ MIT
 Built with:
 - [Sharp](https://sharp.pixelplumbing.com/) - High-performance image processing
 - [Resvg](https://github.com/RazrFalcon/resvg) - SVG rendering
+- [OpenAI](https://openai.com/) - DALL-E AI image generation
 - [AWS SDK](https://aws.amazon.com/sdk-for-javascript/) - S3 uploads
 - [Commander.js](https://github.com/tj/commander.js) - CLI framework
+- [Model Context Protocol](https://modelcontextprotocol.io) - AI assistant integration
 
 ---
 

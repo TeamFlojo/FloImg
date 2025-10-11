@@ -1,5 +1,6 @@
 import { Imgflo } from "./core/client.js";
 import { ShapesProvider } from "./providers/svg/index.js";
+import { OpenAIGenerator } from "./providers/ai/index.js";
 import { SharpTransformProvider } from "./providers/transform/index.js";
 import { S3Provider, FsProvider } from "./providers/store/index.js";
 import type { ImgfloConfig } from "./core/types.js";
@@ -36,6 +37,8 @@ export {
 
 // Export generators and providers
 export { ShapesProvider } from "./providers/svg/index.js";
+export { OpenAIGenerator } from "./providers/ai/index.js";
+export type { OpenAIConfig, OpenAIGenerateParams } from "./providers/ai/index.js";
 export { SharpTransformProvider } from "./providers/transform/index.js";
 export { S3Provider, FsProvider } from "./providers/store/index.js";
 export type { S3ProviderConfig, FsProviderConfig } from "./providers/store/index.js";
@@ -48,6 +51,12 @@ export function createClient(config: ImgfloConfig = {}): Imgflo {
 
   // Register built-in generators
   client.registerGenerator(new ShapesProvider());
+
+  // Register AI generators if configured
+  if (config.ai?.openai) {
+    const openaiConfig = config.ai.openai as any;
+    client.registerGenerator(new OpenAIGenerator(openaiConfig));
+  }
 
   // Register built-in transform providers
   client.registerTransformProvider(new SharpTransformProvider());

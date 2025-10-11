@@ -49,8 +49,7 @@ const imgflo = createClient({
 
 // Generate SVG → Convert to PNG → Upload to S3
 const svg = await imgflo.generate({
-  provider: 'svg',
-  name: 'shapes',
+  generator: 'shapes',
   params: { type: 'gradient', width: 1200, height: 630 }
 });
 
@@ -166,7 +165,7 @@ Perfect for AI agents creating presentation images:
 ```typescript
 // Generate slide backgrounds
 const titleBg = await imgflo.generate({
-  provider: 'svg',
+  generator: 'shapes',
   params: { type: 'gradient', width: 1920, height: 1080 }
 });
 
@@ -191,7 +190,7 @@ Generate and upload social media assets:
 ```typescript
 // Generate OG image
 const ogImage = await imgflo.generate({
-  provider: 'svg',
+  generator: 'shapes',
   params: { type: 'gradient', width: 1200, height: 630 }
 });
 
@@ -210,7 +209,7 @@ Build image processing workflows:
 // Batch process multiple images
 const images = await Promise.all(
   ['gradient', 'circle', 'pattern'].map(type =>
-    imgflo.generate({ provider: 'svg', params: { type } })
+    imgflo.generate({ generator: 'shapes', params: { type } })
   )
 );
 
@@ -360,8 +359,8 @@ import { Imgflo } from 'imgflo';
 
 const client = new Imgflo();
 
-// Register custom SVG provider
-client.registerProvider('svg', {
+// Register custom generator
+client.registerGenerator({
   name: 'my-generator',
   async generate(params) {
     return {
@@ -375,8 +374,7 @@ client.registerProvider('svg', {
 
 // Use it
 const image = await client.generate({
-  provider: 'svg',
-  name: 'my-generator',
+  generator: 'my-generator',
   params: { width: 800, height: 600 }
 });
 ```

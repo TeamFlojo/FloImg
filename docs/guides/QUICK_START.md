@@ -45,8 +45,7 @@ npm install -g imgflo
 ```bash
 # Generate a gradient SVG
 imgflo generate \
-  --provider svg \
-  --name shapes \
+  --generator shapes \
   --params '{"type":"gradient","width":1200,"height":630}' \
   --out gradient.svg
 
@@ -81,7 +80,7 @@ You'll get back a URL like: `https://my-images.s3.amazonaws.com/images/gradient.
 
 ```bash
 # 1. Generate
-imgflo generate --provider svg --params '{"type":"gradient","width":1200,"height":630}' --out temp.svg
+imgflo generate --generator shapes --params '{"type":"gradient","width":1200,"height":630}' --out temp.svg
 
 # 2. Convert
 imgflo transform --in temp.svg --op convert --to image/png --out temp.png
@@ -96,22 +95,22 @@ The built-in `shapes` provider supports:
 
 **Gradients:**
 ```bash
-imgflo generate --provider svg --params '{"type":"gradient","width":1200,"height":630,"color1":"#667eea","color2":"#764ba2"}' --out gradient.svg
+imgflo generate --generator shapes --params '{"type":"gradient","width":1200,"height":630,"color1":"#667eea","color2":"#764ba2"}' --out gradient.svg
 ```
 
 **Circles:**
 ```bash
-imgflo generate --provider svg --params '{"type":"circle","width":500,"height":500,"fill":"#f59e0b"}' --out circle.svg
+imgflo generate --generator shapes --params '{"type":"circle","width":500,"height":500,"fill":"#f59e0b"}' --out circle.svg
 ```
 
 **Rectangles:**
 ```bash
-imgflo generate --provider svg --params '{"type":"rectangle","width":800,"height":600,"fill":"#764ba2","rx":20}' --out rect.svg
+imgflo generate --generator shapes --params '{"type":"rectangle","width":800,"height":600,"fill":"#764ba2","rx":20}' --out rect.svg
 ```
 
 **Patterns (dots, stripes, grid):**
 ```bash
-imgflo generate --provider svg --params '{"type":"pattern","patternType":"dots","width":800,"height":600}' --out pattern.svg
+imgflo generate --generator shapes --params '{"type":"pattern","patternType":"dots","width":800,"height":600}' --out pattern.svg
 ```
 
 ### Using as a Library
@@ -131,8 +130,7 @@ const imgflo = createClient({
 
 // Generate → Convert → Upload
 const svg = await imgflo.generate({
-  provider: 'svg',
-  name: 'shapes',
+  generator: 'shapes',
   params: { type: 'gradient', width: 1200, height: 630 }
 });
 
@@ -161,7 +159,7 @@ When a user asks you to create images for slides:
 ```typescript
 // Generate slide backgrounds
 const titleBg = await imgflo.generate({
-  provider: 'svg',
+  generator: 'shapes',
   params: {
     type: 'gradient',
     width: 1920,
@@ -261,8 +259,8 @@ import { Imgflo } from 'imgflo';
 
 const client = new Imgflo();
 
-// Add a custom SVG provider
-client.registerProvider('svg', {
+// Add a custom generator
+client.registerGenerator({
   name: 'my-shapes',
   async generate(params) {
     return {

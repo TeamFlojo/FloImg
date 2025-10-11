@@ -169,10 +169,9 @@ imgflo upload \
 ### Generate Command
 
 ```bash
-# Specify provider explicitly
+# Specify generator explicitly
 imgflo generate \
-  --provider svg \
-  --name shapes \
+  --generator shapes \
   --params '{"type":"gradient"}' \
   --out bg.svg
 ```

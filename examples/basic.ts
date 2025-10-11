@@ -25,8 +25,7 @@ async function main() {
 
   console.log("🎨 Generating gradient SVG...");
   const svg = await imgflo.generate({
-    provider: "svg",
-    name: "shapes",
+    generator: "shapes",
     params: {
       type: "gradient",
       width: 1200,

@@ -5,8 +5,7 @@
 
 echo "🎨 Example 1: Generate gradient and save locally"
 imgflo generate \
-  --provider svg \
-  --name shapes \
+  --generator shapes \
   --params '{"type":"gradient","width":1200,"height":630,"color1":"#667eea","color2":"#764ba2"}' \
   --out gradient.svg
 
@@ -30,8 +29,7 @@ echo ""
 
 echo "🎨 Example 2: Generate pattern with different colors"
 imgflo generate \
-  --provider svg \
-  --name shapes \
+  --generator shapes \
   --params '{"type":"pattern","patternType":"dots","width":800,"height":600}' \
   --out pattern.svg
 

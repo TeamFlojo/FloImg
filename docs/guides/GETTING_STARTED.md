@@ -15,8 +15,7 @@ npm run build
 
 ```bash
 node dist/cli/index.js generate \
-  --provider svg \
-  --name shapes \
+  --generator shapes \
   --params '{"type":"gradient","width":1200,"height":630,"color1":"#667eea","color2":"#764ba2"}' \
   --out my-first-image.svg
 ```
@@ -87,8 +86,7 @@ const imgflo = createClient({
 
 // Generate a gradient
 const svg = await imgflo.generate({
-  provider: 'svg',
-  name: 'shapes',
+  generator: 'shapes',
   params: {
     type: 'gradient',
     width: 1200,
@@ -136,27 +134,27 @@ Try different shapes:
 
 **Gradient:**
 ```bash
-node dist/cli/index.js generate --provider svg --params '{"type":"gradient","color1":"#ff0080","color2":"#7928ca"}' --out gradient.svg
+node dist/cli/index.js generate --generator shapes --params '{"type":"gradient","color1":"#ff0080","color2":"#7928ca"}' --out gradient.svg
 ```
 
 **Circle:**
 ```bash
-node dist/cli/index.js generate --provider svg --params '{"type":"circle","width":500,"height":500,"fill":"#f59e0b"}' --out circle.svg
+node dist/cli/index.js generate --generator shapes --params '{"type":"circle","width":500,"height":500,"fill":"#f59e0b"}' --out circle.svg
 ```
 
 **Pattern (dots):**
 ```bash
-node dist/cli/index.js generate --provider svg --params '{"type":"pattern","patternType":"dots"}' --out dots.svg
+node dist/cli/index.js generate --generator shapes --params '{"type":"pattern","patternType":"dots"}' --out dots.svg
 ```
 
 **Pattern (stripes):**
 ```bash
-node dist/cli/index.js generate --provider svg --params '{"type":"pattern","patternType":"stripes"}' --out stripes.svg
+node dist/cli/index.js generate --generator shapes --params '{"type":"pattern","patternType":"stripes"}' --out stripes.svg
 ```
 
 **Pattern (grid):**
 ```bash
-node dist/cli/index.js generate --provider svg --params '{"type":"pattern","patternType":"grid"}' --out grid.svg
+node dist/cli/index.js generate --generator shapes --params '{"type":"pattern","patternType":"grid"}' --out grid.svg
 ```
 
 ## Troubleshooting

@@ -22,8 +22,7 @@ async function createSlideImages() {
   // Slide 1: Title slide background
   console.log("📊 Creating title slide background...");
   const titleBg = await imgflo.generate({
-    provider: "svg",
-    name: "shapes",
+    generator: "shapes",
     params: {
       type: "gradient",
       width: 1920,
@@ -49,8 +48,7 @@ async function createSlideImages() {
   // Slide 2: Content slide with pattern
   console.log("\n📊 Creating content slide background...");
   const contentBg = await imgflo.generate({
-    provider: "svg",
-    name: "shapes",
+    generator: "shapes",
     params: {
       type: "pattern",
       patternType: "grid",
@@ -75,8 +73,7 @@ async function createSlideImages() {
   // Slide 3: Accent graphic
   console.log("\n📊 Creating accent graphic...");
   const accent = await imgflo.generate({
-    provider: "svg",
-    name: "shapes",
+    generator: "shapes",
     params: {
       type: "circle",
       width: 500,

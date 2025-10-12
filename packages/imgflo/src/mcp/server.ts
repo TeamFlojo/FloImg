@@ -122,7 +122,7 @@ function selectGenerator(intent: string, params: any): string {
 const server = new Server(
   {
     name: "imgflo",
-    version: "0.2.0",
+    version: "0.3.0",
   },
   {
     capabilities: {
@@ -177,8 +177,10 @@ const TOOLS: Tool[] = [
   {
     name: "transform_image",
     description:
-      "Transform an image (convert format, resize, etc.). " +
-      "Takes image bytes (base64) and returns transformed result. " +
+      "Transform an image with filters, effects, text, and more. " +
+      "Supports: format conversion, resize, filters (blur, sharpen, grayscale, etc.), " +
+      "effects (modulate, tint, negate), borders (extend, roundCorners), text (addText, addCaption), " +
+      "and preset filters (vintage, vibrant, blackAndWhite, dramatic, soft, cool, warm). " +
       "Can optionally auto-save for large transformations by providing a destination.",
     inputSchema: {
       type: "object",
@@ -193,8 +195,43 @@ const TOOLS: Tool[] = [
         },
         operation: {
           type: "string",
-          description: "Transform operation: 'convert', 'resize', 'composite', or 'optimizeSvg'",
-          enum: ["convert", "resize", "composite", "optimizeSvg"],
+          description:
+            "Transform operation: convert, resize, composite, optimizeSvg, " +
+            "blur, sharpen, grayscale, negate, normalize, threshold, modulate, tint, " +
+            "extend, extract, roundCorners, addText, addCaption, preset",
+          enum: [
+            "convert",
+            "resize",
+            "composite",
+            "optimizeSvg",
+            "blur",
+            "sharpen",
+            "grayscale",
+            "negate",
+            "normalize",
+            "threshold",
+            "modulate",
+            "tint",
+            "extend",
+            "extract",
+            "roundCorners",
+            "addText",
+            "addCaption",
+            "preset",
+          ],
+        },
+        params: {
+          type: "object",
+          description:
+            "Parameters for the operation. Examples: " +
+            "blur: {sigma: 5}, " +
+            "modulate: {brightness: 1.2, saturation: 1.3}, " +
+            "tint: {r: 255, g: 240, b: 200}, " +
+            "extend: {top: 20, bottom: 20, left: 20, right: 20, background: '#fff'}, " +
+            "roundCorners: {radius: 20}, " +
+            "addText: {text: 'Hello', x: 100, y: 100, size: 48, color: '#fff', shadow: true}, " +
+            "addCaption: {text: 'Caption', position: 'bottom'}, " +
+            "preset: {name: 'vintage' | 'vibrant' | 'blackAndWhite' | 'dramatic' | 'soft' | 'cool' | 'warm'}",
         },
         to: {
           type: "string",
@@ -328,10 +365,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case "transform_image": {
-        const { imageBytes, mime, operation, to, width, height, destination } = args as {
+        const { imageBytes, mime, operation, params = {}, to, width, height, destination } = args as {
           imageBytes: string;
           mime: string;
           operation: string;
+          params?: Record<string, unknown>;
           to?: string;
           width?: number;
           height?: number;
@@ -344,31 +382,30 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
 
         let blob;
-        switch (operation) {
-          case "convert":
-            if (!to) throw new Error("'to' parameter required for convert operation");
-            blob = await client.transform({
-              blob: inputBlob,
-              op: "convert",
-              to: to as MimeType,
-            });
-            break;
-          case "resize":
-            if (!width || !height) throw new Error("'width' and 'height' required for resize");
-            blob = await client.transform({
-              blob: inputBlob,
-              op: "resize",
-              params: { width, height },
-            });
-            break;
-          case "optimizeSvg":
-            blob = await client.transform({
-              blob: inputBlob,
-              op: "optimizeSvg",
-            });
-            break;
-          default:
-            throw new Error(`Unsupported operation: ${operation}`);
+
+        // Handle special cases that need specific parameters
+        if (operation === "convert") {
+          if (!to) throw new Error("'to' parameter required for convert operation");
+          blob = await client.transform({
+            blob: inputBlob,
+            op: "convert",
+            to: to as MimeType,
+            params,
+          });
+        } else if (operation === "resize") {
+          if (!width && !height) throw new Error("'width' or 'height' required for resize");
+          blob = await client.transform({
+            blob: inputBlob,
+            op: "resize",
+            params: { width, height, ...params },
+          });
+        } else {
+          // All other operations use the generic params approach
+          blob = await client.transform({
+            blob: inputBlob,
+            op: operation as any,
+            params,
+          });
         }
 
         // If destination provided, auto-save (useful for large transformations)

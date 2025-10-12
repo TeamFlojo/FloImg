@@ -130,6 +130,122 @@ export class Imgflo {
         }
         return transformProvider.optimizeSvg(blob);
 
+      // Filter operations
+      case "blur":
+        if (!transformProvider.blur) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support blur operation`
+          );
+        }
+        return transformProvider.blur(blob, params.sigma as number | undefined);
+
+      case "sharpen":
+        if (!transformProvider.sharpen) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support sharpen operation`
+          );
+        }
+        return transformProvider.sharpen(blob, params);
+
+      case "grayscale":
+        if (!transformProvider.grayscale) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support grayscale operation`
+          );
+        }
+        return transformProvider.grayscale(blob);
+
+      case "negate":
+        if (!transformProvider.negate) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support negate operation`
+          );
+        }
+        return transformProvider.negate(blob);
+
+      case "normalize":
+        if (!transformProvider.normalize) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support normalize operation`
+          );
+        }
+        return transformProvider.normalize(blob);
+
+      case "threshold":
+        if (!transformProvider.threshold) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support threshold operation`
+          );
+        }
+        return transformProvider.threshold(blob, params.value as number | undefined);
+
+      case "modulate":
+        if (!transformProvider.modulate) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support modulate operation`
+          );
+        }
+        return transformProvider.modulate(blob, params as Parameters<NonNullable<TransformProvider["modulate"]>>[1]);
+
+      case "tint":
+        if (!transformProvider.tint) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support tint operation`
+          );
+        }
+        return transformProvider.tint(blob, params.color as Parameters<NonNullable<TransformProvider["tint"]>>[1]);
+
+      // Border & frame operations
+      case "extend":
+        if (!transformProvider.extend) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support extend operation`
+          );
+        }
+        return transformProvider.extend(blob, params as Parameters<NonNullable<TransformProvider["extend"]>>[1]);
+
+      case "extract":
+        if (!transformProvider.extract) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support extract operation`
+          );
+        }
+        return transformProvider.extract(blob, params as Parameters<NonNullable<TransformProvider["extract"]>>[1]);
+
+      case "roundCorners":
+        if (!transformProvider.roundCorners) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support roundCorners operation`
+          );
+        }
+        return transformProvider.roundCorners(blob, params.radius as number);
+
+      // Text operations
+      case "addText":
+        if (!transformProvider.addText) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support addText operation`
+          );
+        }
+        return transformProvider.addText(blob, params);
+
+      case "addCaption":
+        if (!transformProvider.addCaption) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support addCaption operation`
+          );
+        }
+        return transformProvider.addCaption(blob, params);
+
+      // Preset filters
+      case "preset":
+        if (!transformProvider.preset) {
+          throw new ConfigurationError(
+            `Transform provider "${providerName}" does not support preset operation`
+          );
+        }
+        return transformProvider.preset(blob, params.name as string);
+
       default:
         throw new ConfigurationError(`Unknown transform operation: ${op}`);
     }

@@ -144,6 +144,42 @@ export interface TransformProvider {
   ): Promise<ImageBlob>;
   /** Optimize SVG file size (optional) */
   optimizeSvg?(svg: ImageBlob): Promise<ImageBlob>;
+
+  // Filter operations (optional)
+  /** Apply Gaussian blur */
+  blur?(input: ImageBlob, sigma?: number): Promise<ImageBlob>;
+  /** Sharpen the image */
+  sharpen?(input: ImageBlob, opts?: Record<string, unknown>): Promise<ImageBlob>;
+  /** Convert to grayscale */
+  grayscale?(input: ImageBlob): Promise<ImageBlob>;
+  /** Negate/invert colors */
+  negate?(input: ImageBlob): Promise<ImageBlob>;
+  /** Auto-enhance contrast */
+  normalize?(input: ImageBlob): Promise<ImageBlob>;
+  /** Apply threshold (pure B&W) */
+  threshold?(input: ImageBlob, value?: number): Promise<ImageBlob>;
+  /** Adjust brightness, saturation, hue, lightness */
+  modulate?(input: ImageBlob, opts: { brightness?: number; saturation?: number; hue?: number; lightness?: number }): Promise<ImageBlob>;
+  /** Apply color tint overlay */
+  tint?(input: ImageBlob, color: string | { r: number; g: number; b: number }): Promise<ImageBlob>;
+
+  // Border & frame operations (optional)
+  /** Add borders to image */
+  extend?(input: ImageBlob, opts: { top: number; bottom: number; left: number; right: number; background?: string | { r: number; g: number; b: number; alpha?: number } }): Promise<ImageBlob>;
+  /** Extract a region from image */
+  extract?(input: ImageBlob, region: { left: number; top: number; width: number; height: number }): Promise<ImageBlob>;
+  /** Round corners of image */
+  roundCorners?(input: ImageBlob, radius: number): Promise<ImageBlob>;
+
+  // Text operations (optional)
+  /** Add text to image */
+  addText?(input: ImageBlob, options: Record<string, unknown>): Promise<ImageBlob>;
+  /** Add caption bar to image */
+  addCaption?(input: ImageBlob, options: Record<string, unknown>): Promise<ImageBlob>;
+
+  // Preset filters (optional)
+  /** Apply preset filter */
+  preset?(input: ImageBlob, presetName: string): Promise<ImageBlob>;
 }
 
 /**
@@ -179,7 +215,25 @@ export interface TransformInput {
   /** Image blob to transform */
   blob: ImageBlob;
   /** Operation to perform */
-  op: "convert" | "resize" | "composite" | "optimizeSvg";
+  op:
+    | "convert"
+    | "resize"
+    | "composite"
+    | "optimizeSvg"
+    | "blur"
+    | "sharpen"
+    | "grayscale"
+    | "negate"
+    | "normalize"
+    | "threshold"
+    | "modulate"
+    | "tint"
+    | "extend"
+    | "extract"
+    | "roundCorners"
+    | "addText"
+    | "addCaption"
+    | "preset";
   /** Target MIME type (for convert operation) */
   to?: MimeType;
   /** Additional operation parameters */
@@ -261,7 +315,25 @@ export type PipelineStep =
     }
   | {
       kind: "transform";
-      op: "convert" | "resize" | "composite" | "optimizeSvg";
+      op:
+        | "convert"
+        | "resize"
+        | "composite"
+        | "optimizeSvg"
+        | "blur"
+        | "sharpen"
+        | "grayscale"
+        | "negate"
+        | "normalize"
+        | "threshold"
+        | "modulate"
+        | "tint"
+        | "extend"
+        | "extract"
+        | "roundCorners"
+        | "addText"
+        | "addCaption"
+        | "preset";
       in: string;
       params: Record<string, unknown>;
       out: string;

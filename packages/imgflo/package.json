@@ -1,6 +1,6 @@
 {
   "name": "imgflo",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Image generation and transformation library for AI agents and developers",
   "type": "module",
   "main": "./dist/index.js",
@@ -64,6 +64,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.709.0",
     "@modelcontextprotocol/sdk": "^1.20.0",
+    "@napi-rs/canvas": "^0.1.80",
     "@resvg/resvg-js": "^2.6.2",
     "commander": "^12.1.0",
     "dotenv": "^16.4.7",

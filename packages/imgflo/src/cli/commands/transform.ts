@@ -5,9 +5,9 @@ import { loadConfig } from "../../config/loader.js";
 import type { MimeType } from "../../core/types.js";
 
 export const transformCommand = new Command("transform")
-  .description("Transform an image (convert, resize, etc.)")
+  .description("Transform an image (convert, resize, filters, effects, text, etc.)")
   .requiredOption("--in <path>", "Input file path")
-  .requiredOption("--op <operation>", "Operation: convert, resize, composite, optimizeSvg")
+  .requiredOption("--op <operation>", "Operation: convert, resize, composite, optimizeSvg, blur, sharpen, grayscale, negate, normalize, threshold, modulate, tint, extend, extract, roundCorners, addText, addCaption, preset")
   .option("--to <format>", "Target format for convert operation")
   .option("--params <json>", "JSON parameters for the operation", "{}")
   .option("--out <path>", "Output file path")

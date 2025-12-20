@@ -1,0 +1,17 @@
+name: Simple Gradient Pipeline
+version: 1.0
+
+steps:
+  - kind: generate
+    generator: shapes
+    params:
+      type: gradient
+      width: 1200
+      height: 630
+      color1: "#667eea"
+      color2: "#764ba2"
+    out: gradient
+
+  - kind: save
+    in: gradient
+    destination: ./output/simple-gradient.svg

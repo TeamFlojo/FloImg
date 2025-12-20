@@ -1,0 +1,457 @@
+/**
+ * Core types for floimg
+ */
+
+export type MimeType =
+  | "image/svg+xml"
+  | "image/png"
+  | "image/jpeg"
+  | "image/webp"
+  | "image/avif";
+
+/**
+ * Represents an image as a buffer with metadata
+ */
+export interface ImageBlob {
+  /** Raw image bytes */
+  bytes: Buffer;
+  /** MIME type of the image */
+  mime: MimeType;
+  /** Image width in pixels (if known) */
+  width?: number;
+  /** Image height in pixels (if known) */
+  height?: number;
+  /** Additional metadata about the image */
+  metadata?: Record<string, unknown>;
+  /** Source identifier (e.g., "svg:gradient", "ai:openai") */
+  source?: string;
+}
+
+/**
+ * Result from uploading an image to storage
+ */
+export interface UploadResult {
+  /** Storage key/path where the image was uploaded */
+  key: string;
+  /** Public URL to access the image (if available) */
+  url?: string;
+  /** ETag or version identifier from the storage provider */
+  etag?: string;
+  /** Additional metadata from the upload operation */
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Configuration for floimg client
+ */
+export interface FloimgConfig {
+  /** Directory for caching generated images */
+  cacheDir?: string;
+  /** Enable verbose logging */
+  verbose?: boolean;
+  /** Image generator configuration */
+  generators?: {
+    default?: string;
+    [generatorName: string]: unknown;
+  };
+  /** Transform provider configuration */
+  transform?: {
+    default?: string;
+    [providerName: string]: unknown;
+  };
+  /** Save provider configuration (filesystem, S3, R2, etc.) */
+  save?: {
+    default?: string;
+    fs?: {
+      baseDir?: string;
+      chmod?: number;
+    };
+    s3?: {
+      bucket?: string;
+      region?: string;
+      endpoint?: string;
+      credentials?: {
+        accessKeyId: string;
+        secretAccessKey: string;
+      };
+    };
+    r2?: {
+      accountId: string;
+      accessKeyId: string;
+      secretAccessKey: string;
+    };
+    [providerName: string]: unknown;
+  };
+
+  // AI configuration
+  ai?: {
+    default?: string;
+    openai?: {
+      apiKey: string;
+    };
+    [providerName: string]: unknown;
+  };
+}
+
+// =============================================================================
+// Schema Types for Capability Discovery
+// =============================================================================
+
+/**
+ * JSON Schema-compatible type for a single parameter
+ */
+export interface ParameterSchema {
+  /** Parameter data type */
+  type: "string" | "number" | "boolean" | "object" | "array";
+  /** Human-readable title for UI display */
+  title?: string;
+  /** Description of what the parameter does */
+  description?: string;
+  /** Default value */
+  default?: unknown;
+  /** Allowed values (for string enums) */
+  enum?: string[];
+  /** Minimum value (for numbers) */
+  minimum?: number;
+  /** Maximum value (for numbers) */
+  maximum?: number;
+  /** For object types: nested property schemas */
+  properties?: Record<string, ParameterSchema>;
+  /** For array types: schema of array items */
+  items?: ParameterSchema;
+}
+
+/**
+ * Schema for an image generator
+ */
+export interface GeneratorSchema {
+  /** Generator identifier (matches ImageGenerator.name) */
+  name: string;
+  /** Human-readable description */
+  description?: string;
+  /** Category for UI grouping (e.g., 'Basic', 'AI', 'Utility') */
+  category?: string;
+  /** Parameter definitions */
+  parameters: Record<string, ParameterSchema>;
+  /** Names of required parameters */
+  requiredParameters?: string[];
+}
+
+/**
+ * Schema for a transform operation
+ */
+export interface TransformOperationSchema {
+  /** Operation name (e.g., 'resize', 'blur') */
+  name: string;
+  /** Human-readable description */
+  description?: string;
+  /** Category for UI grouping (e.g., 'Size', 'Filters', 'Text') */
+  category?: string;
+  /** Parameter definitions */
+  parameters: Record<string, ParameterSchema>;
+  /** Names of required parameters */
+  requiredParameters?: string[];
+}
+
+/**
+ * Schema for a save provider
+ */
+export interface SaveProviderSchema {
+  /** Provider name (e.g., 'fs', 's3') */
+  name: string;
+  /** Human-readable description */
+  description?: string;
+  /** URL protocols this provider handles (e.g., ['s3://', 'r2://']) */
+  protocols?: string[];
+}
+
+/**
+ * Complete capabilities of a floimg client
+ */
+export interface ClientCapabilities {
+  /** Available image generators */
+  generators: GeneratorSchema[];
+  /** Available transform operations */
+  transforms: TransformOperationSchema[];
+  /** Available save providers */
+  saveProviders: SaveProviderSchema[];
+}
+
+// =============================================================================
+// Provider Interfaces
+// =============================================================================
+
+/**
+ * Image generator interface - unified for all generation types
+ * (SVG, AI, procedural, etc.)
+ */
+export interface ImageGenerator {
+  /** Generator name (e.g., 'shapes', 'openai', 'trianglify') */
+  name: string;
+  /** Schema describing this generator's parameters */
+  schema: GeneratorSchema;
+  /** Generate an image from parameters */
+  generate(params: Record<string, unknown>): Promise<ImageBlob>;
+}
+
+// Legacy type aliases for backwards compatibility
+export type SvgProvider = ImageGenerator;
+export type AiProvider = ImageGenerator;
+
+/**
+ * Image transformation provider interface
+ */
+export interface TransformProvider {
+  /** Provider name */
+  name: string;
+  /** Schemas for all operations this provider supports */
+  operationSchemas: Record<string, TransformOperationSchema>;
+  /** Convert image to a different format */
+  convert(input: ImageBlob, to: MimeType): Promise<ImageBlob>;
+  /** Resize an image (optional) */
+  resize?(
+    input: ImageBlob,
+    opts: {
+      width?: number;
+      height?: number;
+      fit?: "cover" | "contain" | "fill";
+    }
+  ): Promise<ImageBlob>;
+  /** Composite multiple images together (optional) */
+  composite?(
+    base: ImageBlob,
+    overlays: Array<{
+      blob: ImageBlob;
+      left: number;
+      top: number;
+    }>
+  ): Promise<ImageBlob>;
+  /** Optimize SVG file size (optional) */
+  optimizeSvg?(svg: ImageBlob): Promise<ImageBlob>;
+
+  // Filter operations (optional)
+  /** Apply Gaussian blur */
+  blur?(input: ImageBlob, sigma?: number): Promise<ImageBlob>;
+  /** Sharpen the image */
+  sharpen?(input: ImageBlob, opts?: Record<string, unknown>): Promise<ImageBlob>;
+  /** Convert to grayscale */
+  grayscale?(input: ImageBlob): Promise<ImageBlob>;
+  /** Negate/invert colors */
+  negate?(input: ImageBlob): Promise<ImageBlob>;
+  /** Auto-enhance contrast */
+  normalize?(input: ImageBlob): Promise<ImageBlob>;
+  /** Apply threshold (pure B&W) */
+  threshold?(input: ImageBlob, value?: number): Promise<ImageBlob>;
+  /** Adjust brightness, saturation, hue, lightness */
+  modulate?(input: ImageBlob, opts: { brightness?: number; saturation?: number; hue?: number; lightness?: number }): Promise<ImageBlob>;
+  /** Apply color tint overlay */
+  tint?(input: ImageBlob, color: string | { r: number; g: number; b: number }): Promise<ImageBlob>;
+
+  // Border & frame operations (optional)
+  /** Add borders to image */
+  extend?(input: ImageBlob, opts: { top: number; bottom: number; left: number; right: number; background?: string | { r: number; g: number; b: number; alpha?: number } }): Promise<ImageBlob>;
+  /** Extract a region from image */
+  extract?(input: ImageBlob, region: { left: number; top: number; width: number; height: number }): Promise<ImageBlob>;
+  /** Round corners of image */
+  roundCorners?(input: ImageBlob, radius: number): Promise<ImageBlob>;
+
+  // Text operations (optional)
+  /** Add text to image */
+  addText?(input: ImageBlob, options: Record<string, unknown>): Promise<ImageBlob>;
+  /** Add caption bar to image */
+  addCaption?(input: ImageBlob, options: Record<string, unknown>): Promise<ImageBlob>;
+
+  // Preset filters (optional)
+  /** Apply preset filter */
+  preset?(input: ImageBlob, presetName: string): Promise<ImageBlob>;
+}
+
+/**
+ * Cloud storage provider interface
+ */
+export interface StoreProvider {
+  /** Provider name */
+  name: string;
+  /** Upload an image to storage */
+  put(input: {
+    key: string;
+    blob: ImageBlob;
+    headers?: Record<string, string>;
+  }): Promise<UploadResult>;
+  /** Get public URL for a stored image (optional) */
+  getUrl?(key: string): Promise<string>;
+}
+
+/**
+ * Input for generate operation
+ */
+export interface GenerateInput {
+  /** Generator name (e.g., 'shapes', 'openai', 'trianglify') */
+  generator: string;
+  /** Generator-specific parameters */
+  params?: Record<string, unknown>;
+}
+
+/**
+ * Input for transform operation
+ */
+export interface TransformInput {
+  /** Image blob to transform */
+  blob: ImageBlob;
+  /** Operation to perform */
+  op:
+    | "convert"
+    | "resize"
+    | "composite"
+    | "optimizeSvg"
+    | "blur"
+    | "sharpen"
+    | "grayscale"
+    | "negate"
+    | "normalize"
+    | "threshold"
+    | "modulate"
+    | "tint"
+    | "extend"
+    | "extract"
+    | "roundCorners"
+    | "addText"
+    | "addCaption"
+    | "preset";
+  /** Target MIME type (for convert operation) */
+  to?: MimeType;
+  /** Additional operation parameters */
+  params?: Record<string, unknown>;
+}
+
+/**
+ * Input for save operation (supports filesystem and cloud)
+ */
+export interface SaveInput {
+  /** Destination path or key */
+  path: string;
+  /** Save provider name (auto-detected if not specified) */
+  provider?: string;
+  /** Overwrite existing file (default: true) */
+  overwrite?: boolean;
+  /** File permissions for filesystem (default: 0o644) */
+  chmod?: number;
+  /** Custom headers for cloud uploads */
+  headers?: Record<string, string>;
+  /** Custom metadata */
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Result from saving an image
+ */
+export interface SaveResult {
+  /** Provider used ('fs', 's3', 'r2', etc.) */
+  provider: string;
+  /** Location where saved (file path or URL) */
+  location: string;
+  /** File size in bytes */
+  size: number;
+  /** MIME type */
+  mime: MimeType;
+  /** Additional metadata */
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Save provider interface (unified for filesystem and cloud)
+ */
+export interface SaveProvider {
+  /** Provider name */
+  name: string;
+  /** Save an image */
+  save(input: {
+    blob: ImageBlob;
+    path: string;
+    [key: string]: unknown;
+  }): Promise<SaveResult>;
+}
+
+/**
+ * Input for upload operation
+ * @deprecated Use save() instead
+ */
+export interface UploadInput {
+  /** Image blob to upload */
+  blob: ImageBlob;
+  /** Storage key/path */
+  key: string;
+  /** Storage provider name (uses default if not specified) */
+  provider?: string;
+  /** Custom headers to send with upload */
+  headers?: Record<string, string>;
+}
+
+/**
+ * Pipeline step definitions
+ */
+export type PipelineStep =
+  | {
+      kind: "generate";
+      generator: string;
+      params?: Record<string, unknown>;
+      out: string;
+    }
+  | {
+      kind: "transform";
+      op:
+        | "convert"
+        | "resize"
+        | "composite"
+        | "optimizeSvg"
+        | "blur"
+        | "sharpen"
+        | "grayscale"
+        | "negate"
+        | "normalize"
+        | "threshold"
+        | "modulate"
+        | "tint"
+        | "extend"
+        | "extract"
+        | "roundCorners"
+        | "addText"
+        | "addCaption"
+        | "preset";
+      in: string;
+      params: Record<string, unknown>;
+      out: string;
+    }
+  | {
+      kind: "save";
+      provider?: string;
+      in: string;
+      destination: string;
+      out?: string;
+    };
+
+/**
+ * Pipeline definition
+ */
+export interface Pipeline {
+  /** Pipeline name */
+  name?: string;
+  /** Steps to execute */
+  steps: PipelineStep[];
+  /** Maximum concurrent steps */
+  concurrency?: number;
+  /** Output directory for intermediate files */
+  outDir?: string;
+}
+
+/**
+ * Result from running a pipeline
+ */
+export interface PipelineResult {
+  /** Step that was executed */
+  step: PipelineStep;
+  /** Output variable name */
+  out: string;
+  /** Result value (ImageBlob or SaveResult) */
+  value: ImageBlob | SaveResult;
+}

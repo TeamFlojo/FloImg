@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "imgflo": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "imgflo"],
+      "env": {
+        "AWS_REGION": "us-east-1",
+        "S3_BUCKET": "your-bucket-name"
+      }
+    }
+  }
+}

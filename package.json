@@ -1,0 +1,32 @@
+{
+  "name": "floimg-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "floimg monorepo - universal image workflow engine for developers and AI agents",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r clean && rm -rf node_modules"
+  },
+  "keywords": [
+    "image",
+    "generation",
+    "monorepo"
+  ],
+  "author": "Brett Cooke",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TeamFlojo/floimg.git"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

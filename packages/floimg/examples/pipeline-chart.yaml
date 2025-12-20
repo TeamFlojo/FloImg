@@ -1,0 +1,26 @@
+name: Quarterly Revenue Chart
+version: 1.0
+
+steps:
+  - kind: generate
+    generator: quickchart
+    params:
+      type: bar
+      data:
+        labels: [Q1, Q2, Q3, Q4]
+        datasets:
+          - label: Revenue
+            data: [12000, 19000, 15000, 25000]
+            backgroundColor: "#667eea"
+    out: chart
+
+  - kind: transform
+    in: chart
+    op: convert
+    to: image/png
+    params: {}
+    out: chart-png
+
+  - kind: save
+    in: chart-png
+    destination: ./output/revenue-chart.png

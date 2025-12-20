@@ -1,0 +1,32 @@
+name: AI Image to S3 Workflow
+steps:
+  # Step 1: Generate AI image
+  - kind: generate
+    generator: openai
+    params:
+      prompt: "A serene sunset over mountains"
+      size: "1024x1024"
+    out: sunset_image
+
+  # Step 2: Resize it
+  - kind: transform
+    in: sunset_image
+    op: resize
+    params:
+      width: 800
+      height: 600
+    out: resized_image
+
+  # Step 3: Add a caption
+  - kind: transform
+    in: resized_image
+    op: addCaption
+    params:
+      text: "Beautiful Sunset"
+      position: bottom
+    out: final_image
+
+  # Step 4: Save to S3
+  - kind: save
+    in: final_image
+    destination: s3://my-bucket/sunset.png

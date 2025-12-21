@@ -1,6 +1,6 @@
 {
   "name": "@teamflojo/floimg-ollama",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Ollama local AI provider for floimg - vision and text generation with local models",
   "type": "module",
   "main": "./dist/index.js",

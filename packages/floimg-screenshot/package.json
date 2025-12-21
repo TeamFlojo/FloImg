@@ -1,6 +1,6 @@
 {
   "name": "@teamflojo/floimg-screenshot",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Screenshot generator for floimg using Playwright headless browser",
   "type": "module",
   "main": "./dist/index.js",

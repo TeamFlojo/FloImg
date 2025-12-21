@@ -7,9 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-12-21
+
+### Added
+
+#### AI Vision & Text Generation
+- **Vision analysis**: `analyzeImage()` method for AI-powered image understanding
+- **Text generation**: `generateText()` method for LLM text completion
+- **DataBlob type**: New output type for text/JSON results from AI operations
+- **VisionProvider interface**: Standardized interface for vision AI providers
+- **TextProvider interface**: Standardized interface for text AI providers
+
+#### AI Providers
+- **OpenAI**: GPT-4 Vision for image analysis, GPT-4 for text generation
+- **Anthropic**: Claude vision and text support (via config)
+- **Google Gemini**: Gemini vision and text support (via config)
+- **Ollama**: Local AI models (LLaVA for vision, Llama for text)
+- **LM Studio**: Local model support via OpenAI-compatible API
+
+#### New Package
+- `@teamflojo/floimg-ollama`: Plugin for local AI models via Ollama
+  - LLaVA vision model support
+  - Llama text model support
+  - Zero-cloud-dependency AI workflows
+
+#### MCP Server
+- `analyze_image` tool: AI vision analysis in MCP workflows
+- `generate_text` tool: AI text generation in MCP workflows
+
 ### Changed
-- Renamed project to floimg (from imgflo)
-- Package namespace changed to @teamflojo/floimg
+- Extended `getCapabilities()` to include AI provider information
+- Updated config types for multi-provider AI support
+
+### Notes
+- All AI features are optional - floimg works without any AI configured
+- AI providers require respective API keys or local model setup
 
 ## [0.1.0] - 2025-12-20
 

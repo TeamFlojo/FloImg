@@ -1,6 +1,6 @@
 {
   "name": "@teamflojo/floimg-d3",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "D3 data visualization generator for floimg using server-side rendering",
   "type": "module",
   "main": "./dist/index.js",

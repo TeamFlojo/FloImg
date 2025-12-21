@@ -1,6 +1,6 @@
 {
   "name": "@teamflojo/floimg-screenshot",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Screenshot generator for floimg using Playwright headless browser",
   "type": "module",
   "main": "./dist/index.js",
@@ -41,7 +41,7 @@
     "directory": "packages/floimg-screenshot"
   },
   "peerDependencies": {
-    "@teamflojo/floimg": "^0.1.0"
+    "@teamflojo/floimg": "^0.2.0"
   },
   "dependencies": {
     "playwright": "^1.48.2"

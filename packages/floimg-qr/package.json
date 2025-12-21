@@ -1,6 +1,6 @@
 {
   "name": "@teamflojo/floimg-qr",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "QR code generator for floimg using qrcode library",
   "type": "module",
   "main": "./dist/index.js",
@@ -39,7 +39,7 @@
     "directory": "packages/floimg-qr"
   },
   "peerDependencies": {
-    "@teamflojo/floimg": "^0.1.0"
+    "@teamflojo/floimg": "^0.2.0"
   },
   "dependencies": {
     "qrcode": "^1.5.4"

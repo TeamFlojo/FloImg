@@ -1,6 +1,6 @@
 {
   "name": "@teamflojo/floimg-quickchart",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "QuickChart.io generator for floimg - create charts using Chart.js",
   "type": "module",
   "main": "./dist/index.js",
@@ -40,7 +40,7 @@
     "directory": "packages/floimg-quickchart"
   },
   "peerDependencies": {
-    "@teamflojo/floimg": "^0.1.0"
+    "@teamflojo/floimg": "^0.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

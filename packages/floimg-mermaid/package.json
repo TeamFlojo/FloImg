@@ -1,6 +1,6 @@
 {
   "name": "@teamflojo/floimg-mermaid",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Mermaid diagram generator for floimg - create flowcharts, sequence diagrams, and more",
   "type": "module",
   "main": "./dist/index.js",
@@ -42,7 +42,7 @@
     "directory": "packages/floimg-mermaid"
   },
   "peerDependencies": {
-    "@teamflojo/floimg": "^0.1.0"
+    "@teamflojo/floimg": "^0.2.0"
   },
   "dependencies": {
     "@mermaid-js/mermaid-cli": "^11.4.1",

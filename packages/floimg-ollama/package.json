@@ -1,6 +1,6 @@
 {
   "name": "@teamflojo/floimg-ollama",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Ollama local AI provider for floimg - vision and text generation with local models",
   "type": "module",
   "main": "./dist/index.js",
@@ -42,7 +42,7 @@
     "directory": "packages/floimg-ollama"
   },
   "peerDependencies": {
-    "@teamflojo/floimg": "^0.1.0"
+    "@teamflojo/floimg": "^0.2.0"
   },
   "dependencies": {
     "ollama": "^0.5.11"

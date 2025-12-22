@@ -10,6 +10,13 @@ import { pluginsCommand } from "./commands/plugins.js";
 import { mcpCommand } from "./commands/mcp.js";
 import { filterCommand, presetCommand } from "./commands/filter.js";
 import { textCommand } from "./commands/text.js";
+// Shorthand commands for common operations
+import { qrCommand } from "./commands/qr.js";
+import { resizeCommand } from "./commands/resize.js";
+import { convertCommand } from "./commands/convert.js";
+import { chartCommand } from "./commands/chart.js";
+// Interactive mode
+import { showInteractiveMenu, shouldShowInteractiveMenu } from "./interactive.js";
 import { readFile } from "fs/promises";
 import { fileURLToPath } from "url";
 import { dirname, join, resolve } from "path";
@@ -35,6 +42,7 @@ program
   .description("Universal image workflow engine for developers and AI agents")
   .version(version);
 
+// Core commands (full API)
 program.addCommand(generateCommand);
 program.addCommand(transformCommand);
 program.addCommand(saveCommand);
@@ -45,6 +53,12 @@ program.addCommand(mcpCommand);
 program.addCommand(filterCommand);
 program.addCommand(presetCommand);
 program.addCommand(textCommand);
+
+// Shorthand commands (convenience wrappers)
+program.addCommand(qrCommand);
+program.addCommand(resizeCommand);
+program.addCommand(convertCommand);
+program.addCommand(chartCommand);
 
 // Enhanced doctor command
 program
@@ -92,7 +106,9 @@ program
         console.log(`    - Bucket: ${(config.save.s3 as any).bucket || "not set"}`);
         console.log(`    - Region: ${(config.save.s3 as any).region || "not set"}`);
         console.log(`    - Endpoint: ${(config.save.s3 as any).endpoint || "default (AWS)"}`);
-        console.log(`    - Credentials: ${(config.save.s3 as any).credentials ? "configured" : "not set"}`);
+        console.log(
+          `    - Credentials: ${(config.save.s3 as any).credentials ? "configured" : "not set"}`
+        );
       }
       if (config.ai?.openai) {
         console.log("  OpenAI:");
@@ -102,7 +118,10 @@ program
         console.log("  No configuration found");
       }
     } catch (error) {
-      console.log("\n⚠️  Error loading configuration:", error instanceof Error ? error.message : error);
+      console.log(
+        "\n⚠️  Error loading configuration:",
+        error instanceof Error ? error.message : error
+      );
     }
 
     console.log("\nEnvironment variables:");
@@ -113,7 +132,10 @@ program
     console.log("  Tigris:");
     console.log("    - TIGRIS_BUCKET_NAME:", process.env.TIGRIS_BUCKET_NAME || "not set");
     console.log("    - TIGRIS_REGION:", process.env.TIGRIS_REGION || "not set");
-    console.log("    - TIGRIS_ACCESS_KEY_ID:", process.env.TIGRIS_ACCESS_KEY_ID ? "set" : "not set");
+    console.log(
+      "    - TIGRIS_ACCESS_KEY_ID:",
+      process.env.TIGRIS_ACCESS_KEY_ID ? "set" : "not set"
+    );
     console.log("  AI:");
     console.log("    - OPENAI_API_KEY:", process.env.OPENAI_API_KEY ? "set" : "not set");
 
@@ -147,7 +169,14 @@ program
     console.log("  floimg plugins           # See available plugins");
     console.log("  floimg config init       # Interactive setup");
     console.log("  floimg mcp install       # Set up MCP for Claude Code");
-    console.log("  floimg generate --generator shapes --params '{\"type\":\"gradient\"}' --out test.svg");
+    console.log(
+      '  floimg generate --generator shapes --params \'{"type":"gradient"}\' --out test.svg'
+    );
   });
 
-program.parse();
+// Check if we should show interactive menu (no args provided)
+if (shouldShowInteractiveMenu(process.argv)) {
+  showInteractiveMenu().catch(console.error);
+} else {
+  program.parse();
+}

@@ -1,0 +1,21 @@
+{
+  "name": "floimg-claude",
+  "description": "Universal image generation and workflows for Claude Code. Generate charts, diagrams, QR codes, screenshots, and AI images with floimg.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Brett Cooke",
+    "url": "https://github.com/TeamFlojo"
+  },
+  "homepage": "https://github.com/TeamFlojo/floimg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TeamFlojo/floimg.git",
+    "directory": "packages/floimg-claude"
+  },
+  "license": "MIT",
+  "keywords": ["image", "chart", "diagram", "qr", "screenshot", "mermaid", "dall-e", "quickchart"],
+  "commands": ["./commands/"],
+  "agents": ["./agents/"],
+  "skills": ["./skills/"],
+  "mcpServers": "./.mcp.json"
+}

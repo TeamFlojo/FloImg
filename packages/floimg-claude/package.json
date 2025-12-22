@@ -1,0 +1,44 @@
+{
+  "name": "@teamflojo/floimg-claude",
+  "version": "0.1.0",
+  "description": "Claude Code plugin for floimg - Universal image generation and workflows",
+  "type": "module",
+  "files": [
+    ".claude-plugin",
+    "commands",
+    "agents",
+    "skills",
+    ".mcp.json",
+    "README.md"
+  ],
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "floimg",
+    "image-generation",
+    "chart",
+    "diagram",
+    "mermaid",
+    "qr-code",
+    "screenshot",
+    "dall-e",
+    "mcp"
+  ],
+  "author": "Brett Cooke",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TeamFlojo/floimg.git",
+    "directory": "packages/floimg-claude"
+  },
+  "bugs": {
+    "url": "https://github.com/TeamFlojo/floimg/issues"
+  },
+  "homepage": "https://github.com/TeamFlojo/floimg#readme",
+  "peerDependencies": {
+    "@teamflojo/floimg": "^0.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

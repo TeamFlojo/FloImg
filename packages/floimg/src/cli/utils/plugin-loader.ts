@@ -67,6 +67,60 @@ async function promptConfirm(message: string): Promise<boolean> {
 }
 
 /**
+ * Check if running via npx
+ */
+export function isRunningViaNpx(): boolean {
+  // npx sets this environment variable or runs from _npx cache
+  return (
+    Boolean(process.env.npm_execpath?.includes("npx")) ||
+    Boolean(process.env.npm_config_user_agent?.includes("npx")) ||
+    process.argv[1]?.includes("_npx")
+  );
+}
+
+/**
+ * Get the global npm prefix path
+ */
+function getGlobalPrefix(): string {
+  try {
+    return execSync("npm config get prefix", { encoding: "utf-8" }).trim();
+  } catch {
+    return "/usr/local"; // fallback
+  }
+}
+
+/**
+ * Try to dynamically import a package, checking global install if needed
+ */
+async function tryImportPackage(packageName: string): Promise<unknown> {
+  // First try normal import (works for local node_modules)
+  try {
+    return await import(packageName);
+  } catch {
+    // Not found locally
+  }
+
+  // When running via npx, try to resolve from global packages
+  if (isRunningViaNpx()) {
+    const globalPrefix = getGlobalPrefix();
+    const globalPaths = [
+      `${globalPrefix}/lib/node_modules/${packageName}`,
+      `${globalPrefix}/node_modules/${packageName}`,
+    ];
+
+    for (const globalPath of globalPaths) {
+      try {
+        return await import(globalPath);
+      } catch {
+        // Not found at this path
+      }
+    }
+  }
+
+  throw new Error(`Cannot find package '${packageName}'`);
+}
+
+/**
  * Detect the package manager being used
  */
 function detectPackageManager(): "npm" | "pnpm" | "yarn" | "bun" {
@@ -85,18 +139,27 @@ function detectPackageManager(): "npm" | "pnpm" | "yarn" | "bun" {
 
 /**
  * Install a package using the detected package manager
+ * When running via npx, installs globally so it's accessible
  */
 function installPackage(packageName: string): void {
   const pm = detectPackageManager();
+  const global = isRunningViaNpx();
 
-  const commands: Record<string, string> = {
-    npm: `npm install ${packageName}`,
-    pnpm: `pnpm add ${packageName}`,
-    yarn: `yarn add ${packageName}`,
-    bun: `bun add ${packageName}`,
-  };
+  const commands: Record<string, string> = global
+    ? {
+        npm: `npm install -g ${packageName}`,
+        pnpm: `pnpm add -g ${packageName}`,
+        yarn: `yarn global add ${packageName}`,
+        bun: `bun add -g ${packageName}`,
+      }
+    : {
+        npm: `npm install ${packageName}`,
+        pnpm: `pnpm add ${packageName}`,
+        yarn: `yarn add ${packageName}`,
+        bun: `bun add ${packageName}`,
+      };
 
-  console.log(`\n📦 Installing ${packageName}...`);
+  console.log(`\n📦 Installing ${packageName}${global ? " (globally)" : ""}...`);
   execSync(commands[pm], { stdio: "inherit" });
   console.log(`✅ Installed ${packageName}\n`);
 }
@@ -121,7 +184,7 @@ export async function loadPlugin<T = unknown>(
 
   // Try to import the plugin
   try {
-    const module = await import(info.package);
+    const module = await tryImportPackage(info.package);
     return module as T;
   } catch {
     // Plugin not installed
@@ -154,25 +217,17 @@ export async function loadPlugin<T = unknown>(
   try {
     installPackage(info.package);
 
-    // Try to import again
-    const module = await import(info.package);
+    // Try to import again (checking global packages if needed)
+    const module = await tryImportPackage(info.package);
     return module as T;
   } catch (error) {
     console.error(
       `\n❌ Failed to install ${info.package}:`,
       error instanceof Error ? error.message : error
     );
-    console.log(`Try installing manually: npm install ${info.package}`);
+    console.log(`Try installing manually: npm install -g ${info.package}`);
     return null;
   }
-}
-
-/**
- * Check if running via npx
- */
-export function isRunningViaNpx(): boolean {
-  // npx sets this environment variable
-  return Boolean(process.env.npm_execpath?.includes("npx"));
 }
 
 /**

@@ -3,7 +3,7 @@ import type {
   TransformNodeData,
   SaveNodeData,
   ParamField,
-} from "@floimg-studio/shared";
+} from "@teamflojo/floimg-studio-shared";
 import { useWorkflowStore } from "../stores/workflowStore";
 
 export function NodeInspector() {

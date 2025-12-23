@@ -6,7 +6,7 @@
  * visual editor always reflects what the execution engine actually supports.
  */
 
-import type { NodeDefinition, ParamSchema, ParamField } from "@floimg-studio/shared";
+import type { NodeDefinition, ParamSchema, ParamField } from "@teamflojo/floimg-studio-shared";
 import type { GeneratorSchema, TransformOperationSchema, ParameterSchema } from "@teamflojo/floimg";
 import { getCachedCapabilities } from "./setup.js";
 

@@ -7,7 +7,7 @@ import type {
   InputNodeData,
   VisionNodeData,
   TextNodeData,
-} from "@floimg-studio/shared";
+} from "@teamflojo/floimg-studio-shared";
 import { useWorkflowStore } from "../stores/workflowStore";
 import { uploadImage, getUploadBlobUrl } from "../api/client";
 

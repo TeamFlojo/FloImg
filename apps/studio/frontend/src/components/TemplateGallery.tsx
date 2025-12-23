@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { templates, getCategories } from "../templates";
-import type { GalleryTemplate } from "@floimg-studio/shared";
+import type { GalleryTemplate } from "@teamflojo/floimg-studio-shared";
 
 interface TemplateGalleryProps {
   onSelect: (templateId: string) => void;

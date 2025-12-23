@@ -1,7 +1,16 @@
 {
-  "name": "@floimg-studio/shared",
+  "name": "@teamflojo/floimg-studio-shared",
   "version": "0.1.0",
+  "description": "Shared types and utilities for FloImg Studio",
   "type": "module",
+  "license": "MIT",
+  "author": "Flojo, Inc.",
+  "homepage": "https://floimg.com/studio",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teamflojo/floimg.git",
+    "directory": "apps/studio/shared"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -10,11 +19,9 @@
       "import": "./dist/index.js"
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/TeamFlojo/floimg.git",
-    "directory": "apps/studio/shared"
-  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",

@@ -1,18 +1,16 @@
 /**
- * @floimg-studio/frontend - Library exports
+ * @teamflojo/floimg-studio-ui
  *
- * This file enables @floimg-studio/frontend to be consumed as a library
- * by floimg-cloud's studio-cloud package.
+ * FloImg Studio React components for building visual workflow editors.
+ * This is the UI library used by FloImg Studio Cloud.
  *
- * Usage:
- *   import { App } from '@floimg-studio/frontend';
- *   import '@floimg-studio/frontend/styles';
+ * For self-hosting, use the Docker image instead.
  */
 
-// Main App component - the full FloImg Studio application
+// Main App component
 export { default as App } from "./App";
 
-// Individual components (for advanced composition if needed)
+// Individual components (for custom compositions)
 export { WorkflowEditor } from "./editor/WorkflowEditor";
 export { NodePalette } from "./components/NodePalette";
 export { NodeInspector } from "./components/NodeInspector";
@@ -22,8 +20,17 @@ export { TemplateGallery } from "./components/TemplateGallery";
 export { WorkflowLibrary } from "./components/WorkflowLibrary";
 export { AISettings } from "./components/AISettings";
 
-// Stores (for state access if needed)
+// State management
 export { useWorkflowStore } from "./stores/workflowStore";
 
 // Templates
-export { getTemplateById, templates, searchTemplates, getTemplatesByCategory } from "./templates";
+export {
+  templates,
+  getCategories,
+  getTemplatesByCategory,
+  getTemplateById,
+  searchTemplates,
+} from "./templates";
+
+// Re-export types from shared
+export type * from "@teamflojo/floimg-studio-shared";

@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import type { StudioNode, StudioEdge, ExecutionStepResult } from "@floimg-studio/shared";
+import type { StudioNode, StudioEdge, ExecutionStepResult } from "@teamflojo/floimg-studio-shared";
 import { executeWorkflow, toPipeline } from "../floimg/executor.js";
 import { stringify as yamlStringify } from "yaml";
 import { nanoid } from "nanoid";

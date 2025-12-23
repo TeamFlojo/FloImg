@@ -5,7 +5,7 @@
  * These work offline and for self-hosted deployments.
  */
 
-import type { GalleryTemplate } from "@floimg-studio/shared";
+import type { GalleryTemplate } from "@teamflojo/floimg-studio-shared";
 
 // ============================================
 // Chart Templates (QuickChart)

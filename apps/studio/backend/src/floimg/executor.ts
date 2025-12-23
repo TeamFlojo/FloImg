@@ -19,7 +19,7 @@ import type {
   TextNodeData,
   ExecutionStepResult,
   ImageMetadata,
-} from "@floimg-studio/shared";
+} from "@teamflojo/floimg-studio-shared";
 import { loadUpload } from "../routes/uploads.js";
 import { nanoid } from "nanoid";
 import { mkdir, writeFile } from "fs/promises";

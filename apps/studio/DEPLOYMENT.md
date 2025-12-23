@@ -1,16 +1,17 @@
-# Deploying floimg-studio
+# Deploying FloImg Studio
 
-floimg-studio is open-source and fully self-hostable. Run it on your own infrastructure with your own API keys.
+FloImg Studio is open-source and fully self-hostable. Run it on your own infrastructure with your own API keys.
 
 ## Quick Start
 
 ### Docker (Recommended)
 
+Pre-built images are available on GitHub Container Registry:
+
 ```bash
-docker build -t floimg-studio .
 docker run -d -p 5100:5100 \
   -e OPENAI_API_KEY=sk-... \
-  floimg-studio
+  ghcr.io/teamflojo/floimg-studio
 ```
 
 Access at `http://localhost:5100`
@@ -21,7 +22,7 @@ Access at `http://localhost:5100`
 version: "3.8"
 services:
   floimg-studio:
-    build: .
+    image: ghcr.io/teamflojo/floimg-studio:latest
     ports:
       - "5100:5100"
     environment:
@@ -30,23 +31,27 @@ services:
     restart: unless-stopped
 ```
 
-### From Source
+### Build from Source
 
 ```bash
 git clone https://github.com/teamflojo/floimg.git
-cd floimg/apps/studio
+cd floimg
 pnpm install
-pnpm build
+pnpm -r build
+cd apps/studio/backend
 pnpm start
 ```
 
-## Configuration
-
-Copy the example environment file:
+Or build your own Docker image:
 
 ```bash
-cp .env.production.example .env
+git clone https://github.com/teamflojo/floimg.git
+cd floimg
+docker build -f apps/studio/Dockerfile -t floimg-studio .
+docker run -d -p 5100:5100 -e OPENAI_API_KEY=sk-... floimg-studio
 ```
+
+## Configuration
 
 ### Required
 
@@ -99,11 +104,17 @@ curl http://localhost:5100/api/health
 ## Updating
 
 ```bash
-git pull
-docker build -t floimg-studio .
+docker pull ghcr.io/teamflojo/floimg-studio:latest
 docker stop floimg-studio && docker rm floimg-studio
-docker run -d --name floimg-studio -p 5100:5100 --env-file .env floimg-studio
+docker run -d --name floimg-studio -p 5100:5100 --env-file .env ghcr.io/teamflojo/floimg-studio
 ```
+
+## npm Packages
+
+For advanced usage, FloImg Studio components are available on npm:
+
+- `@teamflojo/floimg-studio-ui` - React components (for building custom UIs)
+- `@teamflojo/floimg-studio-shared` - Shared types
 
 ---
 

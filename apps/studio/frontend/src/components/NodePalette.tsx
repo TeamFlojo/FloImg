@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { NodeDefinition } from "@floimg-studio/shared";
+import type { NodeDefinition } from "@teamflojo/floimg-studio-shared";
 import { getGenerators, getTransforms } from "../api/client";
 import { useWorkflowStore } from "../stores/workflowStore";
 import { UploadGallery } from "./UploadGallery";

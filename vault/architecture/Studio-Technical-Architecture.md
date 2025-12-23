@@ -1,10 +1,10 @@
 # Technical Architecture
 
-floimg-studio system architecture.
+FloImg Studio system architecture.
 
 ## Overview
 
-floimg-studio is a visual workflow builder that provides a drag-and-drop interface for creating floimg workflows.
+FloImg Studio is a visual workflow builder that provides a drag-and-drop interface for creating floimg workflows.
 
 ```
 ┌─────────────────────────────────────────┐
@@ -111,7 +111,7 @@ floimg-studio is a visual workflow builder that provides a drag-and-drop interfa
 
 ### Capability Auto-Discovery
 
-floimg-studio uses floimg's `getCapabilities()` API to auto-discover available generators and transforms. This ensures the visual editor always reflects what the execution engine supports.
+FloImg Studio uses floimg's `getCapabilities()` API to auto-discover available generators and transforms. This ensures the visual editor always reflects what the execution engine supports.
 
 ```
 ┌─────────────────────────────────────────┐
@@ -151,7 +151,7 @@ client.registerGenerator(quickchart());
 
 ### Schema Mapping
 
-floimg schemas are converted to studio NodeDefinitions:
+floimg schemas are converted to FloImg Studio NodeDefinitions:
 
 | floimg Type                | Studio Type                          |
 | -------------------------- | ------------------------------------ |
@@ -161,7 +161,7 @@ floimg schemas are converted to studio NodeDefinitions:
 
 ### Dependencies
 
-Since Studio now lives in the floimg monorepo (`apps/studio/`), it uses workspace dependencies:
+Since FloImg Studio now lives in the floimg monorepo (`apps/studio/`), it uses workspace dependencies:
 
 ```json
 {
@@ -174,7 +174,7 @@ Since Studio now lives in the floimg monorepo (`apps/studio/`), it uses workspac
 }
 ```
 
-This enables atomic changes across core and studio without a publish-to-test cycle.
+This enables atomic changes across core and FloImg Studio without a publish-to-test cycle.
 
 ### Key Files
 
@@ -186,7 +186,7 @@ This enables atomic changes across core and studio without a publish-to-test cyc
 
 ## Content Moderation
 
-floimg-studio includes content moderation to prevent harmful content from being generated or stored.
+FloImg Studio includes content moderation to prevent harmful content from being generated or stored.
 
 ### Architecture
 
@@ -246,7 +246,7 @@ All moderation events are logged to `data/moderation/incidents.jsonl`:
 
 ## Template System
 
-floimg-studio includes bundled workflow templates that work offline for self-hosted users.
+FloImg Studio includes bundled workflow templates that work offline for self-hosted users.
 
 ### Template Structure
 

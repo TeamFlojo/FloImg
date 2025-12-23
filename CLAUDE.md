@@ -98,9 +98,9 @@ export const myGenerator = createGenerator(schema, async (params, ctx) => {
 });
 ```
 
-## Studio (Visual Workflow Builder)
+## FloImg Studio (Visual Workflow Builder)
 
-The Studio visual editor lives in `apps/studio/`.
+The FloImg Studio visual editor lives in `apps/studio/`.
 
 ### Quick Start
 
@@ -123,8 +123,8 @@ pnpm build:studio   # Build studio packages
 
 ## Agents
 
-- `coordinator` - Multi-package work spanning core + plugins + studio
-- `full-stack-dev` - Plugin development, core library, and studio work
+- `coordinator` - Multi-package work spanning core + plugins + FloImg Studio
+- `full-stack-dev` - Plugin development, core library, and FloImg Studio work
 - `code-reviewer` - PR reviews and code quality
 - `vault-organizer` - Documentation maintenance
 

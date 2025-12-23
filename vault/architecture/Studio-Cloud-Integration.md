@@ -6,12 +6,12 @@ FloImg Studio (`apps/studio/`) is a **pure open-source, self-hostable** workflow
 
 ## Architecture Principle
 
-**floimg-studio = pure open-source**
-**floimg-cloud = commercial extension layer**
+**FloImg Studio = pure open-source**
+**floimg-cloud = commercial extension layer (powers FloImg Studio Cloud)**
 
 This follows the Supabase model where the open-source project is fully functional standalone, and cloud features are added by a separate commercial layer.
 
-## What floimg-studio Provides
+## What FloImg Studio Provides
 
 | Feature                | Included | Notes                     |
 | ---------------------- | -------- | ------------------------- |
@@ -23,7 +23,7 @@ This follows the Supabase model where the open-source project is fully functiona
 | Image download         | Yes      | Direct to filesystem      |
 | Content moderation     | Optional | Configurable via env      |
 
-## What floimg-studio Does NOT Include
+## What FloImg Studio Does NOT Include
 
 | Feature             | Where It Lives | Why                            |
 | ------------------- | -------------- | ------------------------------ |
@@ -58,9 +58,9 @@ MODERATION_ENABLED=true
 MODERATION_THRESHOLD=0.7
 ```
 
-## How studio.floimg.com Works
+## How FloImg Studio Cloud Works
 
-The cloud-hosted version at `studio.floimg.com` is powered by `floimg-cloud`, which:
+The cloud-hosted version at `studio.floimg.com` (FloImg Studio Cloud) is powered by `floimg-cloud`, which:
 
 1. Imports `@floimg-studio/*` packages as dependencies
 2. Wraps the editor with cloud-specific features

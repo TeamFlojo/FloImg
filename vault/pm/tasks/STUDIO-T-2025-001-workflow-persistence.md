@@ -20,7 +20,7 @@ children: []
 
 ## Description
 
-Enable users to save, load, and manage workflows in Studio. Currently, workflows are lost when the browser closes - a critical gap that blocks real usage. Additionally, add JavaScript code export to help developers understand what Studio builds.
+Enable users to save, load, and manage workflows in FloImg Studio. Currently, workflows are lost when the browser closes - a critical gap that blocks real usage. Additionally, add JavaScript code export to help developers understand what FloImg Studio builds.
 
 This addresses the OST opportunity: "Developers lose work when browser closes" and "Developers can't see what the visual builder actually does."
 

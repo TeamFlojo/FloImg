@@ -6,7 +6,7 @@
 
 ## Overview
 
-Studio looks polished but is functionally incomplete - users can build workflows but can't save them. This is the #1 blocker to real usage.
+FloImg Studio looks polished but is functionally incomplete - users can build workflows but can't save them. This is the #1 blocker to real usage.
 
 Two features for tonight:
 

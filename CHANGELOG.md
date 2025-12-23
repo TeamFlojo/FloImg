@@ -7,11 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2025-12-23
+
+### Added
+
+#### FloImg Studio
+
+- **Visual workflow builder**: Drag-and-drop interface for creating image pipelines
+- **Node-based editor**: React Flow canvas with 20+ node types
+- **Template gallery**: Pre-built workflows for common tasks
+- **Real-time preview**: See results as you build
+
+#### npm Packages
+
+- `@teamflojo/floimg-studio-ui` - React components for building custom studio UIs
+- `@teamflojo/floimg-studio-shared` - Shared TypeScript types
+
+#### Docker Support
+
+- Pre-built Docker images on GitHub Container Registry
+- `docker run ghcr.io/teamflojo/floimg-studio` for instant deployment
+
+#### CI/CD
+
+- GitHub Actions workflow for npm publishing
+- Docker image builds on release
+
+### Changed
+
+- Migrated FloImg Studio into monorepo (previously separate repo)
+- Updated documentation for self-hosting options
+
 ## [0.2.0] - 2025-12-21
 
 ### Added
 
 #### AI Vision & Text Generation
+
 - **Vision analysis**: `analyzeImage()` method for AI-powered image understanding
 - **Text generation**: `generateText()` method for LLM text completion
 - **DataBlob type**: New output type for text/JSON results from AI operations
@@ -19,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **TextProvider interface**: Standardized interface for text AI providers
 
 #### AI Providers
+
 - **OpenAI**: GPT-4 Vision for image analysis, GPT-4 for text generation
 - **Anthropic**: Claude vision and text support (via config)
 - **Google Gemini**: Gemini vision and text support (via config)
@@ -26,20 +59,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **LM Studio**: Local model support via OpenAI-compatible API
 
 #### New Package
+
 - `@teamflojo/floimg-ollama`: Plugin for local AI models via Ollama
   - LLaVA vision model support
   - Llama text model support
   - Zero-cloud-dependency AI workflows
 
 #### MCP Server
+
 - `analyze_image` tool: AI vision analysis in MCP workflows
 - `generate_text` tool: AI text generation in MCP workflows
 
 ### Changed
+
 - Extended `getCapabilities()` to include AI provider information
 - Updated config types for multi-provider AI support
 
 ### Notes
+
 - All AI features are optional - floimg works without any AI configured
 - AI providers require respective API keys or local model setup
 
@@ -48,16 +85,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 #### Core Library
+
 - **Three core operations**: generate, transform, save
 - **Multiple interfaces**: JavaScript API, CLI, YAML pipelines, MCP server
 - **Capability discovery**: Runtime schema inspection via `getCapabilities()`
 - **Parallel pipeline execution**: Automatic dependency graph analysis and wave-based execution
 
 #### Built-in Generators
+
 - `shapes` - SVG gradients, circles, rectangles, patterns
 - `openai` - DALL-E image generation
 
 #### Transform Operations
+
 - Format conversion (SVG to PNG/JPEG/WebP/AVIF)
 - Resize with fit modes
 - Composite (layer images)
@@ -67,11 +107,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 8 preset filters: vintage, vibrant, blackAndWhite, dramatic, soft, cool, warm, highContrast
 
 #### Save Providers
+
 - Filesystem (default, zero-config)
 - S3-compatible storage (AWS S3, Tigris, Cloudflare R2)
 - Smart URI routing: `./local/path` vs `s3://bucket/key`
 
 #### CLI
+
 - `floimg generate` - Generate images
 - `floimg transform` - Transform images
 - `floimg save` - Save to filesystem or cloud
@@ -80,11 +122,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `floimg mcp install` - Set up MCP integration
 
 #### MCP Server
+
 - Session workspace for efficient multi-step workflows
 - Image ID tracking (no byte passing between operations)
 - `generate_image`, `transform_image`, `save_image`, `run_pipeline` tools
 
 #### Plugins
+
 - `@teamflojo/floimg-quickchart` - Chart.js charts via QuickChart API
 - `@teamflojo/floimg-d3` - D3 data visualizations
 - `@teamflojo/floimg-mermaid` - Mermaid diagrams
@@ -92,6 +136,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `@teamflojo/floimg-screenshot` - Website screenshots via Playwright
 
 ### Dependencies
+
 - `sharp` - Image processing
 - `@resvg/resvg-js` - SVG rendering
 - `@napi-rs/canvas` - Text rendering
@@ -104,11 +149,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Numbering
 
 floimg follows [Semantic Versioning](https://semver.org/):
+
 - **Major** (x.0.0): Breaking changes to API
 - **Minor** (0.x.0): New features, backward compatible
 - **Patch** (0.0.x): Bug fixes, backward compatible
 
 ## Links
+
 - [GitHub Repository](https://github.com/TeamFlojo/floimg)
 - [npm Package](https://www.npmjs.com/package/@teamflojo/floimg)
 - [Documentation](https://github.com/TeamFlojo/floimg#readme)

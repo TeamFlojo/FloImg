@@ -10,7 +10,7 @@ import { WorkflowLibrary } from "./components/WorkflowLibrary";
 import { AISettings } from "./components/AISettings";
 import { useWorkflowStore } from "./stores/workflowStore";
 import { getTemplateById } from "./templates";
-import type { NodeDefinition } from "@floimg-studio/shared";
+import type { NodeDefinition } from "@teamflojo/floimg-studio-shared";
 
 type TabType = "editor" | "gallery" | "templates";
 

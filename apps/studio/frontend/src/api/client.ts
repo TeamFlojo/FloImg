@@ -1,4 +1,4 @@
-import type { NodeDefinition, StudioNode, StudioEdge, ImageMetadata } from "@floimg-studio/shared";
+import type { NodeDefinition, StudioNode, StudioEdge, ImageMetadata } from "@teamflojo/floimg-studio-shared";
 
 const API_BASE = "/api";
 

@@ -10,7 +10,7 @@ import type {
   TextNodeData,
   NodeDefinition,
   GalleryTemplate,
-} from "@floimg-studio/shared";
+} from "@teamflojo/floimg-studio-shared";
 import { executeWorkflow, exportYaml } from "../api/client";
 import { useSettingsStore } from "./settingsStore";
 

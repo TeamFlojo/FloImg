@@ -1,0 +1,99 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  # Publish npm packages
+  publish-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm -r build
+
+      - name: Build studio UI library
+        run: pnpm --filter @teamflojo/floimg-studio-ui build:lib
+
+      - name: Publish to npm
+        run: |
+          # Publish core packages
+          pnpm --filter @teamflojo/floimg publish --no-git-checks --access public
+          pnpm --filter @teamflojo/floimg-d3 publish --no-git-checks --access public
+          pnpm --filter @teamflojo/floimg-mermaid publish --no-git-checks --access public
+          pnpm --filter @teamflojo/floimg-ollama publish --no-git-checks --access public
+          pnpm --filter @teamflojo/floimg-qr publish --no-git-checks --access public
+          pnpm --filter @teamflojo/floimg-quickchart publish --no-git-checks --access public
+          pnpm --filter @teamflojo/floimg-screenshot publish --no-git-checks --access public
+
+          # Publish studio packages
+          pnpm --filter @teamflojo/floimg-studio-shared publish --no-git-checks --access public
+          pnpm --filter @teamflojo/floimg-studio-ui publish --no-git-checks --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # Build and push Docker image
+  publish-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/studio/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/teamflojo/floimg-studio:latest
+            ghcr.io/teamflojo/floimg-studio:${{ steps.version.outputs.VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Create GitHub Release
+  create-release:
+    needs: [publish-npm, publish-docker]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

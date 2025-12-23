@@ -6,7 +6,7 @@ import type {
   InputNodeData,
   VisionNodeData,
   TextNodeData,
-} from "@floimg-studio/shared";
+} from "@teamflojo/floimg-studio-shared";
 
 type NodeData =
   | GeneratorNodeData

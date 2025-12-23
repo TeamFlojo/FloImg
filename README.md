@@ -165,23 +165,28 @@ Then talk to Claude: _"Create a QR code for example.com"_
 | [`@teamflojo/floimg-qr`](https://www.npmjs.com/package/@teamflojo/floimg-qr)                 | QR codes               | [![npm](https://img.shields.io/npm/v/@teamflojo/floimg-qr.svg)](https://www.npmjs.com/package/@teamflojo/floimg-qr)                 |
 | [`@teamflojo/floimg-screenshot`](https://www.npmjs.com/package/@teamflojo/floimg-screenshot) | Playwright screenshots | [![npm](https://img.shields.io/npm/v/@teamflojo/floimg-screenshot.svg)](https://www.npmjs.com/package/@teamflojo/floimg-screenshot) |
 
+### FloImg Studio
+
+| Package                                                                                            | Description                | npm                                                                                                                                       |
+| -------------------------------------------------------------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@teamflojo/floimg-studio-ui`](https://www.npmjs.com/package/@teamflojo/floimg-studio-ui)         | Visual editor components   | [![npm](https://img.shields.io/npm/v/@teamflojo/floimg-studio-ui.svg)](https://www.npmjs.com/package/@teamflojo/floimg-studio-ui)         |
+| [`@teamflojo/floimg-studio-shared`](https://www.npmjs.com/package/@teamflojo/floimg-studio-shared) | Shared types and utilities | [![npm](https://img.shields.io/npm/v/@teamflojo/floimg-studio-shared.svg)](https://www.npmjs.com/package/@teamflojo/floimg-studio-shared) |
+
 ## FloImg Studio
 
-FloImg Studio is a visual workflow builder for floimg. Create image processing pipelines with a drag-and-drop interface.
+FloImg Studio is a visual workflow builder for floimg. Design image pipelines with a drag-and-drop interface.
 
 ### Self-Host
 
 ```bash
-git clone https://github.com/teamflojo/floimg.git
-cd floimg/apps/studio
-pnpm install && pnpm build && pnpm start
+docker run -d -p 5100:5100 -e OPENAI_API_KEY=sk-... ghcr.io/teamflojo/floimg-studio
 ```
 
-See [DEPLOYMENT.md](apps/studio/DEPLOYMENT.md) for Docker and configuration options.
+Access at `http://localhost:5100`. See [apps/studio/DEPLOYMENT.md](./apps/studio/DEPLOYMENT.md) for more options.
 
 ### Hosted Version
 
-A hosted version is available at [studio.floimg.com](https://studio.floimg.com) with authentication, usage tracking, and managed infrastructure.
+A hosted version with cloud features is available at [studio.floimg.com](https://studio.floimg.com).
 
 ## Documentation
 

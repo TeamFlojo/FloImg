@@ -1,15 +1,68 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import dts from "vite-plugin-dts";
+import { resolve } from "path";
 
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    port: 5173,
-    proxy: {
-      "/api": {
-        target: "http://localhost:5100",
-        changeOrigin: true,
+export default defineConfig(({ mode }) => {
+  // Library mode for npm publishing
+  if (mode === "lib") {
+    return {
+      plugins: [
+        react(),
+        dts({
+          include: ["src"],
+          exclude: ["src/main.tsx", "src/vite-env.d.ts"],
+        }),
+      ],
+      build: {
+        lib: {
+          entry: resolve(__dirname, "src/index.ts"),
+          name: "FloImgStudioUI",
+          formats: ["es"],
+          fileName: "index",
+        },
+        rollupOptions: {
+          external: [
+            "react",
+            "react-dom",
+            "react/jsx-runtime",
+            // Keep these bundled for convenience
+            // "reactflow",
+            // "@tanstack/react-query",
+            // "zustand",
+          ],
+          output: {
+            globals: {
+              react: "React",
+              "react-dom": "ReactDOM",
+            },
+            assetFileNames: (assetInfo) => {
+              if (assetInfo.name === "style.css") return "styles.css";
+              return assetInfo.name || "asset";
+            },
+          },
+        },
+        sourcemap: true,
+        cssCodeSplit: false,
+      },
+    };
+  }
+
+  // Default mode for development and app builds
+  return {
+    plugins: [react()],
+    server: {
+      port: 5173,
+      proxy: {
+        "/api": {
+          target: "http://localhost:5100",
+          changeOrigin: true,
+        },
       },
     },
-  },
+    build: {
+      outDir: "dist",
+      sourcemap: true,
+    },
+  };
 });

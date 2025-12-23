@@ -35,6 +35,13 @@ jobs:
       - name: Build studio UI library
         run: pnpm --filter @teamflojo/floimg-studio-ui build:lib
 
+      - name: Configure npm
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+          echo "@teamflojo:registry=https://registry.npmjs.org/" >> ~/.npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish to npm
         run: |
           # Publish core packages

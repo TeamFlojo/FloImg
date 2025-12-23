@@ -26,10 +26,10 @@ export default defineConfig(({ mode }) => {
             "react",
             "react-dom",
             "react/jsx-runtime",
-            // Keep these bundled for convenience
-            // "reactflow",
-            // "@tanstack/react-query",
-            // "zustand",
+            // These use React context - must be external to share state with host app
+            "reactflow",
+            "@tanstack/react-query",
+            "zustand",
           ],
           output: {
             globals: {

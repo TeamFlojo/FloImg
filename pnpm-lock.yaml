@@ -99,9 +99,6 @@ importers:
 
   apps/studio/frontend:
     dependencies:
-      '@tanstack/react-query':
-        specifier: ^5.90.12
-        version: 5.90.12(react@19.2.3)
       '@teamflojo/floimg-studio-shared':
         specifier: ^0.1.0
         version: link:../shared
@@ -111,13 +108,10 @@ importers:
       react-dom:
         specifier: ^18.0.0 || ^19.0.0
         version: 19.2.3(react@19.2.3)
-      reactflow:
-        specifier: ^11.11.4
-        version: 11.11.4(@types/react@18.3.27)(immer@10.2.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      zustand:
-        specifier: ^5.0.9
-        version: 5.0.9(@types/react@18.3.27)(immer@10.2.0)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
     devDependencies:
+      '@tanstack/react-query':
+        specifier: ^5.90.12
+        version: 5.90.12(react@19.2.3)
       '@types/react':
         specifier: ^18.2.64
         version: 18.3.27
@@ -133,6 +127,9 @@ importers:
       postcss:
         specifier: ^8.4.35
         version: 8.5.6
+      reactflow:
+        specifier: ^11.11.4
+        version: 11.11.4(@types/react@18.3.27)(immer@10.2.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       tailwindcss:
         specifier: ^3.4.1
         version: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
@@ -145,6 +142,9 @@ importers:
       vite-plugin-dts:
         specifier: ^3.7.3
         version: 3.9.1(@types/node@22.19.3)(rollup@4.54.0)(typescript@5.9.3)(vite@5.4.21(@types/node@22.19.3))
+      zustand:
+        specifier: ^5.0.9
+        version: 5.0.9(@types/react@18.3.27)(immer@10.2.0)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
 
   apps/studio/shared:
     devDependencies:

@@ -2,7 +2,6 @@ import type {
   FloimgConfig,
   ImageGenerator,
   TransformProvider,
-  StoreProvider,
   SaveProvider,
   VisionProvider,
   TextProvider,
@@ -10,11 +9,9 @@ import type {
   TransformInput,
   VisionInput,
   TextGenerateInput,
-  UploadInput,
   SaveInput,
   ImageBlob,
   DataBlob,
-  UploadResult,
   SaveResult,
   Pipeline,
   PipelineStep,
@@ -28,15 +25,11 @@ import type {
 } from "./types.js";
 import { isImageBlob, isDataBlob } from "./types.js";
 import { Logger } from "./logger.js";
-import {
-  ProviderNotFoundError,
-  ConfigurationError,
-} from "./errors.js";
+import { ProviderNotFoundError, ConfigurationError } from "./errors.js";
 import {
   buildDependencyGraph,
   computeExecutionWaves,
   executeWithConcurrency,
-  type StepNode,
 } from "./pipeline-runner.js";
 
 /**
@@ -86,9 +79,7 @@ export class Floimg {
     const generatorName = generator || (this.config.generators?.default as string);
 
     if (!generatorName) {
-      throw new ConfigurationError(
-        "No generator specified and no default configured"
-      );
+      throw new ConfigurationError("No generator specified and no default configured");
     }
 
     this.logger.info(`Generating image with generator: ${generatorName}`, params);
@@ -130,7 +121,10 @@ export class Floimg {
             `Transform provider "${providerName}" does not support resize operation`
           );
         }
-        return transformProvider.resize(blob, params as Parameters<NonNullable<TransformProvider["resize"]>>[1]);
+        return transformProvider.resize(
+          blob,
+          params as Parameters<NonNullable<TransformProvider["resize"]>>[1]
+        );
 
       case "composite":
         if (!transformProvider.composite) {
@@ -206,7 +200,10 @@ export class Floimg {
             `Transform provider "${providerName}" does not support modulate operation`
           );
         }
-        return transformProvider.modulate(blob, params as Parameters<NonNullable<TransformProvider["modulate"]>>[1]);
+        return transformProvider.modulate(
+          blob,
+          params as Parameters<NonNullable<TransformProvider["modulate"]>>[1]
+        );
 
       case "tint":
         if (!transformProvider.tint) {
@@ -214,7 +211,10 @@ export class Floimg {
             `Transform provider "${providerName}" does not support tint operation`
           );
         }
-        return transformProvider.tint(blob, params.color as Parameters<NonNullable<TransformProvider["tint"]>>[1]);
+        return transformProvider.tint(
+          blob,
+          params.color as Parameters<NonNullable<TransformProvider["tint"]>>[1]
+        );
 
       // Border & frame operations
       case "extend":
@@ -223,7 +223,10 @@ export class Floimg {
             `Transform provider "${providerName}" does not support extend operation`
           );
         }
-        return transformProvider.extend(blob, params as Parameters<NonNullable<TransformProvider["extend"]>>[1]);
+        return transformProvider.extend(
+          blob,
+          params as Parameters<NonNullable<TransformProvider["extend"]>>[1]
+        );
 
       case "extract":
         if (!transformProvider.extract) {
@@ -231,7 +234,10 @@ export class Floimg {
             `Transform provider "${providerName}" does not support extract operation`
           );
         }
-        return transformProvider.extract(blob, params as Parameters<NonNullable<TransformProvider["extract"]>>[1]);
+        return transformProvider.extract(
+          blob,
+          params as Parameters<NonNullable<TransformProvider["extract"]>>[1]
+        );
 
       case "roundCorners":
         if (!transformProvider.roundCorners) {
@@ -283,9 +289,7 @@ export class Floimg {
     const providerName = provider || (this.config.ai?.default as string);
 
     if (!providerName) {
-      throw new ConfigurationError(
-        "No vision provider specified and no default configured"
-      );
+      throw new ConfigurationError("No vision provider specified and no default configured");
     }
 
     this.logger.info(`Analyzing image with vision provider: ${providerName}`, params);
@@ -309,9 +313,7 @@ export class Floimg {
     const providerName = provider || (this.config.ai?.default as string);
 
     if (!providerName) {
-      throw new ConfigurationError(
-        "No text provider specified and no default configured"
-      );
+      throw new ConfigurationError("No text provider specified and no default configured");
     }
 
     this.logger.info(`Generating text with provider: ${providerName}`, params);
@@ -327,10 +329,7 @@ export class Floimg {
   /**
    * Save an image (filesystem or cloud) with smart destination routing
    */
-  async save(
-    blob: ImageBlob,
-    destination: string | SaveInput
-  ): Promise<SaveResult> {
+  async save(blob: ImageBlob, destination: string | SaveInput): Promise<SaveResult> {
     // Parse destination
     const parsed = this.parseDestination(destination);
 
@@ -384,7 +383,6 @@ export class Floimg {
     return { provider: defaultProvider, path: destination };
   }
 
-
   /**
    * Run a declarative pipeline of operations
    *
@@ -403,9 +401,7 @@ export class Floimg {
     const nodes = buildDependencyGraph(pipeline.steps);
     const waves = computeExecutionWaves(nodes);
 
-    this.logger.debug(
-      `Pipeline has ${waves.length} execution waves, concurrency: ${concurrency}`
-    );
+    this.logger.debug(`Pipeline has ${waves.length} execution waves, concurrency: ${concurrency}`);
 
     // Execute waves sequentially, steps within each wave in parallel
     for (const wave of waves) {
@@ -413,15 +409,12 @@ export class Floimg {
 
       // Execute all steps in this wave in parallel (bounded by concurrency)
       const waveResults = await executeWithConcurrency(
-        wave.steps.map(
-          (node) => () => this.executeStep(node.step, variables)
-        ),
+        wave.steps.map((node) => () => this.executeStep(node.step, variables)),
         concurrency
       );
 
       // Collect results and update variables map
       for (let i = 0; i < wave.steps.length; i++) {
-        const node = wave.steps[i];
         const result = waveResults[i];
         results.push(result);
 
@@ -476,9 +469,7 @@ export class Floimg {
 
       const result = await this.save(
         inputBlob,
-        step.provider
-          ? { path: step.destination, provider: step.provider }
-          : step.destination
+        step.provider ? { path: step.destination, provider: step.provider } : step.destination
       );
 
       return { step, out: step.out || step.destination, value: result };
@@ -516,7 +507,9 @@ export class Floimg {
       return { step, out: step.out, value: result };
     }
 
-    throw new ConfigurationError(`Unknown step kind: ${(step as unknown as { kind: string }).kind}`);
+    throw new ConfigurationError(
+      `Unknown step kind: ${(step as unknown as { kind: string }).kind}`
+    );
   }
 
   /**

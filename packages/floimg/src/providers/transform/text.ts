@@ -1,4 +1,4 @@
-import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 import sharp from "sharp";
 import type { ImageBlob } from "../../core/types.js";
 import { TransformError } from "../../core/errors.js";

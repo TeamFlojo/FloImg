@@ -4,11 +4,11 @@
 
 ## Current Focus
 
-**T-2025-003: Fix Node Dragging** (P0 CRITICAL)
+**T-2025-003: Fix Node Dragging** (P0 CRITICAL) - IN PROGRESS
 
 - Bug: Nodes cannot be dragged on canvas
 - Root cause: Missing `nodesDraggable` prop on ReactFlow
-- Status: Ready to start
+- Branch: `fix/T-2025-003-node-dragging`
 
 ## Next Up
 

@@ -4,11 +4,12 @@ import type { GalleryTemplate } from "@teamflojo/floimg-studio-shared";
 
 const ONBOARDING_STORAGE_KEY = "floimg-studio-onboarded";
 
-// Featured templates to show in onboarding (one from each category)
+// Featured templates to show in onboarding
+// Prioritize pipeline templates that show FloImg's unique value
 const FEATURED_TEMPLATE_IDS = [
-  "sales-dashboard", // Charts - simple, visual
-  "system-architecture", // Diagrams - impressive
-  "chart-watermark", // Pipelines - shows workflow power
+  "chart-watermark", // Pipeline: generate → watermark → round corners (core value prop)
+  "diagram-webp", // Pipeline: generate → optimize format
+  "wifi-qr", // Quick value: practical, immediately useful
 ];
 
 // Check localStorage on module load (client-side only)

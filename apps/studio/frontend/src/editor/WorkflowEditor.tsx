@@ -114,6 +114,7 @@ export function WorkflowEditor() {
         nodeTypes={nodeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         isValidConnection={isValidConnection}
+        proOptions={{ hideAttribution: true }}
         fitView
         snapToGrid
         snapGrid={[15, 15]}

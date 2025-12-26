@@ -1,6 +1,6 @@
 ---
 tags: [type/task, area/studio, priority/p0]
-status: backlog
+status: in-progress
 priority: p0
 created: 2025-12-26
 updated: 2025-12-26
@@ -14,7 +14,7 @@ github_issue:
 ## Task Details
 
 **Task ID**: T-2025-003
-**Status**: backlog
+**Status**: in-progress
 **Priority**: p0 (CRITICAL)
 **Created**: 2025-12-26
 **Completed**:

@@ -75,6 +75,18 @@ For multi-step workflows, iteration, and transforms, use MCP tools:
 For complex workflows, inform the user:
 "Multi-step image workflows work best with MCP. Restart Claude Code once to enable the floimg MCP server for session state and iteration."
 
+## Why Session State Matters
+
+This is FloImg's core advantage over raw LLM + DALL-E:
+
+| Task                  | Without FloImg                           | With FloImg MCP                 |
+| --------------------- | ---------------------------------------- | ------------------------------- |
+| "Create a hero image" | Generates image                          | Generates + stores as `img_001` |
+| "Make it 1200x630"    | Re-generates entirely (different image!) | Resizes exact pixels            |
+| "Make it bluer"       | Start over                               | Adjusts hue on existing image   |
+
+**The key insight**: When you say "make it more vibrant," FloImg adjusts the existing image—it doesn't re-generate a new one. AI handles creation. FloImg handles precision.
+
 ## Generator Selection Guide
 
 | User Intent                   | Generator  | Method                      |
@@ -112,7 +124,7 @@ User: "Add a caption"
 → transform_image({ imageId: "img_002", operation: "addCaption", params: { text: "..." } })
 ```
 
-Session state enables referencing previous images without file paths.
+**Session state is crucial here**: Each transform references the previous result by imageId. No file uploads, no re-generation—just precise refinements.
 
 ### Pattern 3: Full Pipeline (MCP)
 

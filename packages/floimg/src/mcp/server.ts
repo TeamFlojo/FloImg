@@ -52,7 +52,9 @@ async function loadImage(
   if (imageId) {
     const registered = imageRegistry.get(imageId);
     if (!registered) {
-      throw new Error(`Image ID not found: ${imageId}. Use generate_image first to create an image.`);
+      throw new Error(
+        `Image ID not found: ${imageId}. Use generate_image first to create an image.`
+      );
     }
     const bytes = await readFile(registered.path);
     return {
@@ -86,30 +88,30 @@ async function loadImage(
 
 // Detect MIME type from file path
 function detectMimeFromPath(path: string): MimeType {
-  const ext = path.split('.').pop()?.toLowerCase();
+  const ext = path.split(".").pop()?.toLowerCase();
   const mimeMap: Record<string, MimeType> = {
-    'svg': 'image/svg+xml',
-    'png': 'image/png',
-    'jpg': 'image/jpeg',
-    'jpeg': 'image/jpeg',
-    'webp': 'image/webp',
-    'avif': 'image/avif',
+    svg: "image/svg+xml",
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    webp: "image/webp",
+    avif: "image/avif",
   };
-  return mimeMap[ext || ''] || 'image/png';
+  return mimeMap[ext || ""] || "image/png";
 }
 
 // Plugin auto-discovery
 async function loadAvailablePlugins(client: any): Promise<string[]> {
   const plugins: string[] = [];
 
-  console.error('[floimg-mcp] Starting plugin discovery...');
+  console.error("[floimg-mcp] Starting plugin discovery...");
 
   const potentialPlugins = [
-    { name: 'quickchart', module: '@teamflojo/floimg-quickchart' },
-    { name: 'd3', module: '@teamflojo/floimg-d3' },
-    { name: 'mermaid', module: '@teamflojo/floimg-mermaid' },
-    { name: 'qr', module: '@teamflojo/floimg-qr' },
-    { name: 'screenshot', module: '@teamflojo/floimg-screenshot' },
+    { name: "quickchart", module: "@teamflojo/floimg-quickchart" },
+    { name: "d3", module: "@teamflojo/floimg-d3" },
+    { name: "mermaid", module: "@teamflojo/floimg-mermaid" },
+    { name: "qr", module: "@teamflojo/floimg-qr" },
+    { name: "screenshot", module: "@teamflojo/floimg-screenshot" },
   ];
 
   for (const { name, module } of potentialPlugins) {
@@ -122,9 +124,7 @@ async function loadAvailablePlugins(client: any): Promise<string[]> {
         continue;
       }
 
-      const generator = typeof plugin.default === 'function'
-        ? plugin.default()
-        : plugin.default;
+      const generator = typeof plugin.default === "function" ? plugin.default() : plugin.default;
 
       client.registerGenerator(generator);
       plugins.push(name);
@@ -135,12 +135,14 @@ async function loadAvailablePlugins(client: any): Promise<string[]> {
     }
   }
 
-  console.error(`[floimg-mcp] Plugin discovery complete. Loaded: ${plugins.join(', ') || 'none'}`);
+  console.error(`[floimg-mcp] Plugin discovery complete. Loaded: ${plugins.join(", ") || "none"}`);
 
   if (plugins.length === 0) {
-    console.error('[floimg-mcp] ⚠ No generator plugins found!');
-    console.error('[floimg-mcp] Install with: npm install -g @teamflojo/floimg-quickchart @teamflojo/floimg-mermaid @teamflojo/floimg-qr @teamflojo/floimg-d3 @teamflojo/floimg-screenshot');
-    console.error('[floimg-mcp] Only built-in generators (shapes, openai) will be available.');
+    console.error("[floimg-mcp] ⚠ No generator plugins found!");
+    console.error(
+      "[floimg-mcp] Install with: npm install -g @teamflojo/floimg-quickchart @teamflojo/floimg-mermaid @teamflojo/floimg-qr @teamflojo/floimg-d3 @teamflojo/floimg-screenshot"
+    );
+    console.error("[floimg-mcp] Only built-in generators (shapes, openai) will be available.");
   }
 
   return plugins;
@@ -151,51 +153,90 @@ function selectGenerator(intent: string, params: any): string {
   const intentLower = intent.toLowerCase();
 
   // QR codes
-  if (intentLower.includes('qr') || intentLower.includes('barcode')) {
-    return 'qr';
+  if (intentLower.includes("qr") || intentLower.includes("barcode")) {
+    return "qr";
   }
 
   // Screenshots
-  if (intentLower.includes('screenshot') || intentLower.includes('capture') ||
-      intentLower.includes('website') || intentLower.includes('webpage') ||
-      intentLower.includes('url') && params.url) {
-    return 'screenshot';
+  if (
+    intentLower.includes("screenshot") ||
+    intentLower.includes("capture") ||
+    intentLower.includes("website") ||
+    intentLower.includes("webpage") ||
+    (intentLower.includes("url") && params.url)
+  ) {
+    return "screenshot";
   }
 
   // Diagrams (Mermaid)
-  if (intentLower.includes('flowchart') || intentLower.includes('diagram') ||
-      intentLower.includes('sequence') || intentLower.includes('gantt') ||
-      intentLower.includes('class diagram') || intentLower.includes('entity') ||
-      intentLower.includes('state') || intentLower.includes('mindmap')) {
-    return 'mermaid';
+  if (
+    intentLower.includes("flowchart") ||
+    intentLower.includes("diagram") ||
+    intentLower.includes("sequence") ||
+    intentLower.includes("gantt") ||
+    intentLower.includes("class diagram") ||
+    intentLower.includes("entity") ||
+    intentLower.includes("state") ||
+    intentLower.includes("mindmap")
+  ) {
+    return "mermaid";
   }
 
   // Charts & Data Visualization (check BEFORE AI detection)
-  if (intentLower.includes('chart') || intentLower.includes('graph') ||
-      intentLower.includes('plot') || intentLower.includes('visualiz')) {
-
+  if (
+    intentLower.includes("chart") ||
+    intentLower.includes("graph") ||
+    intentLower.includes("plot") ||
+    intentLower.includes("visualiz")
+  ) {
     // D3 for custom/complex visualizations
-    if (params.render || params.renderString ||
-        intentLower.includes('custom') || intentLower.includes('d3')) {
-      return 'd3';
+    if (
+      params.render ||
+      params.renderString ||
+      intentLower.includes("custom") ||
+      intentLower.includes("d3")
+    ) {
+      return "d3";
     }
 
     // QuickChart for standard charts
-    return 'quickchart';
+    return "quickchart";
   }
 
   // AI Image Generation - IMPROVED: Better keyword detection
   // Check for scene descriptions, subjects, art styles, etc.
   const aiKeywords = [
-    'photo', 'picture', 'illustration', 'painting', 'drawing',
-    'scene', 'image of', 'portrait', 'landscape', 'artwork',
-    'realistic', 'photorealistic', 'stylized', 'artistic',
-    'dall-e', 'ai image', 'ai generated', 'generate image',
-    'person', 'people', 'animal', 'building', 'nature',
-    'stadium', 'player', 'celebrating', 'sunset', 'dramatic'
+    "photo",
+    "picture",
+    "illustration",
+    "painting",
+    "drawing",
+    "scene",
+    "image of",
+    "portrait",
+    "landscape",
+    "artwork",
+    "realistic",
+    "photorealistic",
+    "stylized",
+    "artistic",
+    "dall-e",
+    "ai image",
+    "ai generated",
+    "generate image",
+    "person",
+    "people",
+    "animal",
+    "building",
+    "nature",
+    "stadium",
+    "player",
+    "celebrating",
+    "sunset",
+    "dramatic",
   ];
 
-  const hasAIKeyword = aiKeywords.some(keyword => intentLower.includes(keyword));
+  const hasAIKeyword = aiKeywords.some((keyword) => intentLower.includes(keyword));
   const hasPromptParam = params.prompt !== undefined;
 
   // Route to OpenAI if:
@@ -203,14 +244,15 @@ function selectGenerator(intent: string, params: any): string {
   // 2. Has prompt parameter OR
   // 3. Intent describes a scene/subject (more than 5 words)
   const wordCount = intent.trim().split(/\s+/).length;
-  const isDescriptiveIntent = wordCount > 5 && !intentLower.includes('gradient') && !intentLower.includes('shape');
+  const isDescriptiveIntent =
+    wordCount > 5 && !intentLower.includes("gradient") && !intentLower.includes("shape");
 
   if (hasAIKeyword || hasPromptParam || isDescriptiveIntent) {
-    return 'openai';
+    return "openai";
   }
 
   // Default to shapes for simple SVG graphics (gradients, basic shapes)
-  return 'shapes';
+  return "shapes";
 }
 
 // Initialize server
@@ -273,11 +315,14 @@ const TOOLS: Tool[] = [
   {
     name: "transform_image",
     description:
-      "Transform an image with filters, effects, text, resizing, and more. " +
-      "Reference images by: imageId (from generate_image), imagePath (any file), or imageBytes (base64). " +
-      "Supports: resize, convert, blur, sharpen, grayscale, modulate, tint, roundCorners, " +
-      "addText, addCaption, and preset filters (vintage, vibrant, dramatic, etc.). " +
-      "Transformed image is saved to session workspace with new imageId.",
+      "Apply deterministic, pixel-precise transforms to images. Unlike AI regeneration " +
+      "(DALL-E, inpainting), these operations mathematically modify exactly what you specify—" +
+      "the rest of your image stays identical. When you say 'resize to 1200x630,' it does " +
+      "exactly that, guaranteed. " +
+      "Supports: resize, convert, blur, sharpen, grayscale, modulate (brightness/saturation/hue), " +
+      "tint, roundCorners, addText, addCaption, and preset filters. " +
+      "Reference images by: imageId (from generate_image), imagePath, or imageBytes. " +
+      "Each transform creates a new imageId for chaining.",
     inputSchema: {
       type: "object",
       properties: {
@@ -295,12 +340,12 @@ const TOOLS: Tool[] = [
         },
         mime: {
           type: "string",
-          description: "MIME type (required only if using imageBytes, auto-detected for imagePath/imageId)",
+          description:
+            "MIME type (required only if using imageBytes, auto-detected for imagePath/imageId)",
         },
         operation: {
           type: "string",
-          description:
-            "Transform operation to apply",
+          description: "Transform operation to apply",
           enum: [
             "convert",
             "resize",
@@ -376,11 +421,13 @@ const TOOLS: Tool[] = [
         },
         destination: {
           type: "string",
-          description: "Where to save: './output.png', 's3://bucket/key.png', 'r2://bucket/key.png'",
+          description:
+            "Where to save: './output.png', 's3://bucket/key.png', 'r2://bucket/key.png'",
         },
         provider: {
           type: "string",
-          description: "Storage provider: 's3' or 'fs' (auto-detected from destination if not specified)",
+          description:
+            "Storage provider: 's3' or 'fs' (auto-detected from destination if not specified)",
         },
       },
       required: ["destination"],
@@ -389,10 +436,11 @@ const TOOLS: Tool[] = [
   {
     name: "run_pipeline",
     description:
-      "Execute a multi-step image workflow in a single call. " +
-      "Define a series of generate, transform, and save operations. " +
-      "Each step automatically receives the output from the previous step. " +
-      "Perfect for complex workflows like: generate → resize → add caption → upload to cloud.",
+      "Execute a complete image workflow as one atomic operation. Combine AI generation " +
+      "with deterministic transforms and cloud upload in a single call. What typically " +
+      "requires 4+ separate tools becomes one pipeline: generate → transform → save. " +
+      "Each step auto-chains to the next. Session state means you can iterate: run a " +
+      "pipeline, then refine with additional transforms without starting over.",
     inputSchema: {
       type: "object",
       properties: {
@@ -517,11 +565,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     // Load available plugins
     const availablePlugins = await loadAvailablePlugins(client);
-    console.error(`[floimg-mcp] Available generators: shapes, openai, ${availablePlugins.join(', ')}`);
+    console.error(
+      `[floimg-mcp] Available generators: shapes, openai, ${availablePlugins.join(", ")}`
+    );
 
     switch (name) {
       case "generate_image": {
-        const { intent, params = {}, saveTo } = args as {
+        const {
+          intent,
+          params = {},
+          saveTo,
+        } = args as {
           intent: string;
           params?: Record<string, unknown>;
           saveTo?: string;
@@ -538,14 +592,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         // Auto-fill params for simple cases to improve UX
         const finalParams = { ...params };
 
-        if (generator === 'openai' && !finalParams.prompt) {
+        if (generator === "openai" && !finalParams.prompt) {
           // For AI images: use intent as prompt
           finalParams.prompt = intent;
-          finalParams.size = finalParams.size || '1024x1024';
+          finalParams.size = finalParams.size || "1024x1024";
           console.error(`[floimg-mcp] Auto-filled: prompt="${intent}", size=${finalParams.size}`);
         }
 
-        if (generator === 'qr' && !finalParams.text) {
+        if (generator === "qr" && !finalParams.text) {
           // For QR codes: extract URL from intent
           const urlMatch = intent.match(/https?:\/\/[^\s]+/);
           if (urlMatch) {
@@ -554,21 +608,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           } else {
             throw new Error(
               "Could not extract URL from intent for QR code. " +
-              "Please provide params.text explicitly. " +
-              "Example: { intent: 'qr code', params: { text: 'https://example.com' } }"
+                "Please provide params.text explicitly. " +
+                "Example: { intent: 'qr code', params: { text: 'https://example.com' } }"
             );
           }
         }
 
         // For charts and diagrams: params always required (too complex to extract)
-        if ((generator === 'quickchart' || generator === 'mermaid' || generator === 'd3') &&
-            !finalParams.type && !finalParams.data && !finalParams.code && !finalParams.render) {
+        if (
+          (generator === "quickchart" || generator === "mermaid" || generator === "d3") &&
+          !finalParams.type &&
+          !finalParams.data &&
+          !finalParams.code &&
+          !finalParams.render
+        ) {
           throw new Error(
             `${generator} requires explicit params. Intent is only for routing. ` +
-            `Please provide structured data: ` +
-            `${generator === 'quickchart' ? '{ type: "bar", data: {...} }' : ''}` +
-            `${generator === 'mermaid' ? '{ code: "graph TD; A-->B" }' : ''}` +
-            `${generator === 'd3' ? '{ render: "...", data: [...] }' : ''}`
+              `Please provide structured data: ` +
+              `${generator === "quickchart" ? '{ type: "bar", data: {...} }' : ""}` +
+              `${generator === "mermaid" ? '{ code: "graph TD; A-->B" }' : ""}` +
+              `${generator === "d3" ? '{ render: "...", data: [...] }' : ""}`
           );
         }
 
@@ -607,31 +666,44 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text",
-              text: JSON.stringify({
-                success: true,
-                imageId,
-                generator,
-                session: {
-                  path: sessionPath,
-                  mime: blob.mime,
-                  width: blob.width,
-                  height: blob.height,
-                },
-                ...(cloudResult && {
-                  saved: {
-                    location: cloudResult.location,
-                    provider: cloudResult.provider,
-                    size: cloudResult.size,
+              text: JSON.stringify(
+                {
+                  success: true,
+                  imageId,
+                  generator,
+                  session: {
+                    path: sessionPath,
+                    mime: blob.mime,
+                    width: blob.width,
+                    height: blob.height,
                   },
-                }),
-              }, null, 2),
+                  ...(cloudResult && {
+                    saved: {
+                      location: cloudResult.location,
+                      provider: cloudResult.provider,
+                      size: cloudResult.size,
+                    },
+                  }),
+                },
+                null,
+                2
+              ),
             },
           ],
         };
       }
 
       case "transform_image": {
-        const { imageId, imagePath, imageBytes, mime, operation, params = {}, to, saveTo } = args as {
+        const {
+          imageId,
+          imagePath,
+          imageBytes,
+          mime,
+          operation,
+          params = {},
+          to,
+          saveTo,
+        } = args as {
           imageId?: string;
           imagePath?: string;
           imageBytes?: string;
@@ -658,7 +730,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           });
         } else if (operation === "resize") {
           const { width, height } = params as any;
-          if (!width && !height) throw new Error("'width' or 'height' required in params for resize");
+          if (!width && !height)
+            throw new Error("'width' or 'height' required in params for resize");
           resultBlob = await client.transform({
             blob: inputBlob,
             op: "resize",
@@ -703,24 +776,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text",
-              text: JSON.stringify({
-                success: true,
-                imageId: newImageId,
-                operation,
-                session: {
-                  path: sessionPath,
-                  mime: resultBlob.mime,
-                  width: resultBlob.width,
-                  height: resultBlob.height,
-                },
-                ...(cloudResult && {
-                  saved: {
-                    location: cloudResult.location,
-                    provider: cloudResult.provider,
-                    size: cloudResult.size,
+              text: JSON.stringify(
+                {
+                  success: true,
+                  imageId: newImageId,
+                  operation,
+                  session: {
+                    path: sessionPath,
+                    mime: resultBlob.mime,
+                    width: resultBlob.width,
+                    height: resultBlob.height,
                   },
-                }),
-              }, null, 2),
+                  ...(cloudResult && {
+                    saved: {
+                      location: cloudResult.location,
+                      provider: cloudResult.provider,
+                      size: cloudResult.size,
+                    },
+                  }),
+                },
+                null,
+                2
+              ),
             },
           ],
         };
@@ -750,13 +827,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text",
-              text: JSON.stringify({
-                success: true,
-                location: result.location,
-                provider: result.provider,
-                size: result.size,
-                mime: result.mime,
-              }, null, 2),
+              text: JSON.stringify(
+                {
+                  success: true,
+                  location: result.location,
+                  provider: result.provider,
+                  size: result.size,
+                  mime: result.mime,
+                },
+                null,
+                2
+              ),
             },
           ],
         };
@@ -781,18 +862,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
           console.error(`[floimg-mcp] Pipeline step ${i + 1}/${steps.length}: ${stepType}`);
 
-          if (stepType === 'generate') {
+          if (stepType === "generate") {
             // Generate step
             const { intent, params = {} } = stepParams;
             const generator = selectGenerator(intent, params);
 
             // Auto-fill params for simple cases (same logic as generate_image tool)
             const finalParams = { ...params };
-            if (generator === 'openai' && !finalParams.prompt) {
+            if (generator === "openai" && !finalParams.prompt) {
               finalParams.prompt = intent;
-              finalParams.size = finalParams.size || '1024x1024';
+              finalParams.size = finalParams.size || "1024x1024";
             }
-            if (generator === 'qr' && !finalParams.text) {
+            if (generator === "qr" && !finalParams.text) {
               const urlMatch = intent.match(/https?:\/\/[^\s]+/);
               if (urlMatch) finalParams.text = urlMatch[0];
             }
@@ -812,12 +893,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             });
 
             currentImageId = imageId;
-            results.push({ step: i + 1, type: 'generate', imageId, generator });
-
-          } else if (stepType === 'transform') {
+            results.push({ step: i + 1, type: "generate", imageId, generator });
+          } else if (stepType === "transform") {
             // Transform step - uses current image
             if (!currentImageId) {
-              throw new Error(`Pipeline step ${i + 1}: transform requires a previous generate step`);
+              throw new Error(
+                `Pipeline step ${i + 1}: transform requires a previous generate step`
+              );
             }
 
             const { operation, params = {}, to } = stepParams;
@@ -858,12 +940,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             });
 
             currentImageId = newImageId;
-            results.push({ step: i + 1, type: 'transform', operation, imageId: newImageId });
-
-          } else if (stepType === 'save') {
+            results.push({ step: i + 1, type: "transform", operation, imageId: newImageId });
+          } else if (stepType === "save") {
             // Save step - saves current image
             if (!currentImageId) {
-              throw new Error(`Pipeline step ${i + 1}: save requires a previous generate/transform step`);
+              throw new Error(
+                `Pipeline step ${i + 1}: save requires a previous generate/transform step`
+              );
             }
 
             const { destination, provider } = stepParams;
@@ -876,14 +959,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
             results.push({
               step: i + 1,
-              type: 'save',
+              type: "save",
               location: result.location,
               provider: result.provider,
               size: result.size,
             });
-
           } else {
-            throw new Error(`Unknown pipeline step type: ${stepType}. Use 'generate', 'transform', or 'save'.`);
+            throw new Error(
+              `Unknown pipeline step type: ${stepType}. Use 'generate', 'transform', or 'save'.`
+            );
           }
         }
 
@@ -891,21 +975,33 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text",
-              text: JSON.stringify({
-                success: true,
-                pipeline: {
-                  totalSteps: steps.length,
-                  finalImageId: currentImageId,
-                  results,
+              text: JSON.stringify(
+                {
+                  success: true,
+                  pipeline: {
+                    totalSteps: steps.length,
+                    finalImageId: currentImageId,
+                    results,
+                  },
                 },
-              }, null, 2),
+                null,
+                2
+              ),
             },
           ],
         };
       }
 
       case "analyze_image": {
-        const { imageId, imagePath, imageBytes, mime, prompt, provider, outputFormat = "text" } = args as {
+        const {
+          imageId,
+          imagePath,
+          imageBytes,
+          mime,
+          prompt,
+          provider,
+          outputFormat = "text",
+        } = args as {
           imageId?: string;
           imagePath?: string;
           imageBytes?: string;
@@ -927,9 +1023,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (!capabilities.visionProviders || capabilities.visionProviders.length === 0) {
           throw new Error(
             "No vision providers configured. " +
-            "Configure AI providers in floimg.config.ts or environment variables. " +
-            "Supported: OpenAI (OPENAI_API_KEY), Anthropic (ANTHROPIC_API_KEY), " +
-            "Ollama (OLLAMA_BASE_URL), Gemini (GEMINI_API_KEY)"
+              "Configure AI providers in floimg.config.ts or environment variables. " +
+              "Supported: OpenAI (OPENAI_API_KEY), Anthropic (ANTHROPIC_API_KEY), " +
+              "Ollama (OLLAMA_BASE_URL), Gemini (GEMINI_API_KEY)"
           );
         }
 
@@ -952,13 +1048,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text",
-              text: JSON.stringify({
-                success: true,
-                provider: selectedProvider,
-                outputFormat: result.type,
-                content: result.content,
-                ...(result.parsed && { parsed: result.parsed }),
-              }, null, 2),
+              text: JSON.stringify(
+                {
+                  success: true,
+                  provider: selectedProvider,
+                  outputFormat: result.type,
+                  content: result.content,
+                  ...(result.parsed && { parsed: result.parsed }),
+                },
+                null,
+                2
+              ),
             },
           ],
         };
@@ -983,9 +1083,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (!capabilities.textProviders || capabilities.textProviders.length === 0) {
           throw new Error(
             "No text providers configured. " +
-            "Configure AI providers in floimg.config.ts or environment variables. " +
-            "Supported: OpenAI (OPENAI_API_KEY), Anthropic (ANTHROPIC_API_KEY), " +
-            "Ollama (OLLAMA_BASE_URL), Gemini (GEMINI_API_KEY)"
+              "Configure AI providers in floimg.config.ts or environment variables. " +
+              "Supported: OpenAI (OPENAI_API_KEY), Anthropic (ANTHROPIC_API_KEY), " +
+              "Ollama (OLLAMA_BASE_URL), Gemini (GEMINI_API_KEY)"
           );
         }
 
@@ -1010,11 +1110,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text",
-              text: JSON.stringify({
-                success: true,
-                provider: selectedProvider,
-                content: result.content,
-              }, null, 2),
+              text: JSON.stringify(
+                {
+                  success: true,
+                  provider: selectedProvider,
+                  content: result.content,
+                },
+                null,
+                2
+              ),
             },
           ],
         };
@@ -1031,11 +1135,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       content: [
         {
           type: "text",
-          text: JSON.stringify({
-            success: false,
-            error: errorType,
-            message,
-          }, null, 2),
+          text: JSON.stringify(
+            {
+              success: false,
+              error: errorType,
+              message,
+            },
+            null,
+            2
+          ),
         },
       ],
       isError: true,
@@ -1046,13 +1154,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 // Helper: Get file extension from MIME type
 function getExtension(mime: MimeType): string {
   const map: Record<MimeType, string> = {
-    'image/svg+xml': 'svg',
-    'image/png': 'png',
-    'image/jpeg': 'jpg',
-    'image/webp': 'webp',
-    'image/avif': 'avif',
+    "image/svg+xml": "svg",
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/webp": "webp",
+    "image/avif": "avif",
   };
-  return map[mime] || 'png';
+  return map[mime] || "png";
 }
 
 // Start server with stdio transport

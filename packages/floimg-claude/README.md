@@ -14,6 +14,18 @@ Generate AI images, resize for social media, add captions, upload to S3—all th
 
 > **[Full Documentation →](https://floimg.com/docs/claude-code)**
 
+## When FloImg Matters
+
+| Task                      | Raw LLM + DALL-E                         | With FloImg                   |
+| ------------------------- | ---------------------------------------- | ----------------------------- |
+| "Create a hero image"     | Generates image                          | Generates + stores in session |
+| "Now make it 1200x630"    | Re-generates entirely (different image!) | Resizes exact pixels          |
+| "Add our tagline"         | Re-generates entirely                    | Adds text at exact position   |
+| "Upload to S3"            | Manual download/upload                   | Automatic in same pipeline    |
+| "Actually, make it bluer" | Start over                               | Adjusts hue on existing image |
+
+**The gap**: AI generates creative content. FloImg makes it production-ready with deterministic transforms.
+
 ## Quick Start
 
 Install the plugin and start using it:
@@ -74,7 +86,7 @@ User: "Save to S3"
 Claude: [uploads to s3://bucket/hero.png]
 ```
 
-Session state enables referencing images by ID, not file paths. Each step builds on the last.
+**Session state is the key**: FloImg remembers your images. When you say "make it more vibrant," it adjusts the existing image—it doesn't re-generate a new one. Each refinement builds on the last.
 
 ### Multi-Step Workflows
 
@@ -97,11 +109,11 @@ Quick one-shot operations work immediately via CLI:
 
 ## MCP Setup (For Complex Workflows)
 
-MCP unlocks:
+MCP unlocks the full value of FloImg:
 
-- **Multi-step transforms**: generate → resize → caption → save
-- **Iterative refinement**: "make it bluer", "add more contrast"
-- **Session state**: reference images by ID, not file paths
+- **Session state**: FloImg remembers your images. "Make it bluer" adjusts the existing image, not a re-generation
+- **Deterministic transforms**: Resize, caption, adjust colors—mathematically precise, not probabilistic
+- **Pipeline composition**: generate → resize → caption → save as one atomic workflow
 
 After installing the plugin, restart Claude Code once. The MCP server auto-configures.
 
@@ -163,16 +175,28 @@ Just describe what you need in natural language.
 
 ## Transform Operations
 
-With MCP enabled, transform images:
+With MCP enabled, apply deterministic transforms—these modify exactly what you specify, leaving everything else intact:
 
-- `resize` - Scale to specific dimensions
+- `resize` - Scale to specific dimensions (exact pixels, not AI upscaling)
 - `blur` - Apply Gaussian blur
 - `sharpen` - Sharpen edges
 - `grayscale` - Remove color
+- `modulate` - Adjust brightness, saturation, hue (mathematical precision)
 - `roundCorners` - Add border radius
-- `addText` - Overlay text
+- `addText` - Overlay text at exact position
 - `addCaption` - Add caption bar
 - `preset` - Apply filters (vintage, vibrant, dramatic, soft)
+
+### AI Transforms (Requires API Keys)
+
+For creative modifications, AI-powered transforms are also available:
+
+- `removeBackground` - Isolate subjects (Stability AI)
+- `upscale` - AI-enhanced resolution (Stability AI)
+- `faceRestore` - Fix faces in generated images (Replicate)
+- `inpaint` - Replace specific regions (OpenAI)
+
+Use deterministic when you need precision. Use AI transforms when you need creative enhancement.
 
 ## Save Destinations
 

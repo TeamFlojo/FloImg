@@ -131,7 +131,7 @@ export function Toolbar({
           </button>
 
           <div className="flex items-baseline gap-2">
-            <h1 className="text-xl font-bold text-gray-800 dark:text-white">floimg Studio</h1>
+            <h1 className="text-xl font-bold text-gray-800 dark:text-white">FloImg Studio</h1>
             {brandingSlot}
             {!hideAttribution && (
               <a

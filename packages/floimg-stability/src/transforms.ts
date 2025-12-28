@@ -226,7 +226,7 @@ export function stabilityTransform(config: StabilityTransformConfig = {}): Trans
    */
   async function removeBackground(input: ImageBlob): Promise<ImageBlob> {
     const formData = new FormData();
-    formData.append("image", new Blob([input.bytes], { type: input.mime }));
+    formData.append("image", new Blob([new Uint8Array(input.bytes)], { type: input.mime }));
     formData.append("output_format", "png");
 
     const result = await makeEditRequest(
@@ -263,7 +263,7 @@ export function stabilityTransform(config: StabilityTransformConfig = {}): Trans
     };
 
     const formData = new FormData();
-    formData.append("image", new Blob([input.bytes], { type: input.mime }));
+    formData.append("image", new Blob([new Uint8Array(input.bytes)], { type: input.mime }));
     formData.append("output_format", "png");
 
     if (prompt) {
@@ -318,7 +318,7 @@ export function stabilityTransform(config: StabilityTransformConfig = {}): Trans
     }
 
     const formData = new FormData();
-    formData.append("image", new Blob([input.bytes], { type: input.mime }));
+    formData.append("image", new Blob([new Uint8Array(input.bytes)], { type: input.mime }));
     formData.append("prompt", prompt);
     formData.append("search_prompt", searchPrompt);
     formData.append("output_format", "png");
@@ -374,7 +374,7 @@ export function stabilityTransform(config: StabilityTransformConfig = {}): Trans
     }
 
     const formData = new FormData();
-    formData.append("image", new Blob([input.bytes], { type: input.mime }));
+    formData.append("image", new Blob([new Uint8Array(input.bytes)], { type: input.mime }));
     formData.append("prompt", prompt);
     formData.append("left", String(left));
     formData.append("right", String(right));

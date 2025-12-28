@@ -14,11 +14,10 @@ import qr from "../packages/floimg-qr/src/index.js";
 async function main() {
   const floimg = createClient({
     verbose: true,
-    store: {
+    save: {
       default: "fs",
       fs: {
-        basePath: "./output",
-        baseUrl: "file://./output",
+        baseDir: "./output",
       },
     },
   });

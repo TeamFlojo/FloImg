@@ -11,22 +11,21 @@
  * Each generator uses pass-through pattern - native library formats with no abstraction.
  */
 
-import createClient from '../packages/floimg/src/index.js';
-import quickchart from '../packages/floimg-quickchart/src/index.js';
-import mermaid from '../packages/floimg-mermaid/src/index.js';
-import screenshot from '../packages/floimg-screenshot/src/index.js';
+import createClient from "../packages/floimg/src/index.js";
+import quickchart from "../packages/floimg-quickchart/src/index.js";
+import mermaid from "../packages/floimg-mermaid/src/index.js";
+import screenshot from "../packages/floimg-screenshot/src/index.js";
 
 async function main() {
   // Create client with filesystem storage for testing
   const floimg = createClient({
     verbose: true,
-    store: {
-      default: 'fs',
+    save: {
+      default: "fs",
       fs: {
-        basePath: './output',
-        baseUrl: 'file://./output'
-      }
-    }
+        baseDir: "./output",
+      },
+    },
   });
 
   // Register all plugins
@@ -34,119 +33,112 @@ async function main() {
   floimg.registerGenerator(mermaid());
   floimg.registerGenerator(screenshot());
 
-  console.log('🎨 floimg - All Plugins Demo\n');
+  console.log("🎨 floimg - All Plugins Demo\n");
 
   // ====================================================================
   // 1. SHAPES (Built-in, zero dependencies)
   // ====================================================================
-  console.log('1️⃣  Generating SVG gradient with built-in shapes generator...');
+  console.log("1️⃣  Generating SVG gradient with built-in shapes generator...");
   const gradient = await floimg.generate({
-    generator: 'shapes',
+    generator: "shapes",
     params: {
-      type: 'gradient',
+      type: "gradient",
       width: 1200,
       height: 630,
-      color1: '#667eea',
-      color2: '#764ba2'
-    }
+      color1: "#667eea",
+      color2: "#764ba2",
+    },
   });
 
   const gradientPng = await floimg.transform({
     blob: gradient,
-    op: 'convert',
-    to: 'image/png'
+    op: "convert",
+    to: "image/png",
   });
 
-  await floimg.upload({
-    blob: gradientPng,
-    key: 'shapes-gradient.png'
-  });
+  await floimg.save(gradientPng, "./output/shapes-gradient.png");
 
-  console.log('   ✓ Saved shapes-gradient.png\n');
+  console.log("   ✓ Saved shapes-gradient.png\n");
 
   // ====================================================================
   // 2. QUICKCHART (Plugin, Chart.js pass-through)
   // ====================================================================
-  console.log('2️⃣  Generating bar chart with QuickChart (Chart.js)...');
+  console.log("2️⃣  Generating bar chart with QuickChart (Chart.js)...");
   const barChart = await floimg.generate({
-    generator: 'quickchart',
+    generator: "quickchart",
     params: {
       // Pure Chart.js configuration - no floimg abstraction
-      type: 'bar',
+      type: "bar",
       data: {
-        labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024'],
-        datasets: [{
-          label: 'Revenue ($M)',
-          data: [12, 19, 15, 22],
-          backgroundColor: 'rgba(102, 126, 234, 0.6)',
-          borderColor: 'rgba(102, 126, 234, 1)',
-          borderWidth: 2
-        }]
+        labels: ["Q1 2024", "Q2 2024", "Q3 2024", "Q4 2024"],
+        datasets: [
+          {
+            label: "Revenue ($M)",
+            data: [12, 19, 15, 22],
+            backgroundColor: "rgba(102, 126, 234, 0.6)",
+            borderColor: "rgba(102, 126, 234, 1)",
+            borderWidth: 2,
+          },
+        ],
       },
       options: {
         scales: {
           y: {
-            beginAtZero: true
-          }
+            beginAtZero: true,
+          },
         },
         plugins: {
           title: {
             display: true,
-            text: 'Quarterly Revenue 2024'
-          }
-        }
-      }
-    }
+            text: "Quarterly Revenue 2024",
+          },
+        },
+      },
+    },
   });
 
-  await floimg.upload({
-    blob: barChart,
-    key: 'quickchart-revenue.png'
-  });
+  await floimg.save(barChart, "./output/quickchart-revenue.png");
 
-  console.log('   ✓ Saved quickchart-revenue.png\n');
+  console.log("   ✓ Saved quickchart-revenue.png\n");
 
   // ====================================================================
   // 3. QUICKCHART - Line Chart
   // ====================================================================
-  console.log('3️⃣  Generating line chart with QuickChart...');
+  console.log("3️⃣  Generating line chart with QuickChart...");
   const lineChart = await floimg.generate({
-    generator: 'quickchart',
+    generator: "quickchart",
     params: {
-      type: 'line',
+      type: "line",
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
         datasets: [
           {
-            label: '2023',
+            label: "2023",
             data: [65, 59, 80, 81, 56, 55],
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1
+            borderColor: "rgb(75, 192, 192)",
+            tension: 0.1,
           },
           {
-            label: '2024',
+            label: "2024",
             data: [28, 48, 40, 19, 86, 27],
-            borderColor: 'rgb(255, 99, 132)',
-            tension: 0.1
-          }
-        ]
-      }
-    }
+            borderColor: "rgb(255, 99, 132)",
+            tension: 0.1,
+          },
+        ],
+      },
+    },
   });
 
-  await floimg.upload({
-    blob: lineChart,
-    key: 'quickchart-line.png'
-  });
+  await floimg.save(lineChart, "./output/quickchart-line.png");
 
-  console.log('   ✓ Saved quickchart-line.png\n');
+  console.log("   ✓ Saved quickchart-line.png\n");
 
   // ====================================================================
   // 4. MERMAID (Plugin, Mermaid syntax pass-through)
   // ====================================================================
-  console.log('4️⃣  Generating flowchart with Mermaid...');
+  console.log("4️⃣  Generating flowchart with Mermaid...");
   const flowchart = await floimg.generate({
-    generator: 'mermaid',
+    generator: "mermaid",
     params: {
       // Pure Mermaid syntax - no floimg abstraction
       code: `
@@ -158,24 +150,21 @@ async function main() {
           E --> F[Upload to S3]
           F --> G[Return URL]
       `,
-      theme: 'dark',
-      backgroundColor: 'transparent'
-    }
+      theme: "dark",
+      backgroundColor: "transparent",
+    },
   });
 
-  await floimg.upload({
-    blob: flowchart,
-    key: 'mermaid-flow.svg'
-  });
+  await floimg.save(flowchart, "./output/mermaid-flow.svg");
 
-  console.log('   ✓ Saved mermaid-flow.svg\n');
+  console.log("   ✓ Saved mermaid-flow.svg\n");
 
   // ====================================================================
   // 5. MERMAID - Sequence Diagram
   // ====================================================================
-  console.log('5️⃣  Generating sequence diagram with Mermaid...');
+  console.log("5️⃣  Generating sequence diagram with Mermaid...");
   const sequence = await floimg.generate({
-    generator: 'mermaid',
+    generator: "mermaid",
     params: {
       code: `
         sequenceDiagram
@@ -192,23 +181,20 @@ async function main() {
           S3-->>floimg: URL
           floimg-->>User: { url: 'https://...' }
       `,
-      theme: 'neutral'
-    }
+      theme: "neutral",
+    },
   });
 
-  await floimg.upload({
-    blob: sequence,
-    key: 'mermaid-sequence.svg'
-  });
+  await floimg.save(sequence, "./output/mermaid-sequence.svg");
 
-  console.log('   ✓ Saved mermaid-sequence.svg\n');
+  console.log("   ✓ Saved mermaid-sequence.svg\n");
 
   // ====================================================================
   // 6. SCREENSHOT (Plugin, HTML rendering)
   // ====================================================================
-  console.log('6️⃣  Generating OG image with Screenshot (HTML)...');
+  console.log("6️⃣  Generating OG image with Screenshot (HTML)...");
   const ogImage = await floimg.generate({
-    generator: 'screenshot',
+    generator: "screenshot",
     params: {
       html: `
         <html>
@@ -247,57 +233,51 @@ async function main() {
         </html>
       `,
       width: 1200,
-      height: 630
-    }
+      height: 630,
+    },
   });
 
-  await floimg.upload({
-    blob: ogImage,
-    key: 'screenshot-og.png'
-  });
+  await floimg.save(ogImage, "./output/screenshot-og.png");
 
-  console.log('   ✓ Saved screenshot-og.png\n');
+  console.log("   ✓ Saved screenshot-og.png\n");
 
   // ====================================================================
   // 7. SCREENSHOT - Website capture
   // ====================================================================
-  console.log('7️⃣  Capturing website screenshot...');
+  console.log("7️⃣  Capturing website screenshot...");
   const website = await floimg.generate({
-    generator: 'screenshot',
+    generator: "screenshot",
     params: {
-      url: 'https://example.com',
+      url: "https://example.com",
       width: 1280,
       height: 800,
-      waitFor: 'body' // Wait for body to load
-    }
+      waitFor: "body", // Wait for body to load
+    },
   });
 
-  await floimg.upload({
-    blob: website,
-    key: 'screenshot-example.png'
-  });
+  await floimg.save(website, "./output/screenshot-example.png");
 
-  console.log('   ✓ Saved screenshot-example.png\n');
+  console.log("   ✓ Saved screenshot-example.png\n");
 
   // ====================================================================
   // Summary
   // ====================================================================
-  console.log('✨ All generators tested successfully!\n');
-  console.log('📁 Output directory: ./output/\n');
-  console.log('Generated files:');
-  console.log('  • shapes-gradient.png      - SVG shapes (built-in)');
-  console.log('  • quickchart-revenue.png   - Bar chart (Chart.js)');
-  console.log('  • quickchart-line.png      - Line chart (Chart.js)');
-  console.log('  • mermaid-flow.svg         - Flowchart (Mermaid)');
-  console.log('  • mermaid-sequence.svg     - Sequence diagram (Mermaid)');
-  console.log('  • screenshot-og.png        - HTML render (Playwright)');
-  console.log('  • screenshot-example.png   - Website capture (Playwright)\n');
+  console.log("✨ All generators tested successfully!\n");
+  console.log("📁 Output directory: ./output/\n");
+  console.log("Generated files:");
+  console.log("  • shapes-gradient.png      - SVG shapes (built-in)");
+  console.log("  • quickchart-revenue.png   - Bar chart (Chart.js)");
+  console.log("  • quickchart-line.png      - Line chart (Chart.js)");
+  console.log("  • mermaid-flow.svg         - Flowchart (Mermaid)");
+  console.log("  • mermaid-sequence.svg     - Sequence diagram (Mermaid)");
+  console.log("  • screenshot-og.png        - HTML render (Playwright)");
+  console.log("  • screenshot-example.png   - Website capture (Playwright)\n");
 
-  console.log('🎯 Key Takeaway:');
-  console.log('   Each generator uses native library formats with ZERO floimg abstraction.');
-  console.log('   - QuickChart: Pure Chart.js config');
-  console.log('   - Mermaid: Pure Mermaid syntax');
-  console.log('   - Screenshot: Standard HTML/CSS');
+  console.log("🎯 Key Takeaway:");
+  console.log("   Each generator uses native library formats with ZERO floimg abstraction.");
+  console.log("   - QuickChart: Pure Chart.js config");
+  console.log("   - Mermaid: Pure Mermaid syntax");
+  console.log("   - Screenshot: Standard HTML/CSS");
   console.log('   This is the "glue, not the engine" philosophy in action! 🚀\n');
 }
 

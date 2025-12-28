@@ -14,7 +14,7 @@
     "test:studio": "pnpm exec vitest --run --project studio",
     "test:coverage": "pnpm exec vitest --run --coverage",
     "test:watch": "pnpm exec vitest",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm -r typecheck && tsc --noEmit -p examples/tsconfig.json",
     "lint": "eslint packages/*/src --ext .ts,.tsx",
     "lint:fix": "eslint packages/*/src apps/**/src --ext .ts,.tsx --fix",
     "format": "prettier --write \"packages/*/src/**/*.ts\" \"apps/**/src/**/*.{ts,tsx}\"",

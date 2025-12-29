@@ -26,6 +26,8 @@ export interface GeneratorNodeData {
 // Transform node data
 export interface TransformNodeData {
   operation: string;
+  /** Transform provider name (e.g., "gemini-transform", "sharp") for routing */
+  providerName?: string;
   params: Record<string, unknown>;
 }
 
@@ -147,6 +149,12 @@ export interface NodeDefinition {
   params: ParamSchema;
   /** Whether this node uses AI/ML models */
   isAI?: boolean;
+  /** For transforms: the provider name (e.g., "gemini-transform", "sharp") */
+  providerName?: string;
+  /** Whether this node requires an API key */
+  requiresApiKey?: boolean;
+  /** Environment variable name for the API key */
+  apiKeyEnvVar?: string;
 }
 
 // Parameter schema for dynamic form generation

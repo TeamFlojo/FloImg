@@ -79,6 +79,38 @@ export interface CloudConfig {
   authToken: string;
 }
 
+/**
+ * Map provider names to AI provider config keys
+ */
+const PROVIDER_TO_AI_CONFIG: Record<string, keyof AIProviderConfig> = {
+  "gemini-transform": "gemini",
+  "openai-transform": "openai",
+  // Add more mappings as needed
+};
+
+/**
+ * Get API key for a provider from AI config
+ */
+function getApiKeyForProvider(
+  providerName: string,
+  aiProviders?: AIProviderConfig
+): string | undefined {
+  if (!aiProviders) return undefined;
+
+  const configKey = PROVIDER_TO_AI_CONFIG[providerName];
+  if (!configKey) return undefined;
+
+  const config = aiProviders[configKey];
+  if (!config) return undefined;
+
+  // All AI provider configs have apiKey or baseUrl
+  if ("apiKey" in config) {
+    return config.apiKey as string;
+  }
+
+  return undefined;
+}
+
 export interface ExecutionOptions {
   /** Optional template ID if workflow was loaded from a template */
   templateId?: string;
@@ -169,8 +201,8 @@ export async function executeWorkflow(
       });
     }
 
-    // Step 2: Convert workflow to pipeline format
-    const { pipeline: pipelineData, nodeToVar } = toPipeline(nodes, edges);
+    // Step 2: Convert workflow to pipeline format (pass aiProviders for API key injection)
+    const { pipeline: pipelineData, nodeToVar } = toPipeline(nodes, edges, options?.aiProviders);
 
     // Step 3: Populate initialVariables with input node blobs
     for (const inputNode of inputNodes) {
@@ -369,10 +401,15 @@ export async function executeWorkflow(
  * Used for:
  * - YAML export
  * - Execution via client.run()
+ *
+ * @param nodes - Workflow nodes
+ * @param edges - Workflow edges
+ * @param aiProviders - Optional AI provider configuration for API key injection
  */
 export function toPipeline(
   nodes: StudioNode[],
-  edges: StudioEdge[]
+  edges: StudioEdge[],
+  aiProviders?: AIProviderConfig
 ): { pipeline: { name: string; steps: unknown[] }; nodeToVar: Map<string, string> } {
   // Topological sort for ordering
   const dependencies = buildDependencyGraph(nodes, edges);
@@ -423,12 +460,24 @@ export function toPipeline(
       const inputEdge = edges.find((e) => e.target === node.id);
       const inputVar = inputEdge ? nodeToVar.get(inputEdge.source) : undefined;
 
+      // Inject API key for AI transforms if provider is specified
+      let params = { ...data.params };
+      if (data.providerName) {
+        const apiKey = getApiKeyForProvider(data.providerName, aiProviders);
+        if (apiKey && !params.apiKey) {
+          // Only inject if not already specified in params
+          params = { ...params, apiKey };
+        }
+      }
+
       steps.push({
         kind: "transform",
         op: data.operation,
         in: inputVar,
-        params: data.params,
+        params,
         out: varName,
+        // Include provider name if specified (for AI transforms routing)
+        ...(data.providerName && { provider: data.providerName }),
       });
     } else if (node.type === "save") {
       const data = node.data as SaveNodeData;

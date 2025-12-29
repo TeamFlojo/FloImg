@@ -243,6 +243,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
         } else if (definition.type === "transform") {
           data = {
             operation: definition.name,
+            providerName: definition.providerName, // Track which provider this transform belongs to
             params: getDefaultParams(definition),
           } as TransformNodeData;
         } else if (definition.type === "input") {

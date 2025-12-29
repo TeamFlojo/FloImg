@@ -8,7 +8,7 @@
 
 import type { NodeDefinition, ParamSchema, ParamField } from "@teamflojo/floimg-studio-shared";
 import type { GeneratorSchema, TransformOperationSchema, ParameterSchema } from "@teamflojo/floimg";
-import { getCachedCapabilities } from "./setup.js";
+import { getCachedCapabilities, getClient } from "./setup.js";
 
 /**
  * Convert floimg ParameterSchema to studio ParamField
@@ -53,10 +53,12 @@ function generatorToNode(schema: GeneratorSchema): NodeDefinition {
 
 /**
  * Convert floimg TransformOperationSchema to studio NodeDefinition
+ * @param schema - The transform operation schema
+ * @param providerName - The provider this transform belongs to
  */
-function transformToNode(schema: TransformOperationSchema): NodeDefinition {
+function transformToNode(schema: TransformOperationSchema, providerName: string): NodeDefinition {
   return {
-    id: `transform:${schema.name}`,
+    id: `transform:${providerName}:${schema.name}`,
     type: "transform",
     name: schema.name,
     label: formatLabel(schema.name, schema.description),
@@ -69,6 +71,10 @@ function transformToNode(schema: TransformOperationSchema): NodeDefinition {
       ),
       required: schema.requiredParameters,
     },
+    providerName,
+    isAI: schema.isAI,
+    requiresApiKey: schema.requiresApiKey,
+    apiKeyEnvVar: schema.apiKeyEnvVar,
   };
 }
 
@@ -97,10 +103,23 @@ export function getGenerators(): NodeDefinition[] {
 
 /**
  * Get all available transforms as NodeDefinitions
+ * Iterates over providers directly to preserve provider association
  */
 export function getTransforms(): NodeDefinition[] {
-  const caps = getCachedCapabilities();
-  return caps.transforms.map(transformToNode);
+  const client = getClient();
+  const transforms: NodeDefinition[] = [];
+
+  // Iterate over transform providers to preserve provider name association
+  for (const [providerName, provider] of Object.entries(client.providers.transform)) {
+    const typedProvider = provider as {
+      operationSchemas: Record<string, TransformOperationSchema>;
+    };
+    for (const schema of Object.values(typedProvider.operationSchemas)) {
+      transforms.push(transformToNode(schema, providerName));
+    }
+  }
+
+  return transforms;
 }
 
 /**

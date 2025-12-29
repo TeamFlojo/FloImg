@@ -88,8 +88,12 @@ interface WorkflowStore {
   // Node registry
   generators: NodeDefinition[];
   transforms: NodeDefinition[];
+  textProviders: NodeDefinition[];
+  visionProviders: NodeDefinition[];
   setGenerators: (generators: NodeDefinition[]) => void;
   setTransforms: (transforms: NodeDefinition[]) => void;
+  setTextProviders: (textProviders: NodeDefinition[]) => void;
+  setVisionProviders: (visionProviders: NodeDefinition[]) => void;
 
   // Node operations
   addNode: (definition: NodeDefinition, position: { x: number; y: number }) => void;
@@ -139,6 +143,8 @@ export const useWorkflowStore = create<WorkflowStore>()(
       previewVisible: {},
       generators: [],
       transforms: [],
+      textProviders: [],
+      visionProviders: [],
 
       // Workflow persistence state
       savedWorkflows: [],
@@ -230,6 +236,8 @@ export const useWorkflowStore = create<WorkflowStore>()(
 
       setGenerators: (generators) => set({ generators }),
       setTransforms: (transforms) => set({ transforms }),
+      setTextProviders: (textProviders) => set({ textProviders }),
+      setVisionProviders: (visionProviders) => set({ visionProviders }),
 
       addNode: (definition, position) => {
         const id = generateNodeId();
@@ -307,11 +315,20 @@ export const useWorkflowStore = create<WorkflowStore>()(
       addEdge: (connection) => {
         if (!connection.source || !connection.target) return;
 
-        const id = `edge_${connection.source}_${connection.target}`;
+        // Include sourceHandle and targetHandle in edge ID for uniqueness
+        const handleSuffix = [connection.sourceHandle, connection.targetHandle]
+          .filter(Boolean)
+          .join("_");
+        const id = handleSuffix
+          ? `edge_${connection.source}_${connection.target}_${handleSuffix}`
+          : `edge_${connection.source}_${connection.target}`;
+
         const newEdge: Edge = {
           id,
           source: connection.source,
           target: connection.target,
+          sourceHandle: connection.sourceHandle ?? undefined,
+          targetHandle: connection.targetHandle ?? undefined,
         };
 
         set((state) => ({
@@ -344,6 +361,8 @@ export const useWorkflowStore = create<WorkflowStore>()(
           id: e.id,
           source: e.source,
           target: e.target,
+          sourceHandle: e.sourceHandle ?? undefined,
+          targetHandle: e.targetHandle ?? undefined,
         }));
 
         // Get AI provider settings
@@ -434,6 +453,8 @@ export const useWorkflowStore = create<WorkflowStore>()(
           id: e.id,
           source: e.source,
           target: e.target,
+          sourceHandle: e.sourceHandle ?? undefined,
+          targetHandle: e.targetHandle ?? undefined,
         }));
 
         const result = await exportYaml(studioNodes, studioEdges);

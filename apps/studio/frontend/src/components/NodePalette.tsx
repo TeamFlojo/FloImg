@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { NodeDefinition } from "@teamflojo/floimg-studio-shared";
-import { getGenerators, getTransforms } from "../api/client";
+import { getGenerators, getTransforms, getTextProviders, getVisionProviders } from "../api/client";
 import { useWorkflowStore } from "../stores/workflowStore";
 import { UploadGallery } from "./UploadGallery";
 
 export function NodePalette() {
   const setGenerators = useWorkflowStore((s) => s.setGenerators);
   const setTransforms = useWorkflowStore((s) => s.setTransforms);
+  const setTextProviders = useWorkflowStore((s) => s.setTextProviders);
+  const setVisionProviders = useWorkflowStore((s) => s.setVisionProviders);
   const generators = useWorkflowStore((s) => s.generators);
   const transforms = useWorkflowStore((s) => s.transforms);
+  const textProviders = useWorkflowStore((s) => s.textProviders);
+  const visionProviders = useWorkflowStore((s) => s.visionProviders);
   const addNode = useWorkflowStore((s) => s.addNode);
   const [showUploads, setShowUploads] = useState(false);
 
@@ -24,6 +28,16 @@ export function NodePalette() {
     queryFn: getTransforms,
   });
 
+  const { data: fetchedTextProviders } = useQuery({
+    queryKey: ["textProviders"],
+    queryFn: getTextProviders,
+  });
+
+  const { data: fetchedVisionProviders } = useQuery({
+    queryKey: ["visionProviders"],
+    queryFn: getVisionProviders,
+  });
+
   useEffect(() => {
     if (fetchedGenerators) setGenerators(fetchedGenerators);
   }, [fetchedGenerators, setGenerators]);
@@ -31,6 +45,14 @@ export function NodePalette() {
   useEffect(() => {
     if (fetchedTransforms) setTransforms(fetchedTransforms);
   }, [fetchedTransforms, setTransforms]);
+
+  useEffect(() => {
+    if (fetchedTextProviders) setTextProviders(fetchedTextProviders);
+  }, [fetchedTextProviders, setTextProviders]);
+
+  useEffect(() => {
+    if (fetchedVisionProviders) setVisionProviders(fetchedVisionProviders);
+  }, [fetchedVisionProviders, setVisionProviders]);
 
   const handleDragStart = (e: React.DragEvent, definition: NodeDefinition) => {
     e.dataTransfer.setData("application/json", JSON.stringify(definition));
@@ -197,6 +219,60 @@ export function NodePalette() {
             </div>
           ))}
         </div>
+
+        {/* AI Text */}
+        {textProviders.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-pink-600 dark:text-pink-400 uppercase tracking-wide mb-2">
+              AI Text
+            </h3>
+            {textProviders.map((def) => (
+              <div
+                key={def.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, def)}
+                onDoubleClick={() => handleDoubleClick(def)}
+                className="px-3 py-2 bg-pink-50 dark:bg-pink-900/30 border border-pink-200 dark:border-pink-700 rounded mb-1 cursor-grab active:cursor-grabbing hover:bg-pink-100 dark:hover:bg-pink-900/50 transition-colors"
+              >
+                <div className="text-sm font-medium text-pink-700 dark:text-pink-300">
+                  {def.label}
+                </div>
+                {def.description && (
+                  <div className="text-xs text-gray-500 dark:text-zinc-400 truncate">
+                    {def.description}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* AI Vision */}
+        {visionProviders.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-cyan-600 dark:text-cyan-400 uppercase tracking-wide mb-2">
+              AI Vision
+            </h3>
+            {visionProviders.map((def) => (
+              <div
+                key={def.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, def)}
+                onDoubleClick={() => handleDoubleClick(def)}
+                className="px-3 py-2 bg-cyan-50 dark:bg-cyan-900/30 border border-cyan-200 dark:border-cyan-700 rounded mb-1 cursor-grab active:cursor-grabbing hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors"
+              >
+                <div className="text-sm font-medium text-cyan-700 dark:text-cyan-300">
+                  {def.label}
+                </div>
+                {def.description && (
+                  <div className="text-xs text-gray-500 dark:text-zinc-400 truncate">
+                    {def.description}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Output */}
         <div className="mb-6">

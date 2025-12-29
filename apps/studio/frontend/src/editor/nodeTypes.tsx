@@ -316,6 +316,7 @@ export const InputNode = memo(function InputNode({ id, data, selected }: NodePro
 });
 
 // Vision Node (AI image analysis - has input and output)
+// Supports multiple output handles when outputSchema is defined
 export const VisionNode = memo(function VisionNode({
   id,
   data,
@@ -326,6 +327,12 @@ export const VisionNode = memo(function VisionNode({
 
   const executionClass = getExecutionClass(nodeStatus);
   const borderClass = executionClass || (selected ? "border-cyan-500" : "border-cyan-200");
+
+  // Get output schema properties for multi-output handles
+  const outputProperties = data.outputSchema?.properties
+    ? Object.entries(data.outputSchema.properties)
+    : [];
+  const hasMultiOutput = outputProperties.length > 0;
 
   return (
     <div
@@ -359,19 +366,72 @@ export const VisionNode = memo(function VisionNode({
             <div className="truncate">{String(data.params.prompt).slice(0, 30)}...</div>
           ) : null}
         </div>
+        {/* Show output schema info if defined */}
+        {hasMultiOutput && (
+          <div className="mt-2 pt-2 border-t border-cyan-200 dark:border-cyan-800">
+            <div className="text-[10px] text-cyan-500 dark:text-cyan-400 font-medium mb-1">
+              Outputs:
+            </div>
+            {outputProperties.map(([key]) => (
+              <div
+                key={key}
+                className="text-[10px] text-gray-500 dark:text-zinc-400 flex items-center gap-1"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                {key}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-      <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-cyan-500" />
+      {/* Multi-output handles: one for each schema property */}
+      {hasMultiOutput ? (
+        <>
+          {/* Full output handle (backward compat) */}
+          <Handle
+            type="source"
+            position={Position.Right}
+            id="output"
+            className="w-3 h-3 !bg-cyan-500"
+            style={{ top: "50%" }}
+            title="Full JSON output"
+          />
+          {/* Individual property handles */}
+          {outputProperties.map(([key, prop], index) => (
+            <Handle
+              key={key}
+              type="source"
+              position={Position.Right}
+              id={`output.${key}`}
+              className="w-2.5 h-2.5 !bg-cyan-400"
+              style={{
+                top: `${70 + index * 14}%`,
+              }}
+              title={`${key}: ${prop.description || prop.type}`}
+            />
+          ))}
+        </>
+      ) : (
+        <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-cyan-500" />
+      )}
     </div>
   );
 });
 
 // Text Node (AI text generation - has optional input and output)
+// Supports multiple output handles when outputSchema is defined
 export const TextNode = memo(function TextNode({ id, data, selected }: NodeProps<TextNodeData>) {
   const nodeStatus = useWorkflowStore((s) => s.execution.nodeStatus[id]);
   const dataOutput = useWorkflowStore((s) => s.execution.dataOutputs?.[id]);
 
   const executionClass = getExecutionClass(nodeStatus);
   const borderClass = executionClass || (selected ? "border-pink-500" : "border-pink-200");
+
+  // Get output schema properties for multi-output handles
+  const outputProperties = data.outputSchema?.properties
+    ? Object.entries(data.outputSchema.properties)
+    : [];
+  const hasMultiOutput = outputProperties.length > 0;
 
   return (
     <div
@@ -404,8 +464,54 @@ export const TextNode = memo(function TextNode({ id, data, selected }: NodeProps
             <div className="truncate">{String(data.params.prompt).slice(0, 30)}...</div>
           ) : null}
         </div>
+        {/* Show output schema info if defined */}
+        {hasMultiOutput && (
+          <div className="mt-2 pt-2 border-t border-pink-200 dark:border-pink-800">
+            <div className="text-[10px] text-pink-500 dark:text-pink-400 font-medium mb-1">
+              Outputs:
+            </div>
+            {outputProperties.map(([key]) => (
+              <div
+                key={key}
+                className="text-[10px] text-gray-500 dark:text-zinc-400 flex items-center gap-1"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-pink-400"></span>
+                {key}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-      <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-pink-500" />
+      {/* Multi-output handles: one for each schema property */}
+      {hasMultiOutput ? (
+        <>
+          {/* Full output handle (backward compat) */}
+          <Handle
+            type="source"
+            position={Position.Right}
+            id="output"
+            className="w-3 h-3 !bg-pink-500"
+            style={{ top: "50%" }}
+            title="Full JSON output"
+          />
+          {/* Individual property handles */}
+          {outputProperties.map(([key, prop], index) => (
+            <Handle
+              key={key}
+              type="source"
+              position={Position.Right}
+              id={`output.${key}`}
+              className="w-2.5 h-2.5 !bg-pink-400"
+              style={{
+                top: `${70 + index * 14}%`,
+              }}
+              title={`${key}: ${prop.description || prop.type}`}
+            />
+          ))}
+        </>
+      ) : (
+        <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-pink-500" />
+      )}
     </div>
   );
 });

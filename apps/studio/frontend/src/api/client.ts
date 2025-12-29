@@ -33,11 +33,20 @@ export async function getTransforms(): Promise<NodeDefinition[]> {
   return fetchJson(`${API_BASE}/nodes/transforms`);
 }
 
+export async function getTextProviders(): Promise<NodeDefinition[]> {
+  return fetchJson(`${API_BASE}/nodes/text`);
+}
+
+export async function getVisionProviders(): Promise<NodeDefinition[]> {
+  return fetchJson(`${API_BASE}/nodes/vision`);
+}
+
 // AI provider configuration passed to backend
 export interface AIProviderConfig {
   openai?: { apiKey: string };
   anthropic?: { apiKey: string };
   gemini?: { apiKey: string };
+  grok?: { apiKey: string };
   openrouter?: { apiKey: string };
   ollama?: { baseUrl: string };
   lmstudio?: { baseUrl: string };

@@ -20,9 +20,16 @@ const CLOUD_PROVIDERS = [
   {
     id: "gemini" as const,
     name: "Google AI",
-    description: "Gemini Vision, Gemini Text",
+    description: "Gemini Vision, Gemini Text, Gemini Edit",
     placeholder: "AIza...",
     docsUrl: "https://aistudio.google.com/apikey",
+  },
+  {
+    id: "grok" as const,
+    name: "xAI (Grok)",
+    description: "Grok Vision, Grok Text",
+    placeholder: "xai-...",
+    docsUrl: "https://console.x.ai/",
   },
   {
     id: "openrouter" as const,

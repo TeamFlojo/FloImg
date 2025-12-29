@@ -7,7 +7,13 @@
  */
 
 import type { NodeDefinition, ParamSchema, ParamField } from "@teamflojo/floimg-studio-shared";
-import type { GeneratorSchema, TransformOperationSchema, ParameterSchema } from "@teamflojo/floimg";
+import type {
+  GeneratorSchema,
+  TransformOperationSchema,
+  ParameterSchema,
+  TextProviderSchema,
+  VisionProviderSchema,
+} from "@teamflojo/floimg";
 import { getCachedCapabilities, getClient } from "./setup.js";
 
 /**
@@ -75,6 +81,50 @@ function transformToNode(schema: TransformOperationSchema, providerName: string)
     isAI: schema.isAI,
     requiresApiKey: schema.requiresApiKey,
     apiKeyEnvVar: schema.apiKeyEnvVar,
+  };
+}
+
+/**
+ * Convert floimg TextProviderSchema to studio NodeDefinition
+ */
+function textProviderToNode(schema: TextProviderSchema): NodeDefinition {
+  return {
+    id: `text:${schema.name}`,
+    type: "text",
+    name: schema.name,
+    label: formatLabel(schema.name, schema.description),
+    description: schema.description,
+    category: schema.category || "AI Text",
+    params: {
+      type: "object",
+      properties: Object.fromEntries(
+        Object.entries(schema.parameters).map(([k, v]) => [k, parameterToField(v)])
+      ),
+      required: schema.requiredParameters,
+    },
+    requiresApiKey: schema.requiresApiKey,
+  };
+}
+
+/**
+ * Convert floimg VisionProviderSchema to studio NodeDefinition
+ */
+function visionProviderToNode(schema: VisionProviderSchema): NodeDefinition {
+  return {
+    id: `vision:${schema.name}`,
+    type: "vision",
+    name: schema.name,
+    label: formatLabel(schema.name, schema.description),
+    description: schema.description,
+    category: schema.category || "AI Vision",
+    params: {
+      type: "object",
+      properties: Object.fromEntries(
+        Object.entries(schema.parameters).map(([k, v]) => [k, parameterToField(v)])
+      ),
+      required: schema.requiredParameters,
+    },
+    requiresApiKey: schema.requiresApiKey,
   };
 }
 
@@ -180,4 +230,20 @@ export function getTransformSchema(op: string): ParamSchema | undefined {
     ),
     required: transform.requiredParameters,
   };
+}
+
+/**
+ * Get all available text providers as NodeDefinitions
+ */
+export function getTextProviders(): NodeDefinition[] {
+  const caps = getCachedCapabilities();
+  return caps.textProviders.map(textProviderToNode);
+}
+
+/**
+ * Get all available vision providers as NodeDefinitions
+ */
+export function getVisionProviders(): NodeDefinition[] {
+  const caps = getCachedCapabilities();
+  return caps.visionProviders.map(visionProviderToNode);
 }

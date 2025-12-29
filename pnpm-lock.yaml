@@ -15,6 +15,9 @@ importers:
         specifier: ^3.958.0
         version: 3.958.0
     devDependencies:
+      '@eslint/js':
+        specifier: ^9.39.2
+        version: 9.39.2
       '@types/node':
         specifier: ^22.10.2
         version: 22.19.3
@@ -99,6 +102,9 @@ importers:
       '@teamflojo/floimg-studio-shared':
         specifier: workspace:*
         version: link:../shared
+      '@teamflojo/floimg-xai':
+        specifier: workspace:*
+        version: link:../../../packages/floimg-xai
       fastify:
         specifier: ^5.6.2
         version: 5.6.2
@@ -415,6 +421,25 @@ importers:
         version: 2.1.9(@types/node@22.19.3)(jsdom@25.0.1)
 
   packages/floimg-stability:
+    devDependencies:
+      '@teamflojo/floimg':
+        specifier: workspace:*
+        version: link:../floimg
+      '@types/node':
+        specifier: ^22.10.2
+        version: 22.19.3
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.19.3)(jsdom@25.0.1)
+
+  packages/floimg-xai:
+    dependencies:
+      openai:
+        specifier: ^6.0.0
+        version: 6.15.0(ws@8.18.3)(zod@4.2.1)
     devDependencies:
       '@teamflojo/floimg':
         specifier: workspace:*
@@ -5328,6 +5353,7 @@ packages:
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-fetch@3.6.20:
     resolution: {integrity: sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==}

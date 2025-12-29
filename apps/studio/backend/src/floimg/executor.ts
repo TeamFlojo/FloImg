@@ -65,6 +65,7 @@ export interface AIProviderConfig {
   openai?: { apiKey: string };
   anthropic?: { apiKey: string };
   gemini?: { apiKey: string };
+  grok?: { apiKey: string };
   openrouter?: { apiKey: string };
   ollama?: { baseUrl: string };
   lmstudio?: { baseUrl: string };
@@ -83,9 +84,17 @@ export interface CloudConfig {
  * Map provider names to AI provider config keys
  */
 const PROVIDER_TO_AI_CONFIG: Record<string, keyof AIProviderConfig> = {
+  // Transform providers
   "gemini-transform": "gemini",
   "openai-transform": "openai",
-  // Add more mappings as needed
+  // Text providers
+  "gemini-text": "gemini",
+  "grok-text": "grok",
+  "openai-text": "openai",
+  // Vision providers
+  "gemini-vision": "gemini",
+  "grok-vision": "grok",
+  "openai-vision": "openai",
 };
 
 /**
@@ -260,11 +269,15 @@ export async function executeWorkflow(
 
         const textResults = await client.run(textPipeline);
 
-        // Store resolved text values
+        // Store resolved text values and parsed objects for property extraction
         const resolvedText = new Map<string, string>();
+        const resolvedParsed = new Map<string, Record<string, unknown>>();
         for (const result of textResults) {
           if (isDataBlob(result.value)) {
             resolvedText.set(result.out, result.value.content);
+            if (result.value.parsed) {
+              resolvedParsed.set(result.out, result.value.parsed);
+            }
           }
         }
 
@@ -272,14 +285,39 @@ export async function executeWorkflow(
         for (const step of pipeline.steps) {
           if (step.kind === "transform" && step.params._promptFromVar) {
             const varName = step.params._promptFromVar as string;
-            const text = resolvedText.get(varName);
+            const propertyName = step.params._promptFromProperty as string | undefined;
+
+            let text: string | undefined;
+
+            // If a specific property was requested (from sourceHandle like "output.prompt")
+            if (propertyName) {
+              const parsed = resolvedParsed.get(varName);
+              if (parsed && propertyName in parsed) {
+                const value = parsed[propertyName];
+                // Convert to string (could be string, number, boolean, etc.)
+                text = typeof value === "string" ? value : JSON.stringify(value);
+                console.log(
+                  `Extracted property "${propertyName}" from text output: "${text.slice(0, 50)}..."`
+                );
+              } else {
+                console.warn(
+                  `Property "${propertyName}" not found in parsed output, using full content`
+                );
+                text = resolvedText.get(varName);
+              }
+            } else {
+              // No property specified, use full content
+              text = resolvedText.get(varName);
+            }
+
             if (text) {
               // Use resolved text as prompt (override any existing prompt)
               step.params.prompt = text;
               console.log(`Injected dynamic prompt for transform: "${text.slice(0, 50)}..."`);
             }
-            // Clean up the marker
+            // Clean up the markers
             delete step.params._promptFromVar;
+            delete step.params._promptFromProperty;
           }
         }
       }
@@ -519,6 +557,8 @@ export function toPipeline(
       // Find text input edge (for AI transforms with dynamic prompts)
       const textEdge = edges.find((e) => e.target === node.id && e.targetHandle === "text");
       const textSourceVar = textEdge ? nodeToVar.get(textEdge.source) : undefined;
+      // Capture source handle for property extraction (e.g., "output.prompt" extracts just the prompt property)
+      const textSourceHandle = textEdge?.sourceHandle;
 
       // Inject API key for AI transforms if provider is specified
       let params = { ...data.params };
@@ -534,6 +574,10 @@ export function toPipeline(
       // The actual text will be injected during execution after text nodes complete
       if (textSourceVar) {
         params = { ...params, _promptFromVar: textSourceVar };
+        // If sourceHandle specifies a property (e.g., "output.prompt"), mark it for extraction
+        if (textSourceHandle?.startsWith("output.")) {
+          params = { ...params, _promptFromProperty: textSourceHandle.slice(7) }; // Extract "prompt" from "output.prompt"
+        }
       }
 
       steps.push({
@@ -561,11 +605,18 @@ export function toPipeline(
       const inputEdge = edges.find((e) => e.target === node.id);
       const inputVar = inputEdge ? nodeToVar.get(inputEdge.source) : undefined;
 
+      // Inject API key for vision providers
+      let params = { ...data.params };
+      const apiKey = getApiKeyForProvider(data.providerName, aiProviders);
+      if (apiKey && !params.apiKey) {
+        params = { ...params, apiKey };
+      }
+
       steps.push({
         kind: "vision",
         provider: data.providerName,
         in: inputVar,
-        params: data.params,
+        params,
         out: varName,
       });
     } else if (node.type === "text") {
@@ -573,11 +624,18 @@ export function toPipeline(
       const inputEdge = edges.find((e) => e.target === node.id);
       const inputVar = inputEdge ? nodeToVar.get(inputEdge.source) : undefined;
 
+      // Inject API key for text providers
+      let params = { ...data.params };
+      const apiKey = getApiKeyForProvider(data.providerName, aiProviders);
+      if (apiKey && !params.apiKey) {
+        params = { ...params, apiKey };
+      }
+
       steps.push({
         kind: "text",
         provider: data.providerName,
         in: inputVar,
-        params: data.params,
+        params,
         out: varName,
       });
     }

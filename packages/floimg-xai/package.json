@@ -1,0 +1,57 @@
+{
+  "name": "@teamflojo/floimg-xai",
+  "version": "0.1.0",
+  "description": "xAI Grok text and vision providers for floimg",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build",
+    "test": "vitest --run"
+  },
+  "keywords": [
+    "floimg",
+    "xai",
+    "grok",
+    "text-generation",
+    "vision",
+    "ai"
+  ],
+  "author": "Brett Cooke",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TeamFlojo/floimg.git",
+    "directory": "packages/floimg-xai"
+  },
+  "peerDependencies": {
+    "@teamflojo/floimg": "^0.2.0"
+  },
+  "dependencies": {
+    "openai": "^4.76.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@teamflojo/floimg": "workspace:*",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

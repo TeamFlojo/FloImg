@@ -5,6 +5,8 @@ import {
   getInputNodes,
   getGeneratorSchema,
   getTransformSchema,
+  getTextProviders,
+  getVisionProviders,
 } from "../floimg/registry.js";
 
 export async function nodesRoutes(fastify: FastifyInstance) {
@@ -41,5 +43,15 @@ export async function nodesRoutes(fastify: FastifyInstance) {
       return { error: "Transform not found" };
     }
     return schema;
+  });
+
+  // List all text providers
+  fastify.get("/text", async () => {
+    return getTextProviders();
+  });
+
+  // List all vision providers
+  fastify.get("/vision", async () => {
+    return getVisionProviders();
   });
 }

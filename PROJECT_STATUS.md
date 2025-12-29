@@ -1,6 +1,6 @@
 # PROJECT STATUS
 
-**Last Updated**: 2025-12-26
+**Last Updated**: 2025-12-29
 
 ## Current Focus
 
@@ -8,6 +8,7 @@ None - ready for next task
 
 ## Next Up
 
+- **T-2025-004**: Add AI Image Editing Node to FloImg Studio (Gemini API)
 - Create PR for T-2025-003 fixes
 - Additional FloImg Studio UX improvements
 

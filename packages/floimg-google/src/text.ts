@@ -22,14 +22,14 @@ import type {
 /**
  * Supported Gemini models for text generation
  */
-const _GEMINI_TEXT_MODELS = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"] as const;
+const _GEMINI_TEXT_MODELS = ["gemini-2.5-flash", "gemini-3-flash-preview"] as const;
 
 type GeminiTextModel = (typeof _GEMINI_TEXT_MODELS)[number];
 
 export interface GeminiTextConfig {
   /** Google AI API key (defaults to GOOGLE_AI_API_KEY env var) */
   apiKey?: string;
-  /** Model to use (default: gemini-2.0-flash) */
+  /** Model to use (default: gemini-2.5-flash) */
   model?: GeminiTextModel;
   /** Maximum tokens in response */
   maxTokens?: number;
@@ -178,7 +178,7 @@ export function geminiText(config: GeminiTextConfig = {}): TextProvider {
       }
 
       const client = getClient(apiKey);
-      const model = config.model || "gemini-2.0-flash";
+      const model = config.model || "gemini-2.5-flash";
 
       // Build the prompt with optional context
       let fullPrompt = prompt;
@@ -248,14 +248,14 @@ export function geminiText(config: GeminiTextConfig = {}): TextProvider {
 /**
  * Supported Gemini models for vision/image analysis
  */
-const _GEMINI_VISION_MODELS = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"] as const;
+const _GEMINI_VISION_MODELS = ["gemini-2.5-flash", "gemini-3-flash-preview"] as const;
 
 type GeminiVisionModel = (typeof _GEMINI_VISION_MODELS)[number];
 
 export interface GeminiVisionConfig {
   /** Google AI API key (defaults to GOOGLE_AI_API_KEY env var) */
   apiKey?: string;
-  /** Model to use (default: gemini-2.0-flash) */
+  /** Model to use (default: gemini-2.5-flash) */
   model?: GeminiVisionModel;
   /** Maximum tokens in response */
   maxTokens?: number;
@@ -374,7 +374,7 @@ export function geminiVision(config: GeminiVisionConfig = {}): VisionProvider {
       }
 
       const client = getClient(apiKey);
-      const model = config.model || "gemini-2.0-flash";
+      const model = config.model || "gemini-2.5-flash";
 
       // Convert image to base64
       const base64Image = input.bytes.toString("base64");

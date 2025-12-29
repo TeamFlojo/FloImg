@@ -30,7 +30,7 @@ We pledge to act and interact in ways that contribute to an open, welcoming, div
 This Code of Conduct applies within all community spaces, including:
 
 - GitHub repositories (issues, PRs, discussions)
-- Community chat channels
+- Discord server
 - Social media interactions representing the project
 - In-person or virtual events
 

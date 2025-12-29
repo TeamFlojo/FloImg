@@ -240,6 +240,8 @@ npm link @teamflojo/floimg-myplugin
 
 ## Troubleshooting
 
+Need help? Join our [Discord](https://discord.gg/jcczptnX) for real-time support.
+
 ### "Cannot find module"
 
 Rebuild all packages:

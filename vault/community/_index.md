@@ -21,6 +21,7 @@ Welcome to the floimg community. This section contains everything you need to co
 
 | I want to...            | Go to...                                                 |
 | ----------------------- | -------------------------------------------------------- |
+| Get real-time help      | [[Discord]]                                              |
 | Report a bug            | [[Issue-Guidelines#Bug Reports]]                         |
 | Request a feature       | [[Issue-Guidelines#Feature Requests]]                    |
 | Submit a PR             | [[Pull-Request-Guide]]                                   |

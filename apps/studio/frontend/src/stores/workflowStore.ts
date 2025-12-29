@@ -258,9 +258,13 @@ export const useWorkflowStore = create<WorkflowStore>()(
             params: getDefaultParams(definition),
           } as TextNodeData;
         } else {
+          // Save node - read provider and destination from definition params
+          const props = definition.params?.properties || {};
+          const provider = (props.provider?.default as string) || "filesystem";
+          const destination = (props.destination?.default as string) || "./output/image.png";
           data = {
-            destination: "./output/image.png",
-            provider: "filesystem",
+            destination,
+            provider,
           } as SaveNodeData;
         }
 

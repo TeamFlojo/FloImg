@@ -13,7 +13,8 @@ import mermaid from "@teamflojo/floimg-mermaid";
 import quickchart from "@teamflojo/floimg-quickchart";
 import openai, { openaiTransform } from "@teamflojo/floimg-openai";
 import stability, { stabilityTransform } from "@teamflojo/floimg-stability";
-import googleImagen, { geminiTransform } from "@teamflojo/floimg-google";
+import googleImagen, { geminiTransform, geminiText, geminiVision } from "@teamflojo/floimg-google";
+import { grokText, grokVision } from "@teamflojo/floimg-xai";
 import { replicateTransform } from "@teamflojo/floimg-replicate";
 
 type FloimgClient = ReturnType<typeof createClient>;
@@ -63,11 +64,18 @@ export function initializeClient(config: { verbose?: boolean } = {}): FloimgClie
     );
   }
 
+  // Register text and vision providers
+  // Users provide their own API keys per-request, so we register without server keys
+  client.registerTextProvider(geminiText());
+  client.registerTextProvider(grokText());
+  client.registerVisionProvider(geminiVision());
+  client.registerVisionProvider(grokVision());
+
   // Cache capabilities
   capabilities = client.getCapabilities();
 
   console.log(
-    `[floimg] Client initialized with ${capabilities.generators.length} generators and ${capabilities.transforms.length} transforms`
+    `[floimg] Client initialized with ${capabilities.generators.length} generators, ${capabilities.transforms.length} transforms, ${capabilities.textProviders.length} text providers, ${capabilities.visionProviders.length} vision providers`
   );
 
   return client;

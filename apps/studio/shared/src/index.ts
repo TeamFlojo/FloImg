@@ -51,12 +51,32 @@ export interface InputNodeData {
 export interface VisionNodeData {
   providerName: string; // e.g., "openai-vision", "ollama-vision"
   params: Record<string, unknown>; // prompt, outputFormat, etc.
+  /** Output schema for structured JSON - defines what properties are available as outputs */
+  outputSchema?: OutputSchema;
 }
 
 // Text node data (AI text generation)
 export interface TextNodeData {
   providerName: string; // e.g., "openai-text", "ollama-text"
   params: Record<string, unknown>; // prompt, systemPrompt, temperature, etc.
+  /** Output schema for structured JSON - defines what properties are available as outputs */
+  outputSchema?: OutputSchema;
+}
+
+/**
+ * Output schema for text/vision nodes that produce structured JSON
+ * Defines the shape of the output and enables multi-output handles
+ */
+export interface OutputSchema {
+  type: "object";
+  properties: Record<string, OutputProperty>;
+  /** Friendly name for the schema (shown in UI) */
+  name?: string;
+}
+
+export interface OutputProperty {
+  type: "string" | "number" | "boolean" | "object" | "array";
+  description?: string;
 }
 
 // Union type for node data
@@ -157,6 +177,8 @@ export interface NodeDefinition {
   requiresApiKey?: boolean;
   /** Environment variable name for the API key */
   apiKeyEnvVar?: string;
+  /** Default output schema for structured JSON outputs (text/vision nodes) */
+  outputSchema?: OutputSchema;
 }
 
 // Parameter schema for dynamic form generation

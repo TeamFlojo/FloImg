@@ -57,8 +57,11 @@ export function WorkflowEditor() {
       // Rule 2: Cannot connect TO a generator or input (no input port)
       if (targetNode.type === "generator" || targetNode.type === "input") return false;
 
-      // Rule 3: Each input port only accepts one connection
-      const existingInputConnection = edges.find((e) => e.target === target);
+      // Rule 3: Each input handle only accepts one connection
+      // (allow multiple connections to same node if targeting different handles)
+      const existingInputConnection = edges.find(
+        (e) => e.target === target && e.targetHandle === connection.targetHandle
+      );
       if (existingInputConnection) return false;
 
       // Rule 4: No self-connections

@@ -27,6 +27,7 @@
     "@fastify/websocket": "^11.2.0",
     "@teamflojo/floimg": "workspace:*",
     "@teamflojo/floimg-google": "workspace:*",
+    "@teamflojo/floimg-xai": "workspace:*",
     "@teamflojo/floimg-mermaid": "workspace:*",
     "@teamflojo/floimg-openai": "workspace:*",
     "@teamflojo/floimg-qr": "workspace:*",

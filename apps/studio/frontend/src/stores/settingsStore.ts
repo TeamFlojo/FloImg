@@ -19,6 +19,7 @@ export interface AISettings {
   openai?: CloudProvider;
   anthropic?: CloudProvider;
   gemini?: CloudProvider;
+  grok?: CloudProvider;
   openrouter?: CloudProvider;
 
   // Local providers (no API key, just URL)
@@ -42,6 +43,7 @@ interface SettingsStore {
     openai?: { apiKey: string };
     anthropic?: { apiKey: string };
     gemini?: { apiKey: string };
+    grok?: { apiKey: string };
     openrouter?: { apiKey: string };
     ollama?: { baseUrl: string };
     lmstudio?: { baseUrl: string };
@@ -100,6 +102,9 @@ export const useSettingsStore = create<SettingsStore>()(
         }
         if (ai.gemini?.enabled && ai.gemini.apiKey) {
           result.gemini = { apiKey: ai.gemini.apiKey };
+        }
+        if (ai.grok?.enabled && ai.grok.apiKey) {
+          result.grok = { apiKey: ai.grok.apiKey };
         }
         if (ai.openrouter?.enabled && ai.openrouter.apiKey) {
           result.openrouter = { apiKey: ai.openrouter.apiKey };

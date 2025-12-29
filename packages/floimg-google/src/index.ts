@@ -218,3 +218,15 @@ export { googleImagen };
 
 // Transform provider exports
 export { geminiTransform, geminiEditSchema, type GeminiTransformConfig } from "./transforms.js";
+
+// Text and Vision provider exports
+export {
+  geminiText,
+  geminiTextSchema,
+  geminiVision,
+  geminiVisionSchema,
+  type GeminiTextConfig,
+  type GeminiTextParams,
+  type GeminiVisionConfig,
+  type GeminiVisionParams,
+} from "./text.js";

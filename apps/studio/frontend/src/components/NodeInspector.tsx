@@ -1,8 +1,13 @@
+import { useState } from "react";
 import type {
   GeneratorNodeData,
   TransformNodeData,
   SaveNodeData,
+  TextNodeData,
+  VisionNodeData,
   ParamField,
+  OutputSchema,
+  OutputProperty,
 } from "@teamflojo/floimg-studio-shared";
 import { useWorkflowStore } from "../stores/workflowStore";
 
@@ -11,6 +16,8 @@ export function NodeInspector() {
   const nodes = useWorkflowStore((s) => s.nodes);
   const generators = useWorkflowStore((s) => s.generators);
   const transforms = useWorkflowStore((s) => s.transforms);
+  const textProviders = useWorkflowStore((s) => s.textProviders);
+  const visionProviders = useWorkflowStore((s) => s.visionProviders);
   const updateNodeData = useWorkflowStore((s) => s.updateNodeData);
   const deleteNode = useWorkflowStore((s) => s.deleteNode);
 
@@ -49,6 +56,16 @@ export function NodeInspector() {
         description: "File path to save the image",
       },
     };
+  } else if (selectedNode.type === "text") {
+    const data = selectedNode.data as TextNodeData;
+    const def = textProviders.find((t) => t.name === data.providerName);
+    schema = def?.params?.properties;
+    nodeLabel = def?.label || data.providerName;
+  } else if (selectedNode.type === "vision") {
+    const data = selectedNode.data as VisionNodeData;
+    const def = visionProviders.find((v) => v.name === data.providerName);
+    schema = def?.params?.properties;
+    nodeLabel = def?.label || data.providerName;
   }
 
   const handleParamChange = (key: string, value: unknown) => {
@@ -64,6 +81,16 @@ export function NodeInspector() {
       });
     } else if (selectedNode.type === "save") {
       updateNodeData(selectedNode.id, { [key]: value });
+    } else if (selectedNode.type === "text") {
+      const data = selectedNode.data as TextNodeData;
+      updateNodeData(selectedNode.id, {
+        params: { ...data.params, [key]: value },
+      });
+    } else if (selectedNode.type === "vision") {
+      const data = selectedNode.data as VisionNodeData;
+      updateNodeData(selectedNode.id, {
+        params: { ...data.params, [key]: value },
+      });
     }
   };
 
@@ -74,6 +101,10 @@ export function NodeInspector() {
       return (selectedNode.data as TransformNodeData).params[key];
     } else if (selectedNode.type === "save") {
       return (selectedNode.data as SaveNodeData)[key as keyof SaveNodeData];
+    } else if (selectedNode.type === "text") {
+      return (selectedNode.data as TextNodeData).params[key];
+    } else if (selectedNode.type === "vision") {
+      return (selectedNode.data as VisionNodeData).params[key];
     }
     return undefined;
   };
@@ -103,6 +134,15 @@ export function NodeInspector() {
               />
             ))}
         </div>
+
+        {/* Output Schema Editor for text/vision nodes */}
+        {(selectedNode.type === "text" || selectedNode.type === "vision") && (
+          <OutputSchemaEditor
+            nodeId={selectedNode.id}
+            outputSchema={(selectedNode.data as TextNodeData | VisionNodeData).outputSchema}
+            updateNodeData={updateNodeData}
+          />
+        )}
       </div>
     </div>
   );
@@ -257,6 +297,173 @@ function FieldEditor({ name, field, value, onChange }: FieldEditorProps) {
       )}
       {field.description && (
         <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">{field.description}</p>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
+// Output Schema Editor for text/vision nodes
+// ============================================================================
+
+interface OutputSchemaEditorProps {
+  nodeId: string;
+  outputSchema?: OutputSchema;
+  updateNodeData: (id: string, data: Partial<TextNodeData | VisionNodeData>) => void;
+}
+
+function OutputSchemaEditor({ nodeId, outputSchema, updateNodeData }: OutputSchemaEditorProps) {
+  const [newPropertyName, setNewPropertyName] = useState("");
+
+  const properties = outputSchema?.properties || {};
+  const propertyEntries = Object.entries(properties);
+
+  const handleAddProperty = () => {
+    if (!newPropertyName.trim()) return;
+
+    const newSchema: OutputSchema = {
+      type: "object",
+      properties: {
+        ...properties,
+        [newPropertyName.trim()]: { type: "string" },
+      },
+    };
+
+    updateNodeData(nodeId, { outputSchema: newSchema });
+    setNewPropertyName("");
+  };
+
+  const handleRemoveProperty = (key: string) => {
+    const newProperties = { ...properties };
+    delete newProperties[key];
+
+    if (Object.keys(newProperties).length === 0) {
+      updateNodeData(nodeId, { outputSchema: undefined });
+    } else {
+      updateNodeData(nodeId, {
+        outputSchema: { type: "object", properties: newProperties },
+      });
+    }
+  };
+
+  const handleTypeChange = (key: string, type: OutputProperty["type"]) => {
+    updateNodeData(nodeId, {
+      outputSchema: {
+        type: "object",
+        properties: {
+          ...properties,
+          [key]: { ...properties[key], type },
+        },
+      },
+    });
+  };
+
+  const handleDescriptionChange = (key: string, description: string) => {
+    updateNodeData(nodeId, {
+      outputSchema: {
+        type: "object",
+        properties: {
+          ...properties,
+          [key]: { ...properties[key], description: description || undefined },
+        },
+      },
+    });
+  };
+
+  return (
+    <div className="mt-6 pt-4 border-t border-gray-200 dark:border-zinc-700">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-medium text-gray-700 dark:text-zinc-300">Output Schema</h3>
+        <span className="text-xs text-gray-500 dark:text-zinc-500">
+          {propertyEntries.length > 0
+            ? `${propertyEntries.length} output${propertyEntries.length > 1 ? "s" : ""}`
+            : "No outputs defined"}
+        </span>
+      </div>
+
+      <p className="text-xs text-gray-500 dark:text-zinc-400 mb-3">
+        Define output properties to enable connecting individual JSON fields to other nodes.
+      </p>
+
+      {/* Existing properties */}
+      {propertyEntries.length > 0 && (
+        <div className="space-y-2 mb-3">
+          {propertyEntries.map(([key, prop]) => (
+            <div
+              key={key}
+              className="flex items-center gap-2 p-2 bg-pink-50 dark:bg-pink-900/20 rounded border border-pink-200 dark:border-pink-800"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-pink-700 dark:text-pink-300 truncate">
+                    {key}
+                  </span>
+                  <select
+                    value={prop.type}
+                    onChange={(e) =>
+                      handleTypeChange(key, e.target.value as OutputProperty["type"])
+                    }
+                    className="text-xs px-1.5 py-0.5 rounded border border-pink-300 dark:border-pink-700 bg-white dark:bg-zinc-800 text-gray-700 dark:text-zinc-300"
+                  >
+                    <option value="string">string</option>
+                    <option value="number">number</option>
+                    <option value="boolean">boolean</option>
+                    <option value="object">object</option>
+                    <option value="array">array</option>
+                  </select>
+                </div>
+                <input
+                  type="text"
+                  value={prop.description || ""}
+                  onChange={(e) => handleDescriptionChange(key, e.target.value)}
+                  placeholder="Description (optional)"
+                  className="mt-1 w-full text-xs px-2 py-1 rounded border border-pink-200 dark:border-pink-700 bg-white dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 placeholder-gray-400 dark:placeholder-zinc-500"
+                />
+              </div>
+              <button
+                onClick={() => handleRemoveProperty(key)}
+                className="text-pink-500 hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300 p-1"
+                title="Remove property"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Add new property */}
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={newPropertyName}
+          onChange={(e) => setNewPropertyName(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAddProperty()}
+          placeholder="Property name..."
+          className="flex-1 px-2 py-1.5 text-sm border border-gray-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500"
+        />
+        <button
+          onClick={handleAddProperty}
+          disabled={!newPropertyName.trim()}
+          className="px-3 py-1.5 text-sm font-medium text-white bg-pink-500 rounded hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Add
+        </button>
+      </div>
+
+      {/* Hint about usage */}
+      {propertyEntries.length > 0 && (
+        <p className="mt-3 text-xs text-gray-500 dark:text-zinc-500">
+          Connect from the small pink handles on the right of the node to route individual
+          properties.
+        </p>
       )}
     </div>
   );

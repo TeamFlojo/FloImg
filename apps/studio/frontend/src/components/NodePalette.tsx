@@ -72,6 +72,10 @@ export function NodePalette() {
           title: "Destination",
           default: "./output/image.png",
         },
+        provider: {
+          type: "string",
+          default: "filesystem",
+        },
       },
     },
   };

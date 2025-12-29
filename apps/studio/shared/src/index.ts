@@ -32,7 +32,8 @@ export interface TransformNodeData {
 // Save node data
 export interface SaveNodeData {
   destination: string;
-  provider?: "filesystem" | "s3";
+  /** Save provider. OSS supports "filesystem" and "s3". Extensions may add others. */
+  provider?: string;
 }
 
 // Input node data (uploaded image)

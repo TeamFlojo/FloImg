@@ -290,6 +290,17 @@ A hosted version with cloud features is available at [studio.floimg.com](https:/
 - **[Claude Code](https://floimg.com/docs/claude-code)** - AI agent integration
 - **[Plugins](https://floimg.com/docs/plugins/quickchart)** - Generator documentation
 
+## Safety & Content Moderation
+
+FloImg Studio includes built-in content moderation to prevent harmful content:
+
+- **Scan Before Save** - All generated images pass through moderation before storage
+- **11 Categories** - Violence, hate, harassment, self-harm, sexual content, and more
+- **Powered by OpenAI** - Industry-standard moderation API
+- **Configurable** - Self-hosted users can disable or customize
+
+Learn more at [floimg.com/safety](https://floimg.com/safety).
+
 ## Contributing
 
 We welcome contributions—generators, storage backends, tests, docs.

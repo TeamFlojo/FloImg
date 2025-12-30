@@ -8,6 +8,7 @@ on:
       - 'packages/floimg-*/**'
       - 'apps/studio/**'
       - 'pnpm-lock.yaml'
+  workflow_dispatch:
 
 permissions:
   packages: write

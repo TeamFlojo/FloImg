@@ -21,6 +21,10 @@ export interface Position {
 export interface GeneratorNodeData {
   generatorName: string;
   params: Record<string, unknown>;
+  /** Whether this generator accepts reference images */
+  acceptsReferenceImages?: boolean;
+  /** Maximum number of reference images supported */
+  maxReferenceImages?: number;
 }
 
 // Transform node data
@@ -31,6 +35,10 @@ export interface TransformNodeData {
   /** Whether this transform is AI-powered and can accept text input */
   isAI?: boolean;
   params: Record<string, unknown>;
+  /** Whether this transform accepts additional reference images */
+  acceptsReferenceImages?: boolean;
+  /** Maximum number of reference images supported */
+  maxReferenceImages?: number;
 }
 
 // Save node data
@@ -181,6 +189,10 @@ export interface NodeDefinition {
   apiKeyEnvVar?: string;
   /** Default output schema for structured JSON outputs (text/vision nodes) */
   outputSchema?: OutputSchema;
+  /** Whether this node accepts reference images (for AI generators/transforms) */
+  acceptsReferenceImages?: boolean;
+  /** Maximum number of reference images supported */
+  maxReferenceImages?: number;
 }
 
 // Parameter schema for dynamic form generation

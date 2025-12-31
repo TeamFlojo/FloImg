@@ -247,6 +247,8 @@ export const useWorkflowStore = create<WorkflowStore>()(
           data = {
             generatorName: definition.name,
             params: getDefaultParams(definition),
+            acceptsReferenceImages: definition.acceptsReferenceImages,
+            maxReferenceImages: definition.maxReferenceImages,
           } as GeneratorNodeData;
         } else if (definition.type === "transform") {
           data = {
@@ -254,6 +256,8 @@ export const useWorkflowStore = create<WorkflowStore>()(
             providerName: definition.providerName, // Track which provider this transform belongs to
             isAI: definition.isAI, // Track if this is an AI transform (can accept text input)
             params: getDefaultParams(definition),
+            acceptsReferenceImages: definition.acceptsReferenceImages,
+            maxReferenceImages: definition.maxReferenceImages,
           } as TransformNodeData;
         } else if (definition.type === "input") {
           data = {

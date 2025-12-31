@@ -236,6 +236,12 @@ export interface GeneratorSchema {
   requiresApiKey?: boolean;
   /** Environment variable name for the API key (e.g., 'OPENAI_API_KEY') */
   apiKeyEnvVar?: string;
+
+  // Reference image support (for AI generators that can use style/content references)
+  /** Whether this generator accepts reference images as input */
+  acceptsReferenceImages?: boolean;
+  /** Maximum number of reference images supported (default: unlimited if acceptsReferenceImages is true) */
+  maxReferenceImages?: number;
 }
 
 /**
@@ -270,6 +276,12 @@ export interface TransformOperationSchema {
   requiresApiKey?: boolean;
   /** Environment variable name for the API key */
   apiKeyEnvVar?: string;
+
+  // Reference image support (for AI transforms that can use additional reference images)
+  /** Whether this transform accepts additional reference images beyond the primary input */
+  acceptsReferenceImages?: boolean;
+  /** Maximum number of reference images supported */
+  maxReferenceImages?: number;
 }
 
 /**

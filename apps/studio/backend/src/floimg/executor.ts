@@ -327,6 +327,35 @@ export async function executeWorkflow(
       }
     }
 
+    // Step 4.6: Resolve reference images for AI generators/transforms
+    // Reference images from input nodes are available in initialVariables
+    for (const step of pipeline.steps) {
+      if (
+        (step.kind === "generate" || step.kind === "transform") &&
+        step.params?._referenceImageVars
+      ) {
+        const refVars = step.params._referenceImageVars as string[];
+        const referenceImages: ImageBlob[] = [];
+
+        for (const varName of refVars) {
+          const blob = initialVariables[varName];
+          if (blob && isImageBlob(blob)) {
+            referenceImages.push(blob);
+          } else {
+            console.warn(`Reference image variable ${varName} not found or not an image`);
+          }
+        }
+
+        if (referenceImages.length > 0) {
+          step.params.referenceImages = referenceImages;
+          console.log(`Injected ${referenceImages.length} reference images for ${step.kind} step`);
+        }
+
+        // Clean up the marker
+        delete step.params._referenceImageVars;
+      }
+    }
+
     console.log(`Executing pipeline with ${pipeline.steps.length} steps via core runner`);
 
     // Step 5: Map step indices to node IDs for callbacks
@@ -551,6 +580,19 @@ export function toPipeline(
         params = { ...params, apiKey };
       }
 
+      // Find reference image edges (for AI generators that accept reference images)
+      const referenceEdges = edges.filter(
+        (e) => e.target === node.id && e.targetHandle === "references"
+      );
+      if (referenceEdges.length > 0) {
+        const refVars = referenceEdges
+          .map((e) => nodeToVar.get(e.source))
+          .filter((v): v is string => v !== undefined);
+        if (refVars.length > 0) {
+          params = { ...params, _referenceImageVars: refVars };
+        }
+      }
+
       steps.push({
         kind: "generate",
         generator: data.generatorName,
@@ -589,6 +631,19 @@ export function toPipeline(
         // If sourceHandle specifies a property (e.g., "output.prompt"), mark it for extraction
         if (textSourceHandle?.startsWith("output.")) {
           params = { ...params, _promptFromProperty: textSourceHandle.slice(7) }; // Extract "prompt" from "output.prompt"
+        }
+      }
+
+      // Find reference image edges (for AI transforms that accept additional references)
+      const referenceEdges = edges.filter(
+        (e) => e.target === node.id && e.targetHandle === "references"
+      );
+      if (referenceEdges.length > 0) {
+        const refVars = referenceEdges
+          .map((e) => nodeToVar.get(e.source))
+          .filter((v): v is string => v !== undefined);
+        if (refVars.length > 0) {
+          params = { ...params, _referenceImageVars: refVars };
         }
       }
 

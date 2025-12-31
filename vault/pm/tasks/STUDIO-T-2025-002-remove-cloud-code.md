@@ -1,9 +1,9 @@
 ---
 tags: [type/task]
-status: in-progress
+status: completed
 priority: p1
 created: 2025-12-22
-updated: 2025-12-22
+updated: 2025-12-31
 parent:
 children: []
 ---
@@ -12,11 +12,11 @@ children: []
 
 ## Task Details
 
-**Task ID**: T-2025-002
-**Status**: in-progress
+**Task ID**: STUDIO-T-2025-002
+**Status**: completed
 **Priority**: p1
 **Created**: 2025-12-22
-**Completed**:
+**Completed**: 2025-12-31
 
 ## Description
 

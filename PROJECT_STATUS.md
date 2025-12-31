@@ -9,10 +9,21 @@ No active task. Ready for new work.
 ## Next Up
 
 - Additional FloImg Studio UX improvements
-- STUDIO-T-2025-001: Workflow persistence
-- STUDIO-T-2025-002: Remove cloud code from OSS
 
 ## Just Completed
+
+**STUDIO-T-2025-001: Workflow Persistence** (2025-12-31)
+
+- localStorage persistence via zustand/persist
+- Save, load, delete, rename, duplicate workflows
+- Keyboard shortcut (Cmd+S) for quick save
+- Unsaved changes indicator
+
+**STUDIO-T-2025-002: Remove Cloud Code from OSS** (2025-12-31)
+
+- Removed authStore, useGuestUsage, TOSConsent, AuthModal
+- FloImg Studio is now pure open-source
+- Cloud features live in floimg-cloud repo
 
 **T-2025-004: AI Text/Vision/Editing Nodes** (2025-12-31)
 

@@ -61,6 +61,7 @@ function PreviewToggle({ nodeId, color }: { nodeId: string; color: string }) {
 }
 
 // Generator Node (source nodes - have output only)
+// AI generators may also have a references input handle
 export const GeneratorNode = memo(function GeneratorNode({
   id,
   data,
@@ -73,10 +74,24 @@ export const GeneratorNode = memo(function GeneratorNode({
   const executionClass = getExecutionClass(nodeStatus);
   const borderClass = executionClass || (selected ? "border-blue-500" : "border-blue-200");
 
+  // Check if this generator accepts reference images
+  const acceptsReferences = data.acceptsReferenceImages;
+
   return (
     <div
       className={`rounded-lg border-2 bg-white dark:bg-zinc-800 shadow-md min-w-[180px] overflow-hidden ${borderClass}`}
     >
+      {/* Reference images input handle (for AI generators) */}
+      {acceptsReferences && (
+        <Handle
+          type="target"
+          position={Position.Left}
+          id="references"
+          className="w-3 h-3 !bg-violet-500"
+          style={{ top: "50%" }}
+          title={`Reference images (up to ${data.maxReferenceImages || 14})`}
+        />
+      )}
       {preview && previewVisible && (
         <div className="bg-gray-100 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700">
           <img src={preview} alt="Preview" className="w-full h-24 object-contain" />
@@ -90,6 +105,11 @@ export const GeneratorNode = memo(function GeneratorNode({
           </span>
           <PreviewToggle nodeId={id} color="text-blue-500 dark:text-blue-400" />
         </div>
+        {acceptsReferences && (
+          <div className="text-[10px] text-violet-500 dark:text-violet-400 mb-1">
+            ← Connect reference images
+          </div>
+        )}
         <div className="text-xs text-gray-500 dark:text-zinc-400">
           {Object.entries(data.params)
             .filter(([, value]) => typeof value !== "object" || value === null)
@@ -108,6 +128,7 @@ export const GeneratorNode = memo(function GeneratorNode({
 
 // Transform Node (have both input and output)
 // AI transforms also have an optional text input at the top
+// AI transforms that accept references have a references input at the bottom
 export const TransformNode = memo(function TransformNode({
   id,
   data,
@@ -122,6 +143,8 @@ export const TransformNode = memo(function TransformNode({
 
   // AI transforms get a purple accent to indicate AI-powered
   const isAI = data.isAI;
+  // Check if this transform accepts reference images
+  const acceptsReferences = data.acceptsReferenceImages;
 
   return (
     <div
@@ -139,6 +162,16 @@ export const TransformNode = memo(function TransformNode({
       )}
       {/* Image input handle */}
       <Handle type="target" position={Position.Left} id="image" className="w-3 h-3 !bg-teal-500" />
+      {/* Reference images input handle (for AI transforms that accept additional references) */}
+      {acceptsReferences && (
+        <Handle
+          type="target"
+          position={Position.Bottom}
+          id="references"
+          className="w-3 h-3 !bg-violet-500"
+          title={`Reference images (up to ${data.maxReferenceImages || 13})`}
+        />
+      )}
       {preview && previewVisible && (
         <div className="bg-gray-100 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700">
           <img src={preview} alt="Preview" className="w-full h-24 object-contain" />
@@ -173,6 +206,11 @@ export const TransformNode = memo(function TransformNode({
         {isAI && (
           <div className="text-[10px] text-pink-500 dark:text-pink-400 mb-1">
             ↑ Connect text node for dynamic prompt
+          </div>
+        )}
+        {acceptsReferences && (
+          <div className="text-[10px] text-violet-500 dark:text-violet-400 mb-1">
+            ↓ Connect reference images
           </div>
         )}
         <div className="text-xs text-gray-500 dark:text-zinc-400">

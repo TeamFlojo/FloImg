@@ -4,15 +4,20 @@
 
 ## Current Focus
 
-**T-2025-005**: Add prompt input handle to gemini-generate node
-- Branch: `feat/T-2025-005-gemini-generate-prompt-input`
-- Status: IN PROGRESS
+No active task. Ready for new work.
 
 ## Next Up
 
+- **T-2025-006**: Add node duplication in FloImg Studio
 - Additional FloImg Studio UX improvements
 
 ## Just Completed
+
+**T-2025-005: Add Prompt Input to Gemini Generate** (2025-12-31)
+
+- Pink text input handle on AI generator nodes
+- Enables text/vision → gemini-generate workflows
+- Added prePrompt parameter for combining static + dynamic prompts
 
 **STUDIO-T-2025-001: Workflow Persistence** (2025-12-31)
 

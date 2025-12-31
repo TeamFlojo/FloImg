@@ -8,6 +8,7 @@ No active task. Ready for new work.
 
 ## Next Up
 
+- **T-2025-005**: Add prompt input handle to gemini-generate node
 - Additional FloImg Studio UX improvements
 
 ## Just Completed

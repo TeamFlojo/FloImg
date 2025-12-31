@@ -54,6 +54,11 @@ function generatorToNode(schema: GeneratorSchema): NodeDefinition {
       ),
       required: schema.requiredParameters,
     },
+    isAI: schema.isAI,
+    requiresApiKey: schema.requiresApiKey,
+    apiKeyEnvVar: schema.apiKeyEnvVar,
+    acceptsReferenceImages: schema.acceptsReferenceImages,
+    maxReferenceImages: schema.maxReferenceImages,
   };
 }
 
@@ -81,6 +86,8 @@ function transformToNode(schema: TransformOperationSchema, providerName: string)
     isAI: schema.isAI,
     requiresApiKey: schema.requiresApiKey,
     apiKeyEnvVar: schema.apiKeyEnvVar,
+    acceptsReferenceImages: schema.acceptsReferenceImages,
+    maxReferenceImages: schema.maxReferenceImages,
   };
 }
 

@@ -127,6 +127,9 @@ export const geminiEditSchema: TransformOperationSchema = {
   isAI: true,
   requiresApiKey: true,
   apiKeyEnvVar: "GOOGLE_AI_API_KEY",
+  // Accepts additional reference images beyond the primary input
+  acceptsReferenceImages: true,
+  maxReferenceImages: 13, // 14 total minus the primary input
 };
 
 /**
@@ -198,6 +201,7 @@ export function geminiTransform(config: GeminiTransformConfig = {}): TransformPr
 
   /**
    * Edit an image using Gemini's multimodal capabilities
+   * Supports up to 13 additional reference images (14 total including the primary input)
    */
   async function edit(input: ImageBlob, params: Record<string, unknown>): Promise<ImageBlob> {
     const {
@@ -208,6 +212,7 @@ export function geminiTransform(config: GeminiTransformConfig = {}): TransformPr
       imageSize = "1K",
       groundingWithSearch = false,
       apiKey: requestApiKey,
+      referenceImages,
     } = params as {
       prompt: string;
       prePrompt?: string;
@@ -216,6 +221,7 @@ export function geminiTransform(config: GeminiTransformConfig = {}): TransformPr
       imageSize?: GeminiImageSize;
       groundingWithSearch?: boolean;
       apiKey?: string;
+      referenceImages?: ImageBlob[];
     };
 
     // Use request API key if provided, otherwise fall back to default
@@ -231,6 +237,13 @@ export function geminiTransform(config: GeminiTransformConfig = {}): TransformPr
       throw new Error("prompt is required for Gemini image editing");
     }
 
+    // Validate reference images count (max 13 additional, since primary input is 1)
+    if (referenceImages && referenceImages.length > 13) {
+      throw new Error(
+        `Too many reference images: ${referenceImages.length}. Gemini edit supports up to 13 additional reference images (14 total including the primary input).`
+      );
+    }
+
     const client = getClient(apiKey);
 
     // Convert input image to base64
@@ -242,7 +255,7 @@ export function geminiTransform(config: GeminiTransformConfig = {}): TransformPr
 
     // Build config with imageConfig for aspect ratio and size
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const config: Record<string, any> = {
+    const genConfig: Record<string, any> = {
       responseModalities: ["TEXT", "IMAGE"],
       imageConfig: {
         aspectRatio,
@@ -252,27 +265,43 @@ export function geminiTransform(config: GeminiTransformConfig = {}): TransformPr
 
     // Add Google Search grounding if enabled
     if (groundingWithSearch) {
-      config.tools = [{ googleSearch: {} }];
+      genConfig.tools = [{ googleSearch: {} }];
     }
 
-    // Call Gemini with image + text prompt
+    // Build parts array: text prompt + primary input image + reference images
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const parts: any[] = [
+      { text: fullPrompt },
+      {
+        inlineData: {
+          mimeType: input.mime,
+          data: base64Image,
+        },
+      },
+    ];
+
+    // Add reference images as additional inline data parts
+    if (referenceImages && referenceImages.length > 0) {
+      for (const refImage of referenceImages) {
+        parts.push({
+          inlineData: {
+            mimeType: refImage.mime,
+            data: refImage.bytes.toString("base64"),
+          },
+        });
+      }
+    }
+
+    // Call Gemini with image(s) + text prompt
     const response = await client.models.generateContent({
       model,
       contents: [
         {
           role: "user",
-          parts: [
-            { text: fullPrompt },
-            {
-              inlineData: {
-                mimeType: input.mime,
-                data: base64Image,
-              },
-            },
-          ],
+          parts,
         },
       ],
-      config,
+      config: genConfig,
     });
 
     // Extract the generated image from the response
@@ -281,16 +310,16 @@ export function geminiTransform(config: GeminiTransformConfig = {}): TransformPr
       throw new Error("No response from Gemini");
     }
 
-    const parts = candidates[0].content?.parts;
-    if (!parts) {
+    const responseParts = candidates[0].content?.parts;
+    if (!responseParts) {
       throw new Error("No content in Gemini response");
     }
 
     // Find the image part in the response
-    const imagePart = parts.find((part) => part.inlineData?.mimeType?.startsWith("image/"));
+    const imagePart = responseParts.find((part) => part.inlineData?.mimeType?.startsWith("image/"));
     if (!imagePart?.inlineData?.data) {
       // Check if there's text explaining why no image was generated
-      const textPart = parts.find((part) => part.text);
+      const textPart = responseParts.find((part) => part.text);
       if (textPart?.text) {
         throw new Error(`Gemini could not edit the image: ${textPart.text}`);
       }
@@ -324,6 +353,7 @@ export function geminiTransform(config: GeminiTransformConfig = {}): TransformPr
         aspectRatio,
         imageSize,
         groundingWithSearch,
+        referenceImageCount: referenceImages?.length || 0,
       },
     };
   }
@@ -417,6 +447,9 @@ export const geminiGenerateSchema: GeneratorSchema = {
   isAI: true,
   requiresApiKey: true,
   apiKeyEnvVar: "GOOGLE_AI_API_KEY",
+  // Accepts reference images via Studio's references handle
+  acceptsReferenceImages: true,
+  maxReferenceImages: 14,
 };
 
 /**
@@ -434,6 +467,7 @@ export interface GeminiGenerateConfig {
  *
  * Generates images from text prompts using Gemini's native image generation.
  * Uses the same models as Gemini Edit but without requiring an input image.
+ * Supports up to 14 reference images for style transfer and character consistency.
  *
  * @example
  * ```typescript
@@ -443,11 +477,21 @@ export interface GeminiGenerateConfig {
  * const floimg = createClient();
  * floimg.registerGenerator(geminiGenerate());
  *
+ * // Basic generation
  * const image = await floimg.generate({
  *   generator: 'gemini-generate',
  *   params: {
  *     prompt: 'A steaming espresso cup with dramatic lighting',
  *     apiKey: userApiKey
+ *   }
+ * });
+ *
+ * // With reference images (up to 14)
+ * const image = await floimg.generate({
+ *   generator: 'gemini-generate',
+ *   params: {
+ *     prompt: 'Generate a new scene in the style of these images',
+ *     referenceImages: [styleImage1, styleImage2],
  *   }
  * });
  * ```
@@ -480,6 +524,7 @@ export function geminiGenerate(config: GeminiGenerateConfig = {}): ImageGenerato
         imageSize = "1K",
         groundingWithSearch = false,
         apiKey: requestApiKey,
+        referenceImages,
       } = params as {
         prompt: string;
         model?: GeminiImageModel;
@@ -487,6 +532,7 @@ export function geminiGenerate(config: GeminiGenerateConfig = {}): ImageGenerato
         imageSize?: GeminiImageSize;
         groundingWithSearch?: boolean;
         apiKey?: string;
+        referenceImages?: ImageBlob[];
       };
 
       const apiKey = requestApiKey || defaultApiKey;
@@ -501,11 +547,18 @@ export function geminiGenerate(config: GeminiGenerateConfig = {}): ImageGenerato
         throw new Error("prompt is required for Gemini image generation");
       }
 
+      // Validate reference images count (max 14 per Google docs)
+      if (referenceImages && referenceImages.length > 14) {
+        throw new Error(
+          `Too many reference images: ${referenceImages.length}. Gemini supports up to 14 reference images.`
+        );
+      }
+
       const client = getClient(apiKey);
 
       // Build config with imageConfig for aspect ratio and size
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const config: Record<string, any> = {
+      const genConfig: Record<string, any> = {
         responseModalities: ["TEXT", "IMAGE"],
         imageConfig: {
           aspectRatio,
@@ -515,19 +568,35 @@ export function geminiGenerate(config: GeminiGenerateConfig = {}): ImageGenerato
 
       // Add Google Search grounding if enabled
       if (groundingWithSearch) {
-        config.tools = [{ googleSearch: {} }];
+        genConfig.tools = [{ googleSearch: {} }];
       }
 
-      // Call Gemini with just text prompt (no input image)
+      // Build parts array: text prompt + reference images (if any)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const parts: any[] = [{ text: prompt }];
+
+      // Add reference images as inline data parts
+      if (referenceImages && referenceImages.length > 0) {
+        for (const refImage of referenceImages) {
+          parts.push({
+            inlineData: {
+              mimeType: refImage.mime,
+              data: refImage.bytes.toString("base64"),
+            },
+          });
+        }
+      }
+
+      // Call Gemini with text prompt + reference images
       const response = await client.models.generateContent({
         model,
         contents: [
           {
             role: "user",
-            parts: [{ text: prompt }],
+            parts,
           },
         ],
-        config,
+        config: genConfig,
       });
 
       // Extract the generated image from the response
@@ -536,15 +605,17 @@ export function geminiGenerate(config: GeminiGenerateConfig = {}): ImageGenerato
         throw new Error("No response from Gemini");
       }
 
-      const parts = candidates[0].content?.parts;
-      if (!parts) {
+      const responseParts = candidates[0].content?.parts;
+      if (!responseParts) {
         throw new Error("No content in Gemini response");
       }
 
       // Find the image part in the response
-      const imagePart = parts.find((part) => part.inlineData?.mimeType?.startsWith("image/"));
+      const imagePart = responseParts.find((part) =>
+        part.inlineData?.mimeType?.startsWith("image/")
+      );
       if (!imagePart?.inlineData?.data) {
-        const textPart = parts.find((part) => part.text);
+        const textPart = responseParts.find((part) => part.text);
         if (textPart?.text) {
           throw new Error(`Gemini could not generate the image: ${textPart.text}`);
         }
@@ -576,6 +647,7 @@ export function geminiGenerate(config: GeminiGenerateConfig = {}): ImageGenerato
           aspectRatio,
           imageSize,
           groundingWithSearch,
+          referenceImageCount: referenceImages?.length || 0,
         },
       };
     },

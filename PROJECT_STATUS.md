@@ -4,11 +4,12 @@
 
 ## Current Focus
 
-No active task. Ready for new work.
+**T-2025-007: Gemini 3 Pro Workflow Generation** (in-progress)
+
+Natural language to workflow JSON using Gemini 3 Pro structured outputs.
 
 ## Next Up
 
-- **T-2025-007**: Gemini 3 Pro workflow generation (natural language → workflow JSON)
 - **T-2025-006**: Add node duplication in FloImg Studio
 - Additional FloImg Studio UX improvements
 

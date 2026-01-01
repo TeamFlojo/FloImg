@@ -20,6 +20,12 @@ Natural language to workflow JSON using Gemini 3 Pro structured outputs.
 
 ## Just Completed
 
+**BUG-2025-001: Fix cloud save node inspector** (2025-12-31)
+
+- Cloud save nodes now show "Save to FloImg Cloud" header and "Filename" field
+- Filesystem save nodes still show "Destination" and file path description
+- PR #65 merged
+
 **T-2025-005: Add Prompt Input to Gemini Generate** (2025-12-31)
 
 - Pink text input handle on AI generator nodes
@@ -65,6 +71,12 @@ Natural language to workflow JSON using Gemini 3 Pro structured outputs.
 
 ## Recent Releases
 
+**v0.6.0** (2025-12-31)
+
+- AI Chat workflow generation (Gemini 3 Pro structured outputs)
+- Added reference image chaining and prePrompt parameter
+- floimg-google@0.3.1, floimg-studio-ui@0.1.7, floimg-studio-shared@0.1.2
+
 **v0.5.0** (2025-12-23)
 
 - FloImg Studio packages published to npm
@@ -78,17 +90,17 @@ Natural language to workflow JSON using Gemini 3 Pro structured outputs.
 
 | Package                         | npm Version | Description                        |
 | ------------------------------- | ----------- | ---------------------------------- |
-| @teamflojo/floimg               | 0.3.2       | Core library                       |
-| @teamflojo/floimg-openai        | 0.1.0       | OpenAI DALL-E + transforms         |
-| @teamflojo/floimg-stability     | 0.1.0       | Stability AI SDXL/SD3 + transforms |
-| @teamflojo/floimg-google        | 0.2.0       | Google Imagen + Gemini Text/Vision |
+| @teamflojo/floimg               | 0.7.1       | Core library                       |
+| @teamflojo/floimg-openai        | 0.2.0       | OpenAI DALL-E + transforms         |
+| @teamflojo/floimg-stability     | 0.2.1       | Stability AI SDXL/SD3 + transforms |
+| @teamflojo/floimg-google        | 0.3.1       | Google Imagen + Gemini Text/Vision |
 | @teamflojo/floimg-replicate     | 0.1.0       | Replicate AI transforms            |
-| @teamflojo/floimg-ollama        | 0.1.0       | Ollama local AI                    |
-| @teamflojo/floimg-qr            | 0.1.0       | QR code generator                  |
-| @teamflojo/floimg-mermaid       | 0.1.0       | Mermaid diagrams                   |
-| @teamflojo/floimg-quickchart    | 0.1.0       | Chart.js via QuickChart            |
-| @teamflojo/floimg-studio-ui     | 0.1.2       | Studio React components            |
-| @teamflojo/floimg-studio-shared | 0.1.0       | Studio shared types                |
+| @teamflojo/floimg-ollama        | 0.2.1       | Ollama local AI                    |
+| @teamflojo/floimg-qr            | 0.2.1       | QR code generator                  |
+| @teamflojo/floimg-mermaid       | 0.2.1       | Mermaid diagrams                   |
+| @teamflojo/floimg-quickchart    | 0.2.1       | Chart.js via QuickChart            |
+| @teamflojo/floimg-studio-ui     | 0.1.7       | Studio React components            |
+| @teamflojo/floimg-studio-shared | 0.1.2       | Studio shared types                |
 | @teamflojo/floimg-xai           | 0.1.0       | Grok Text/Vision                   |
 
 ## FloImg Studio

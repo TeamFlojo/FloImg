@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [0.8.2] - 2026-01-01
+
+### Added
+
+#### FloImg Studio
+
+- **`hideWorkflowLibrary` prop** - New Toolbar prop allows wrappers to hide the "My Workflows" button when providing custom workflow management
+
 ## [0.7.1] - 2025-12-31
 
 ### Fixed

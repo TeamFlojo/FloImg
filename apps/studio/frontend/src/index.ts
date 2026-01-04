@@ -25,14 +25,16 @@ export { UploadGallery } from "./components/UploadGallery";
 // State management
 export { useWorkflowStore } from "./stores/workflowStore";
 
-// Templates
+// Templates (OSS-compatible only - no cloud-only AI templates)
 export {
-  templates,
-  getCategories,
-  getTemplatesByCategory,
-  getTemplateById,
-  searchTemplates,
-} from "./templates";
+  coreTemplates as templates,
+  getCoreCategories as getCategories,
+  getCoreTemplatesByCategory as getTemplatesByCategory,
+  getCoreTemplateById as getTemplateById,
+  searchCoreTemplates as searchTemplates,
+  resolveTemplate,
+  type Template,
+} from "@teamflojo/floimg-templates";
 
 // Re-export types from shared
 export type * from "@teamflojo/floimg-studio-shared";

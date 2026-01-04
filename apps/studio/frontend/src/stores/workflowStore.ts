@@ -9,10 +9,10 @@ import type {
   VisionNodeData,
   TextNodeData,
   NodeDefinition,
-  GalleryTemplate,
   GeneratedWorkflowData,
   StudioNodeType,
 } from "@teamflojo/floimg-studio-shared";
+import type { Template } from "@teamflojo/floimg-templates";
 import { executeWorkflow, exportYaml } from "../api/client";
 import type { StudioNode, StudioEdge } from "@teamflojo/floimg-studio-shared";
 import { useSettingsStore } from "./settingsStore";
@@ -62,7 +62,7 @@ interface WorkflowStore {
 
   // Template tracking
   currentTemplateId: string | null;
-  loadTemplate: (template: GalleryTemplate) => void;
+  loadTemplate: (template: Template) => void;
   clearWorkflow: () => void;
 
   // Workflow persistence

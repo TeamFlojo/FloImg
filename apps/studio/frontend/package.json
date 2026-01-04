@@ -1,6 +1,6 @@
 {
   "name": "@teamflojo/floimg-studio-ui",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "FloImg Studio React components for building visual workflow editors",
   "type": "module",
   "license": "MIT",
@@ -55,7 +55,8 @@
     "zustand": "^4.0.0 || ^5.0.0"
   },
   "dependencies": {
-    "@teamflojo/floimg-studio-shared": "^0.1.0"
+    "@teamflojo/floimg-studio-shared": "^0.1.0",
+    "@teamflojo/floimg-templates": "workspace:*"
   },
   "devDependencies": {
     "@tanstack/react-query": "^5.90.12",

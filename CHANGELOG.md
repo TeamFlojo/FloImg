@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [v0.9.1] - 2026-01-04
+
+### @teamflojo/floimg-templates (0.1.0) - NEW
+
+- feat: new shared package for workflow templates
+- feat: templates organized by category (AI Workflows, Data Viz, Marketing, Utilities)
+- feat: `coreTemplates` for OSS (offline-compatible) vs `allTemplates` for FSC
+- feat: `resolveTemplate()` for legacy ID mapping
+- feat: `getStudioUrl()` helper for template deep links
+
+### @teamflojo/floimg-studio-ui (0.3.1)
+
+- refactor: use `@teamflojo/floimg-templates` as single source of truth
+- feat: template loading uses `resolveTemplate()` for backwards compatibility
+- chore: remove local template definitions (now in shared package)
+
 ## [v0.9.0] - 2026-01-03
 
 ### Breaking Changes

@@ -10,7 +10,7 @@ import { WorkflowLibrary } from "./components/WorkflowLibrary";
 import { AISettings } from "./components/AISettings";
 import { AIChat } from "./components/AIChat";
 import { useWorkflowStore } from "./stores/workflowStore";
-import { getTemplateById } from "./templates";
+import { resolveTemplate } from "@teamflojo/floimg-templates";
 import type { NodeDefinition, GeneratedWorkflowData } from "@teamflojo/floimg-studio-shared";
 
 // EditorDropZone - handles node drops with correct coordinate conversion
@@ -70,7 +70,8 @@ function App() {
     const templateId = params.get("template");
 
     if (templateId) {
-      const template = getTemplateById(templateId);
+      // resolveTemplate handles both canonical IDs and legacy IDs
+      const template = resolveTemplate(templateId);
       if (template) {
         loadTemplate(template);
         // Clean up URL without reload
@@ -93,7 +94,7 @@ function App() {
   // Handler for template selection (from TemplateGallery)
   const handleTemplateSelect = useCallback(
     (templateId: string) => {
-      const template = getTemplateById(templateId);
+      const template = resolveTemplate(templateId);
       if (template) {
         loadTemplate(template);
         setActiveTab("editor");

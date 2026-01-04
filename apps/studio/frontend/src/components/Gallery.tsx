@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { listImages, getImageUrl, getImageWorkflow, type ImageInfo } from "../api/client";
 import { useWorkflowStore } from "../stores/workflowStore";
-import type { GalleryTemplate } from "@teamflojo/floimg-studio-shared";
+import type { Template } from "@teamflojo/floimg-templates";
 
 export function Gallery() {
   const loadTemplate = useWorkflowStore((s) => s.loadTemplate);
@@ -24,12 +24,12 @@ export function Gallery() {
     try {
       const metadata = await getImageWorkflow(imageId);
       if (metadata?.workflow) {
-        // Convert to GalleryTemplate format
-        const template: GalleryTemplate = {
+        // Convert to Template format for loading
+        const template: Template = {
           id: `image-${imageId}`,
           name: `Workflow from ${imageId}`,
           description: "Loaded from gallery image",
-          category: "Gallery",
+          category: "Utilities",
           generator: "unknown",
           workflow: {
             nodes: metadata.workflow.nodes,

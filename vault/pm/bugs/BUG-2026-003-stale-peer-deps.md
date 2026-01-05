@@ -1,8 +1,9 @@
 ---
 tags: [type/bug, area/packages]
-status: in_progress
+status: completed
 priority: p1
 created: 2026-01-04
+completed: 2026-01-04
 branch: fix/BUG-2026-003-peer-deps
 ---
 
@@ -11,7 +12,7 @@ branch: fix/BUG-2026-003-peer-deps
 ## Bug Details
 
 **Bug ID**: BUG-2026-003
-**Status**: in_progress
+**Status**: completed
 **Priority**: p1
 **Created**: 2026-01-04
 
@@ -45,18 +46,18 @@ npm refuses to install due to peer dependency mismatch. Users must use `--legacy
 
 All have peer dep `@teamflojo/floimg@^0.2.0` (or `^0.4.0` for claude), need `^0.8.0`:
 
-- [ ] `@teamflojo/floimg-mermaid` (0.2.1 → 0.2.2)
-- [ ] `@teamflojo/floimg-qr` (0.2.1 → 0.2.2)
-- [ ] `@teamflojo/floimg-quickchart` (0.2.1 → 0.2.2)
-- [ ] `@teamflojo/floimg-d3` (0.2.1 → 0.2.2)
-- [ ] `@teamflojo/floimg-screenshot` (0.2.1 → 0.2.2)
-- [ ] `@teamflojo/floimg-openai` (0.2.0 → 0.2.1)
-- [ ] `@teamflojo/floimg-stability` (0.2.1 → 0.2.2)
-- [ ] `@teamflojo/floimg-google` (0.4.0 → 0.4.1)
-- [ ] `@teamflojo/floimg-replicate` (0.1.0 → 0.1.1)
-- [ ] `@teamflojo/floimg-ollama` (0.2.1 → 0.2.2)
-- [ ] `@teamflojo/floimg-xai` (0.1.0 → 0.1.1)
-- [ ] `@teamflojo/floimg-claude` (0.2.0 → 0.2.1)
+- [x] `@teamflojo/floimg-mermaid` (0.2.1 → 0.2.2)
+- [x] `@teamflojo/floimg-qr` (0.2.1 → 0.2.2)
+- [x] `@teamflojo/floimg-quickchart` (0.2.1 → 0.2.2)
+- [x] `@teamflojo/floimg-d3` (0.2.1 → 0.2.2)
+- [x] `@teamflojo/floimg-screenshot` (0.2.1 → 0.2.2)
+- [x] `@teamflojo/floimg-openai` (0.2.0 → 0.2.1)
+- [x] `@teamflojo/floimg-stability` (0.2.1 → 0.2.2)
+- [x] `@teamflojo/floimg-google` (0.4.0 → 0.4.1)
+- [x] `@teamflojo/floimg-replicate` (0.1.0 → 0.1.1)
+- [x] `@teamflojo/floimg-ollama` (0.2.1 → 0.2.2)
+- [x] `@teamflojo/floimg-xai` (0.1.0 → 0.1.1)
+- [x] `@teamflojo/floimg-claude` (0.2.0 → 0.2.1)
 
 ## Fix
 

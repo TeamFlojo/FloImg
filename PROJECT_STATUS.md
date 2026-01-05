@@ -4,14 +4,6 @@
 
 ## Current Focus
 
-**BUG-2026-003: Fix stale peer dependencies** (in_progress)
-
-- 12 plugin packages have peer deps on `@teamflojo/floimg@^0.2.0` instead of `^0.8.0`
-- Causes npm install failures for users
-- Branch: `fix/BUG-2026-003-peer-deps`
-
----
-
 **T-2025-007: Gemini 3 Pro Workflow Generation** (PR #64 ready for merge)
 
 Natural language to workflow JSON using Gemini 3 Pro structured outputs.
@@ -27,6 +19,12 @@ Natural language to workflow JSON using Gemini 3 Pro structured outputs.
 - Additional FloImg Studio UX improvements
 
 ## Just Completed
+
+**BUG-2026-003: Fix stale peer dependencies** (2026-01-04)
+
+- Updated peer deps from `^0.2.0` to `^0.8.0` in all 12 plugin packages
+- Users no longer need `--legacy-peer-deps` flag
+- Released as v0.9.6 (PR #88 merged)
 
 **Gallery → Images Rename** (2026-01-01)
 
@@ -91,6 +89,13 @@ Natural language to workflow JSON using Gemini 3 Pro structured outputs.
 
 ## Recent Releases
 
+**v0.9.6** (2026-01-04)
+
+- Fix peer dependencies in all 12 plugin packages (^0.2.0 → ^0.8.0)
+- floimg-mermaid@0.2.2, floimg-qr@0.2.2, floimg-quickchart@0.2.2, floimg-d3@0.2.2
+- floimg-screenshot@0.2.2, floimg-openai@0.2.1, floimg-stability@0.2.2, floimg-google@0.4.1
+- floimg-replicate@0.1.1, floimg-ollama@0.2.2, floimg-xai@0.1.1, floimg-claude@0.2.1
+
 **v0.8.0** (2025-12-31)
 
 - AI text/vision nodes (Gemini Text, Vision, Edit; Grok Text, Vision)
@@ -120,17 +125,20 @@ Natural language to workflow JSON using Gemini 3 Pro structured outputs.
 | Package                         | npm Version | Description                        |
 | ------------------------------- | ----------- | ---------------------------------- |
 | @teamflojo/floimg               | 0.7.1       | Core library                       |
-| @teamflojo/floimg-openai        | 0.2.0       | OpenAI DALL-E + transforms         |
-| @teamflojo/floimg-stability     | 0.2.1       | Stability AI SDXL/SD3 + transforms |
-| @teamflojo/floimg-google        | 0.3.1       | Google Imagen + Gemini Text/Vision |
-| @teamflojo/floimg-replicate     | 0.1.0       | Replicate AI transforms            |
-| @teamflojo/floimg-ollama        | 0.2.1       | Ollama local AI                    |
-| @teamflojo/floimg-qr            | 0.2.1       | QR code generator                  |
-| @teamflojo/floimg-mermaid       | 0.2.1       | Mermaid diagrams                   |
-| @teamflojo/floimg-quickchart    | 0.2.1       | Chart.js via QuickChart            |
-| @teamflojo/floimg-studio-ui     | 0.2.1       | Studio React components            |
-| @teamflojo/floimg-studio-shared | 0.2.0       | Studio shared types                |
-| @teamflojo/floimg-xai           | 0.1.0       | Grok Text/Vision                   |
+| @teamflojo/floimg-openai        | 0.2.1       | OpenAI DALL-E + transforms         |
+| @teamflojo/floimg-stability     | 0.2.2       | Stability AI SDXL/SD3 + transforms |
+| @teamflojo/floimg-google        | 0.4.1       | Google Imagen + Gemini Text/Vision |
+| @teamflojo/floimg-replicate     | 0.1.1       | Replicate AI transforms            |
+| @teamflojo/floimg-ollama        | 0.2.2       | Ollama local AI                    |
+| @teamflojo/floimg-qr            | 0.2.2       | QR code generator                  |
+| @teamflojo/floimg-mermaid       | 0.2.2       | Mermaid diagrams                   |
+| @teamflojo/floimg-quickchart    | 0.2.2       | Chart.js via QuickChart            |
+| @teamflojo/floimg-d3            | 0.2.2       | D3 data visualizations             |
+| @teamflojo/floimg-screenshot    | 0.2.2       | Screenshot/Playwright              |
+| @teamflojo/floimg-studio-ui     | 0.3.3       | Studio React components            |
+| @teamflojo/floimg-studio-shared | 0.3.0       | Studio shared types                |
+| @teamflojo/floimg-xai           | 0.1.1       | Grok Text/Vision                   |
+| @teamflojo/floimg-claude        | 0.2.1       | Claude Code plugin                 |
 
 ## FloImg Studio
 
@@ -149,9 +157,7 @@ Visual workflow builder in `apps/studio/`:
 
 ## Backlog
 
-- **BUG-2026-003**: Plugin packages have stale peer dependencies (p1)
-- Publish updated packages to npm (floimg-openai, floimg-replicate)
-- Additional AI provider packages (Anthropic, Gemini)
+- Additional AI provider packages (Anthropic)
 - More generator plugins
 
 ## Blockers

@@ -137,7 +137,7 @@ vault/
 
 ## Getting Help
 
-- **Discord**: Join our [Discord community](https://discord.gg/jcczptnX) for real-time help and discussion
+- **Discord**: Join our [Discord community](https://discord.gg/ahb9FSGUzb) for real-time help and discussion
 - **Questions**: Open a [GitHub Discussion](https://github.com/TeamFlojo/floimg/discussions)
 - **Bugs**: Create an [Issue](https://github.com/TeamFlojo/floimg/issues)
 - **Security**: See [[Security]] for responsible disclosure

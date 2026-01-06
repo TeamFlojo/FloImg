@@ -2,7 +2,7 @@
 
 Join the floimg Discord community for real-time help, discussion, and connecting with other developers.
 
-**[Join Discord](https://discord.gg/jcczptnX)**
+**[Join Discord](https://discord.gg/ahb9FSGUzb)**
 
 ## What It's For
 

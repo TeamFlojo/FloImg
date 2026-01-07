@@ -112,6 +112,49 @@ export function NodeInspector() {
     return undefined;
   };
 
+  // Determine which fields should be visible based on current parameter values
+  const isFieldVisible = (key: string, field: ParamField): boolean => {
+    // Hide legacy fields (marked with "Legacy" in title or description)
+    if (field.title?.includes("Legacy") || field.description?.includes("Legacy")) {
+      return false;
+    }
+
+    // For shapes generator, apply conditional visibility
+    if (
+      selectedNode.type === "generator" &&
+      (selectedNode.data as GeneratorNodeData).generatorName === "shapes"
+    ) {
+      const shapeType = getParamValue("shapeType") || "rectangle";
+      const fillType = getParamValue("fillType") || "solid";
+
+      // Shape-specific parameters
+      if (key === "sides") return shapeType === "polygon";
+      if (key === "points" || key === "innerRadius") return shapeType === "star";
+      if (key === "cornerRadius") return shapeType === "rectangle";
+
+      // Fill-specific parameters
+      if (key === "fillColor") return fillType === "solid";
+      if (
+        key === "gradientType" ||
+        key === "gradientColor1" ||
+        key === "gradientColor2" ||
+        key === "gradientAngle"
+      ) {
+        return fillType === "gradient";
+      }
+      if (
+        key === "patternType" ||
+        key === "patternColor" ||
+        key === "patternBackground" ||
+        key === "patternScale"
+      ) {
+        return fillType === "pattern";
+      }
+    }
+
+    return true;
+  };
+
   return (
     <div className="w-80 bg-gray-50 dark:bg-zinc-800 border-l border-gray-200 dark:border-zinc-700 overflow-y-auto">
       <div className="p-4">
@@ -127,15 +170,17 @@ export function NodeInspector() {
 
         <div className="space-y-4">
           {schema &&
-            Object.entries(schema).map(([key, field]) => (
-              <FieldEditor
-                key={key}
-                name={key}
-                field={field}
-                value={getParamValue(key)}
-                onChange={(value) => handleParamChange(key, value)}
-              />
-            ))}
+            Object.entries(schema)
+              .filter(([key, field]) => isFieldVisible(key, field))
+              .map(([key, field]) => (
+                <FieldEditor
+                  key={key}
+                  name={key}
+                  field={field}
+                  value={getParamValue(key)}
+                  onChange={(value) => handleParamChange(key, value)}
+                />
+              ))}
         </div>
 
         {/* Output Schema Editor for text/vision nodes */}

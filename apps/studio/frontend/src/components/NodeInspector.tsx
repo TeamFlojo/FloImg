@@ -113,12 +113,7 @@ export function NodeInspector() {
   };
 
   // Determine which fields should be visible based on current parameter values
-  const isFieldVisible = (key: string, field: ParamField): boolean => {
-    // Hide legacy fields (marked with "Legacy" in title or description)
-    if (field.title?.includes("Legacy") || field.description?.includes("Legacy")) {
-      return false;
-    }
-
+  const isFieldVisible = (key: string, _field: ParamField): boolean => {
     // For shapes generator, apply conditional visibility
     if (
       selectedNode.type === "generator" &&

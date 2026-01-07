@@ -123,6 +123,7 @@ vault/
 2. **Use /p before starting work** - Multi-step work needs task tracking
 3. **Evergreen docs have no temporal language** - No "will", "recently", "soon"
 4. **Link GitHub Issues to vault tasks** - Vault is source of truth, GH is public interface
+5. **No backwards compatibility (pre-1.0)** - Delete, don't deprecate. Remove old code entirely rather than keeping legacy paths. See [[No-Backwards-Compatibility]]
 
 ## Releases
 

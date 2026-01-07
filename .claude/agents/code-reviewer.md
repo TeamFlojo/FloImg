@@ -40,6 +40,7 @@ When invoking this agent, include:
 - [ ] Clear naming (variables, functions)
 - [ ] Single responsibility functions
 - [ ] Proper error handling
+- [ ] **No backwards compatibility code** - No legacy params, migration functions, or deprecation shims (see [[No-Backwards-Compatibility]])
 
 ### TypeScript
 

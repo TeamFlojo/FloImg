@@ -188,58 +188,6 @@ describe("ShapesProvider", () => {
     });
   });
 
-  describe("legacy parameter migration", () => {
-    it("should migrate legacy gradient type", async () => {
-      const result = await provider.generate({
-        type: "gradient",
-        color1: "#FF0000",
-        color2: "#0000FF",
-      });
-
-      expect(result.source).toBe("svg:shapes:rectangle:gradient");
-      const svg = result.bytes.toString("utf-8");
-      expect(svg).toContain("#FF0000");
-      expect(svg).toContain("#0000FF");
-    });
-
-    it("should migrate legacy circle type", async () => {
-      const result = await provider.generate({
-        type: "circle",
-        fill: "#00FF00",
-      });
-
-      expect(result.source).toBe("svg:shapes:circle:solid");
-      const svg = result.bytes.toString("utf-8");
-      expect(svg).toContain("<circle");
-      expect(svg).toContain("#00FF00");
-    });
-
-    it("should migrate legacy rectangle type", async () => {
-      const result = await provider.generate({
-        type: "rectangle",
-        fill: "#0000FF",
-        rx: 10,
-      });
-
-      expect(result.source).toBe("svg:shapes:rectangle:solid");
-      const svg = result.bytes.toString("utf-8");
-      expect(svg).toContain("<rect");
-      expect(svg).toContain("#0000FF");
-      expect(svg).toContain('rx="10"');
-    });
-
-    it("should migrate legacy pattern type", async () => {
-      const result = await provider.generate({
-        type: "pattern",
-        patternType: "stripes",
-      });
-
-      expect(result.source).toBe("svg:shapes:rectangle:pattern");
-      const svg = result.bytes.toString("utf-8");
-      expect(svg).toContain("<pattern");
-    });
-  });
-
   describe("error handling", () => {
     it("should throw for unknown shape type", async () => {
       await expect(provider.generate({ shapeType: "unknown" })).rejects.toThrow(

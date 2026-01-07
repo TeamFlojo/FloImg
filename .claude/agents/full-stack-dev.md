@@ -41,6 +41,7 @@ When invoking this agent, include:
    - Add proper TypeScript types
    - Include parameter schemas
    - Write tests
+   - **No backwards compatibility** - Delete old code, don't deprecate (see [[No-Backwards-Compatibility]])
 4. **Verify** - Run typecheck and tests
 
 ## Key Patterns

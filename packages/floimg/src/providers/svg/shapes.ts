@@ -168,85 +168,9 @@ export const shapesSchema: GeneratorSchema = {
       minimum: 0,
       maximum: 360,
     },
-
-    // === Legacy (for backward compatibility) ===
-    type: {
-      type: "string",
-      title: "Type (Legacy)",
-      description: "Legacy shape type - use shapeType and fillType instead",
-      enum: ["gradient", "circle", "rectangle", "pattern"],
-    },
-    color1: {
-      type: "string",
-      title: "Color 1 (Legacy)",
-      description: "Legacy gradient color - use gradientColor1 instead",
-    },
-    color2: {
-      type: "string",
-      title: "Color 2 (Legacy)",
-      description: "Legacy gradient color - use gradientColor2 instead",
-    },
-    fill: {
-      type: "string",
-      title: "Fill (Legacy)",
-      description: "Legacy fill color - use fillColor instead",
-    },
-    rx: {
-      type: "number",
-      title: "Corner Radius (Legacy)",
-      description: "Legacy corner radius - use cornerRadius instead",
-    },
   },
   requiredParameters: [],
 };
-
-/**
- * Migrates legacy parameters to new schema format
- */
-function migrateLegacyParams(params: Record<string, unknown>): Record<string, unknown> {
-  const result = { ...params };
-
-  // If using legacy `type` parameter, migrate to shapeType + fillType
-  if (params.type && !params.shapeType) {
-    const legacyType = params.type as string;
-
-    switch (legacyType) {
-      case "gradient":
-        result.shapeType = "rectangle";
-        result.fillType = "gradient";
-        if (params.color1) result.gradientColor1 = params.color1;
-        if (params.color2) result.gradientColor2 = params.color2;
-        break;
-      case "pattern":
-        result.shapeType = "rectangle";
-        result.fillType = "pattern";
-        break;
-      case "circle":
-        result.shapeType = "circle";
-        result.fillType = "solid";
-        if (params.fill) result.fillColor = params.fill;
-        break;
-      case "rectangle":
-        result.shapeType = "rectangle";
-        result.fillType = "solid";
-        if (params.fill) result.fillColor = params.fill;
-        if (params.rx) result.cornerRadius = params.rx;
-        break;
-    }
-  }
-
-  // Migrate legacy fill to fillColor
-  if (params.fill && !params.fillColor) {
-    result.fillColor = params.fill;
-  }
-
-  // Migrate legacy rx to cornerRadius
-  if (params.rx && !params.cornerRadius) {
-    result.cornerRadius = params.rx;
-  }
-
-  return result;
-}
 
 /**
  * SVG shapes provider for generating geometric shapes with various fills
@@ -256,9 +180,6 @@ export class ShapesProvider implements SvgProvider {
   schema = shapesSchema;
 
   async generate(params: Record<string, unknown>): Promise<ImageBlob> {
-    // Migrate legacy parameters
-    const migratedParams = migrateLegacyParams(params);
-
     const {
       shapeType = "rectangle",
       width = 1200,
@@ -280,7 +201,7 @@ export class ShapesProvider implements SvgProvider {
       points = 5,
       innerRadius = 0.5,
       rotation = 0,
-    } = migratedParams;
+    } = params;
 
     const w = width as number;
     const h = height as number;

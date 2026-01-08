@@ -616,6 +616,8 @@ export interface SaveResult {
 export interface SaveProvider {
   /** Provider name */
   name: string;
+  /** Alternative names this provider can be referenced by (for backwards compatibility) */
+  aliases?: string[];
   /** Save an image */
   save(input: { blob: ImageBlob; path: string; [key: string]: unknown }): Promise<SaveResult>;
 }

@@ -99,6 +99,7 @@ export function createClient(config: FloimgConfig = {}): FloImg {
 
   // Register save providers
   // Always register filesystem provider (default, zero-config)
+  // FsSaveProvider registers as "fs" with "filesystem" alias for Studio compatibility
   const fsConfig = config.save?.fs || {};
   client.registerSaveProvider(new FsSaveProvider(fsConfig));
 

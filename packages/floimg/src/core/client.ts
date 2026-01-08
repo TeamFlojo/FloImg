@@ -428,6 +428,14 @@ export class FloImg {
   registerSaveProvider(provider: SaveProvider): void {
     this.providers.save[provider.name] = provider;
     this.logger.debug(`Registered save provider: ${provider.name}`);
+
+    // Register under aliases for backwards compatibility
+    if (provider.aliases) {
+      for (const alias of provider.aliases) {
+        this.providers.save[alias] = provider;
+        this.logger.debug(`Registered save provider alias: ${alias} -> ${provider.name}`);
+      }
+    }
   }
 
   /**

@@ -4,9 +4,13 @@ import type { SaveProvider, ImageBlob, SaveResult } from "../../core/types.js";
 
 /**
  * Filesystem save provider - saves images to local disk
+ *
+ * Registered as "fs" (primary) with "filesystem" alias for Studio compatibility.
+ * SDK/CLI traditionally use "fs", while Studio uses "filesystem".
  */
 export default class FsSaveProvider implements SaveProvider {
   name = "fs";
+  aliases = ["filesystem"];
   private baseDir: string;
   private defaultChmod: number;
 

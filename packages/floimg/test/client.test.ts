@@ -335,6 +335,65 @@ describe("FloImg Core Client", () => {
       client.registerSaveProvider(mockSaveProvider);
       expect(client.providers.save["mock-save"]).toBe(mockSaveProvider);
     });
+
+    it("should register a save provider with aliases", () => {
+      const providerWithAliases: SaveProvider = {
+        name: "primary-name",
+        aliases: ["alias-one", "alias-two"],
+        async save(input: { blob: ImageBlob; path: string }) {
+          return {
+            provider: "primary-name",
+            location: `https://example.com/${input.path}`,
+            size: input.blob.bytes.length,
+            mime: input.blob.mime,
+          };
+        },
+      };
+
+      client.registerSaveProvider(providerWithAliases);
+
+      // Should be registered under primary name
+      expect(client.providers.save["primary-name"]).toBe(providerWithAliases);
+      // Should also be registered under aliases
+      expect(client.providers.save["alias-one"]).toBe(providerWithAliases);
+      expect(client.providers.save["alias-two"]).toBe(providerWithAliases);
+      // All references should point to the same provider instance
+      expect(client.providers.save["alias-one"]).toBe(client.providers.save["primary-name"]);
+    });
+
+    it("should work with save provider using alias name", async () => {
+      const providerWithAlias: SaveProvider = {
+        name: "main",
+        aliases: ["alternate"],
+        async save(input: { blob: ImageBlob; path: string }) {
+          return {
+            provider: "main",
+            location: `saved://${input.path}`,
+            size: input.blob.bytes.length,
+            mime: input.blob.mime,
+          };
+        },
+      };
+
+      client.registerSaveProvider(providerWithAlias);
+
+      const testBlob: ImageBlob = {
+        bytes: Buffer.from("test"),
+        mime: "image/png",
+        width: 100,
+        height: 100,
+        source: "test",
+      };
+
+      // Save using the alias name
+      const result = await client.save(testBlob, {
+        path: "test.png",
+        provider: "alternate",
+      });
+
+      expect(result.location).toBe("saved://test.png");
+      expect(result.provider).toBe("main");
+    });
   });
 
   describe("Image Save", () => {

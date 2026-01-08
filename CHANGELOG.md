@@ -5,6 +5,28 @@ All notable changes to FloImg will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.11.0] - 2026-01-07
+
+### @teamflojo/floimg-studio-ui (0.4.0)
+
+- feat: real-time workflow execution progress via SSE streaming
+- feat: output inspector modal for viewing full text/vision node responses
+- feat: AI generation cancellation support
+- feat: per-node execution status indicators (running → completed/error/skipped)
+- fix: add size/depth safeguards to JSON tree rendering (max depth 20, max array 500)
+
+### @teamflojo/floimg-studio-shared (0.4.0)
+
+- feat: add SSE event types for execution and generation streaming
+- feat: add "skipped" status to ExecutionStepResult with skipReason field
+
+### @teamflojo/floimg-studio-backend (0.2.0)
+
+- feat: add `/api/execute/stream` SSE endpoint for real-time execution progress
+- feat: add `/api/generate/workflow/stream` SSE endpoint with generation phases
+- feat: sequential execution with inline moderation and real-time callbacks
+- feat: partial failure handling - skip dependent steps when upstream fails
+
 ## [v0.10.0] - 2026-01-07
 
 ### @teamflojo/floimg (0.9.0)

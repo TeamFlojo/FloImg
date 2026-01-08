@@ -15,7 +15,10 @@ import type {
 } from "@teamflojo/floimg-studio-shared";
 import type { Template } from "@teamflojo/floimg-templates";
 import { exportYaml } from "../api/client";
-import { createSSEConnection } from "../api/sse";
+import { createSSEConnection, type SSEConnection } from "../api/sse";
+
+// Module-level variable to store active SSE connection (not in store since it's not serializable)
+let activeExecutionConnection: SSEConnection | null = null;
 import type { StudioNode, StudioEdge } from "@teamflojo/floimg-studio-shared";
 import { useSettingsStore } from "./settingsStore";
 
@@ -117,6 +120,7 @@ interface WorkflowStore {
   // Execution
   execution: ExecutionState;
   execute: () => Promise<void>;
+  cancelExecution: () => void;
 
   // Export
   exportToYaml: () => Promise<string>;
@@ -435,7 +439,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
 
         // Use SSE streaming for real-time progress updates
         return new Promise<void>((resolve, reject) => {
-          createSSEConnection<ExecutionSSEEvent>(
+          activeExecutionConnection = createSSEConnection<ExecutionSSEEvent>(
             "/api/execute/stream",
             { nodes: studioNodes, edges: studioEdges, aiProviders },
             {
@@ -543,9 +547,14 @@ export const useWorkflowStore = create<WorkflowStore>()(
                 reject(error);
               },
               onClose: () => {
-                // Stream closed - if we didn't get a completed/error event, treat as error
+                // Clear the connection reference
+                activeExecutionConnection = null;
+
+                // Stream closed - check why
                 const state = get();
                 if (state.execution.status === "running") {
+                  // Check if this was a user cancellation (status would be 'cancelled' if so)
+                  // Otherwise treat as unexpected closure
                   set({
                     execution: {
                       ...state.execution,
@@ -558,9 +567,26 @@ export const useWorkflowStore = create<WorkflowStore>()(
               },
             }
           );
+        });
+      },
 
-          // Store abort controller for potential cancellation (future feature)
-          // Could expose this via store if needed
+      cancelExecution: () => {
+        // Abort the active connection if any
+        if (activeExecutionConnection) {
+          activeExecutionConnection.abort();
+          activeExecutionConnection = null;
+        }
+
+        // Reset execution state to idle
+        set({
+          execution: {
+            status: "idle",
+            imageIds: [],
+            imageUrls: [],
+            previews: {},
+            dataOutputs: {},
+            nodeStatus: {},
+          },
         });
       },
 

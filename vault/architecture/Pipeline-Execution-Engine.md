@@ -22,11 +22,16 @@ This enables maximum throughput while respecting data dependencies.
 
 Each step type has specific input/output patterns:
 
-| Step Type | Inputs | Outputs |
-|-----------|--------|---------|
-| `generate` | none | `out` variable |
-| `transform` | `in` variable | `out` variable |
-| `save` | `in` variable | optional `out` variable |
+| Step Type   | Inputs                         | Outputs                  |
+| ----------- | ------------------------------ | ------------------------ |
+| `generate`  | none                           | `out` variable           |
+| `transform` | `in` variable                  | `out` variable           |
+| `save`      | `in` variable                  | optional `out` variable  |
+| `vision`    | `in` variable                  | `out` variable           |
+| `text`      | optional `in` variable         | `out` variable           |
+| `fan-out`   | `in` variable                  | multiple `out` variables |
+| `collect`   | multiple `in` variables        | `out` variable           |
+| `router`    | `in` + `selectionIn` variables | `out` variable           |
 
 Example pipeline:
 
@@ -78,10 +83,10 @@ Each step becomes a node in the dependency graph:
 
 ```typescript
 interface StepNode {
-  index: number;              // Original position in steps array
-  step: PipelineStep;         // The step definition
-  dependencies: Set<string>;  // Variable names this step requires
-  outputs: string[];          // Variable names this step produces
+  index: number; // Original position in steps array
+  step: PipelineStep; // The step definition
+  dependencies: Set<string>; // Variable names this step requires
+  outputs: string[]; // Variable names this step produces
 }
 ```
 
@@ -115,12 +120,12 @@ function computeExecutionWaves(nodes: StepNode[]): ExecutionWave[] {
 
   while (remainingNodes.length > 0) {
     // Find all nodes whose dependencies are satisfied
-    const ready = remainingNodes.filter(node =>
-      [...node.dependencies].every(dep => satisfiedOutputs.has(dep))
+    const ready = remainingNodes.filter((node) =>
+      [...node.dependencies].every((dep) => satisfiedOutputs.has(dep))
     );
 
     if (ready.length === 0) {
-      throw new Error('Circular dependency or missing input');
+      throw new Error("Circular dependency or missing input");
     }
 
     // Add ready nodes to current wave
@@ -155,7 +160,7 @@ Within each wave, steps execute with bounded concurrency:
 ```typescript
 interface Pipeline {
   steps: PipelineStep[];
-  concurrency?: number;  // Max parallel operations (default: Infinity)
+  concurrency?: number; // Max parallel operations (default: Infinity)
 }
 ```
 
@@ -182,14 +187,14 @@ async function executeWithConcurrency<T>(
   concurrency: number
 ): Promise<T[]> {
   if (concurrency === Infinity) {
-    return Promise.all(tasks.map(task => task()));
+    return Promise.all(tasks.map((task) => task()));
   }
 
   const results: T[] = [];
   const executing: Promise<void>[] = [];
 
   for (const [index, task] of tasks.entries()) {
-    const p = task().then(result => {
+    const p = task().then((result) => {
       results[index] = result;
     });
 
@@ -200,10 +205,7 @@ async function executeWithConcurrency<T>(
       // Remove completed promises
       for (let i = executing.length - 1; i >= 0; i--) {
         // Check if promise is settled by racing with resolved promise
-        const settled = await Promise.race([
-          executing[i].then(() => true),
-          Promise.resolve(false)
-        ]);
+        const settled = await Promise.race([executing[i].then(() => true), Promise.resolve(false)]);
         if (settled) executing.splice(i, 1);
       }
     }
@@ -262,7 +264,7 @@ The wave computation algorithm detects:
 
 ```yaml
 - kind: transform
-  in: nonexistent  # Error: no step produces 'nonexistent'
+  in: nonexistent # Error: no step produces 'nonexistent'
   op: resize
 ```
 
@@ -329,6 +331,197 @@ steps:
 ```
 
 **Result:** 3 waves: generate → 3 transforms → 3 saves
+
+---
+
+## Branching Primitives
+
+The pipeline engine supports three branching step types for iterative workflows.
+
+### Fan-Out
+
+Distributes a single input to multiple parallel branches.
+
+**Modes:**
+
+| Mode    | Description                        | Use Case                            |
+| ------- | ---------------------------------- | ----------------------------------- |
+| `count` | Copy input to N branches           | Generate N variations of same image |
+| `array` | Distribute array items to branches | Process each prompt separately      |
+
+**Example (count mode):**
+
+```yaml
+steps:
+  - kind: generate
+    generator: dall-e-3
+    params: { prompt: "A logo" }
+    out: source
+
+  - kind: fan-out
+    in: source
+    mode: count
+    count: 3
+    out: [branch_0, branch_1, branch_2]
+```
+
+**Example (array mode):**
+
+```yaml
+steps:
+  - kind: text
+    provider: openai
+    params:
+      prompt: "Generate 3 logo concepts as JSON: {concepts: [...]}"
+      outputFormat: json
+    out: concepts
+
+  - kind: fan-out
+    in: concepts
+    mode: array
+    arrayProperty: concepts
+    out: [prompt_0, prompt_1, prompt_2]
+```
+
+### Collect
+
+Gathers outputs from parallel branches into an array.
+
+**Wait modes:**
+
+| Mode        | Behavior                                                  |
+| ----------- | --------------------------------------------------------- |
+| `all`       | Requires all inputs (fails if any missing)                |
+| `available` | Accepts partial results (use `minRequired` for threshold) |
+
+**Example:**
+
+```yaml
+steps:
+  - kind: collect
+    in: [result_0, result_1, result_2]
+    waitMode: all
+    out: all_results
+
+  # Or with partial results:
+  - kind: collect
+    in: [result_0, result_1, result_2]
+    waitMode: available
+    minRequired: 2
+    out: best_efforts
+```
+
+### Router
+
+Selects one item from collected candidates based on AI evaluation.
+
+**Selection types:**
+
+| Type       | Description                                   |
+| ---------- | --------------------------------------------- |
+| `index`    | Select by numeric index (e.g., `{winner: 1}`) |
+| `property` | Match by property value                       |
+
+**Example:**
+
+```yaml
+steps:
+  # Evaluate with vision AI
+  - kind: vision
+    provider: openai-vision
+    in: all_results
+    params:
+      prompt: "Which image is best? Return JSON: {winner: <index>}"
+      outputFormat: json
+    out: evaluation
+
+  # Route to winner
+  - kind: router
+    in: all_results
+    selectionIn: evaluation
+    selectionType: index
+    selectionProperty: winner
+    out: best_result
+```
+
+### Complete Iterative Workflow
+
+The canonical pattern for AI-driven iteration:
+
+```yaml
+name: Logo Variations
+steps:
+  # 1. Generate prompts
+  - kind: text
+    provider: openai
+    params:
+      prompt: "Generate 3 logo concepts for 'FlowSync'"
+      outputFormat: json
+    out: concepts
+
+  # 2. Fan-out to parallel branches
+  - kind: fan-out
+    in: concepts
+    mode: array
+    arrayProperty: concepts
+    out: [prompt_0, prompt_1, prompt_2]
+
+  # 3. Generate logos in parallel
+  - kind: generate
+    generator: dall-e-3
+    params: { prompt: "{{prompt_0.value}}" }
+    out: logo_0
+
+  - kind: generate
+    generator: dall-e-3
+    params: { prompt: "{{prompt_1.value}}" }
+    out: logo_1
+
+  - kind: generate
+    generator: dall-e-3
+    params: { prompt: "{{prompt_2.value}}" }
+    out: logo_2
+
+  # 4. Collect results
+  - kind: collect
+    in: [logo_0, logo_1, logo_2]
+    waitMode: all
+    out: all_logos
+
+  # 5. Evaluate with AI
+  - kind: vision
+    provider: openai-vision
+    in: all_logos
+    params:
+      prompt: "Evaluate these logos. Return {winner: <index>}"
+      outputFormat: json
+    out: evaluation
+
+  # 6. Route to winner
+  - kind: router
+    in: all_logos
+    selectionIn: evaluation
+    selectionType: index
+    selectionProperty: winner
+    out: best_logo
+
+  # 7. Save
+  - kind: save
+    in: best_logo
+    destination: ./output/best-logo.png
+```
+
+**Execution waves for this workflow:**
+
+```
+Wave 1: text (generate prompts)
+Wave 2: fan-out
+Wave 3: generate x3 (parallel!)
+Wave 4: collect
+Wave 5: vision (evaluate)
+Wave 6: router
+Wave 7: save
+```
 
 ---
 

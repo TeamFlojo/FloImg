@@ -1,6 +1,6 @@
 {
   "name": "@teamflojo/floimg-qr",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "QR code generator for floimg using qrcode library",
   "type": "module",
   "main": "./dist/index.js",

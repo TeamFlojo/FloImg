@@ -24,7 +24,7 @@ export const socialMediaKit: Template = {
   },
   icon: "share",
   preview: {
-    imageUrl: "/showcase/pipelines/output/og-image.png",
+    imageUrl: "https://floimg.com/images/templates/social-media-kit.png",
   },
   codeExample: `// One source -> all platforms
 const socialKit = await floimg.pipeline(heroImage, [
@@ -110,7 +110,7 @@ export const avatarPipeline: Template = {
   },
   icon: "image",
   preview: {
-    imageUrl: "/showcase/pipelines/output/avatar-128.png",
+    imageUrl: "https://floimg.com/images/templates/avatar-pipeline.png",
   },
   codeExample: `const avatars = await floimg.pipeline(photo, [
   { op: 'crop', params: { shape: 'circle' } },
@@ -205,7 +205,7 @@ export const watermarkBranding: Template = {
   },
   icon: "image",
   preview: {
-    imageUrl: "/showcase/pipelines/output/watermark-branded.png",
+    imageUrl: "https://floimg.com/images/templates/watermark-branding.png",
   },
   seo: {
     title: "Branded Watermark Template",
@@ -290,7 +290,7 @@ export const filterShowcase: Template = {
   },
   icon: "image",
   preview: {
-    imageUrl: "/showcase/pipelines/output/filter-vintage.png",
+    imageUrl: "https://floimg.com/images/templates/filter-showcase.png",
   },
   seo: {
     title: "Image Filter Effects",
@@ -372,7 +372,7 @@ export const responsiveImages: Template = {
   },
   icon: "image",
   preview: {
-    imageUrl: "/showcase/pipelines/output/responsive-desktop.png",
+    imageUrl: "https://floimg.com/images/templates/responsive-images.png",
   },
   codeExample: `// One source → all responsive sizes
 const responsive = await floimg.from(source)
@@ -485,7 +485,7 @@ export const teamHeadshots: Template = {
   },
   icon: "image",
   preview: {
-    imageUrl: "/showcase/pipelines/output/headshot-standard.png",
+    imageUrl: "https://floimg.com/images/templates/team-headshots.png",
   },
   codeExample: `const headshot = await floimg.from(photo)
   .transform('extract', { width: 400, height: 400, gravity: 'face' })
@@ -582,7 +582,7 @@ export const screenshotDocs: Template = {
   },
   icon: "image",
   preview: {
-    imageUrl: "/showcase/pipelines/output/screenshot-docs.png",
+    imageUrl: "https://floimg.com/images/templates/screenshot-docs.png",
   },
   codeExample: `const docImage = await floimg
   .generate('screenshot', { url: 'https://example.com', width: 1280 })
@@ -690,7 +690,7 @@ export const blogOgImage: Template = {
   },
   icon: "share",
   preview: {
-    imageUrl: "/showcase/pipelines/output/blog-og.png",
+    imageUrl: "https://floimg.com/images/templates/blog-og-image.png",
   },
   codeExample: `const ogImage = await floimg.from(heroImage)
   .transform('resize', { width: 1200, height: 630, fit: 'cover' })
@@ -784,7 +784,7 @@ export const emailBanner: Template = {
   },
   icon: "share",
   preview: {
-    imageUrl: "/showcase/pipelines/output/email-banner.png",
+    imageUrl: "https://floimg.com/images/templates/email-banner.png",
   },
   codeExample: `const banner = await floimg.from(image)
   .transform('resize', { width: 600, height: 200, fit: 'cover' })
@@ -879,7 +879,7 @@ export const appIcons: Template = {
   },
   icon: "image",
   preview: {
-    imageUrl: "/showcase/pipelines/output/app-icon-180.png",
+    imageUrl: "https://floimg.com/images/templates/app-icons.png",
   },
   codeExample: `const icons = await floimg.from(logo)
   .transform('removeBackground')

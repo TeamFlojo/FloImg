@@ -27,7 +27,7 @@ export const revenueChart: Template = {
   },
   icon: "chart",
   preview: {
-    imageUrl: "/showcase/data-viz/quarterly-revenue.png",
+    imageUrl: "https://floimg.com/images/templates/revenue-chart.png",
   },
   codeExample: `const chart = await floimg
   .generate('quickchart', {
@@ -161,7 +161,7 @@ export const monthlyUsers: Template = {
   },
   icon: "chart",
   preview: {
-    imageUrl: "/showcase/data-viz/monthly-users.png",
+    imageUrl: "https://floimg.com/images/templates/monthly-users.png",
   },
   codeExample: `const chart = await floimg
   .generate('quickchart', {
@@ -286,7 +286,7 @@ export const frameworkUsage: Template = {
   },
   icon: "chart",
   preview: {
-    imageUrl: "/showcase/data-viz/framework-usage.png",
+    imageUrl: "https://floimg.com/images/templates/framework-usage.png",
   },
   codeExample: `const chart = await floimg
   .generate('quickchart', {
@@ -417,7 +417,7 @@ export const trafficBreakdown: Template = {
   },
   icon: "chart",
   preview: {
-    imageUrl: "/showcase/data-viz/traffic-by-device.png",
+    imageUrl: "https://floimg.com/images/templates/traffic-breakdown.png",
   },
   codeExample: `const chart = await floimg
   .generate('quickchart', {
@@ -550,7 +550,7 @@ export const apiFlow: Template = {
   },
   icon: "diagram",
   preview: {
-    imageUrl: "/showcase/diagrams/api-flow.png",
+    imageUrl: "https://floimg.com/images/templates/api-flow.png",
   },
   codeExample: `const diagram = await floimg
   .generate('mermaid', {
@@ -679,7 +679,7 @@ export const systemArchitecture: Template = {
   },
   icon: "diagram",
   preview: {
-    imageUrl: "/showcase/diagrams/system-architecture.png",
+    imageUrl: "https://floimg.com/images/templates/system-architecture.png",
   },
   codeExample: `const diagram = await floimg
   .generate('mermaid', {
@@ -828,7 +828,7 @@ export const gitWorkflow: Template = {
   },
   icon: "diagram",
   preview: {
-    imageUrl: "/showcase/diagrams/git-workflow.png",
+    imageUrl: "https://floimg.com/images/templates/git-workflow.png",
   },
   codeExample: `const diagram = await floimg
   .generate('mermaid', {

@@ -27,13 +27,12 @@ export const brandedQR: Template = {
   },
   icon: "qr",
   preview: {
-    imageUrl: "/showcase/qr-codes/qr-brand.png",
+    imageUrl: "https://floimg.com/images/templates/branded-qr.png",
   },
   codeExample: `const qr = await floimg
   .generate('qr', {
-    data: 'https://floimg.com',
-    dark: '#0d9488',
-    light: '#ffffff'
+    text: 'https://floimg.com',
+    color: { dark: '#0d9488', light: '#ffffff' }
   })
   .transform('resize', { width: 300, height: 300 })
   .transform('roundCorners', { radius: 16 })
@@ -53,11 +52,10 @@ export const brandedQR: Template = {
         data: {
           generatorName: "qr",
           params: {
-            data: "https://floimg.com",
-            size: 400,
+            text: "https://floimg.com",
+            width: 400,
             margin: 2,
-            dark: "#0d9488",
-            light: "#ffffff",
+            color: { dark: "#0d9488", light: "#ffffff" },
             errorCorrectionLevel: "M",
           },
         },
@@ -126,13 +124,12 @@ export const darkQR: Template = {
   },
   icon: "qr",
   preview: {
-    imageUrl: "/showcase/qr-codes/qr-dark.png",
+    imageUrl: "https://floimg.com/images/templates/dark-qr.png",
   },
   codeExample: `const qr = await floimg
   .generate('qr', {
-    data: 'https://floimg.com',
-    dark: '#ffffff',
-    light: '#18181b'
+    text: 'https://floimg.com',
+    color: { dark: '#ffffff', light: '#18181b' }
   })
   .transform('resize', { width: 300, height: 300 })
   .transform('extend', {
@@ -155,11 +152,10 @@ export const darkQR: Template = {
         data: {
           generatorName: "qr",
           params: {
-            data: "https://floimg.com",
-            size: 400,
+            text: "https://floimg.com",
+            width: 400,
             margin: 2,
-            dark: "#ffffff",
-            light: "#18181b",
+            color: { dark: "#ffffff", light: "#18181b" },
             errorCorrectionLevel: "M",
           },
         },
@@ -233,13 +229,12 @@ export const wifiQR: Template = {
   },
   icon: "qr",
   preview: {
-    imageUrl: "/showcase/qr-codes/qr-wifi.png",
+    imageUrl: "https://floimg.com/images/templates/wifi-qr.png",
   },
   codeExample: `const qr = await floimg
   .generate('qr', {
-    data: 'WIFI:T:WPA;S:GuestNetwork;P:welcome123;;',
-    dark: '#059669',
-    light: '#ffffff'
+    text: 'WIFI:T:WPA;S:GuestNetwork;P:welcome123;;',
+    color: { dark: '#059669', light: '#ffffff' }
   })
   .transform('resize', { width: 300, height: 300 })
   .transform('addCaption', {
@@ -264,11 +259,10 @@ export const wifiQR: Template = {
         data: {
           generatorName: "qr",
           params: {
-            data: "WIFI:T:WPA;S:GuestNetwork;P:welcome123;;",
-            size: 400,
+            text: "WIFI:T:WPA;S:GuestNetwork;P:welcome123;;",
+            width: 400,
             margin: 2,
-            dark: "#059669",
-            light: "#ffffff",
+            color: { dark: "#059669", light: "#ffffff" },
             errorCorrectionLevel: "H",
           },
         },
@@ -338,7 +332,7 @@ export const thumbnailGenerator: Template = {
   },
   icon: "image",
   preview: {
-    imageUrl: "/showcase/pipelines/output/thumb-200.png",
+    imageUrl: "https://floimg.com/images/templates/thumbnail-generator.png",
   },
   seo: {
     title: "Thumbnail Generator",

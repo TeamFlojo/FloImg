@@ -31,7 +31,7 @@ export const aiProductShot: Template = {
   icon: "sparkles",
   valueProp: "E-commerce-ready product photos in seconds",
   preview: {
-    imageUrl: "/showcase/ai-generation/product-headphones.png",
+    imageUrl: "https://floimg.com/images/templates/ai-product-shot.png",
   },
   codeExample: `const product = await floimg
   .generate('openai', {
@@ -136,7 +136,7 @@ export const aiHeroImage: Template = {
   icon: "sparkles",
   valueProp: "Landing page hero images in seconds",
   preview: {
-    imageUrl: "/showcase/ai-generation/futuristic-city.png",
+    imageUrl: "https://floimg.com/images/templates/ai-hero-image.png",
   },
   codeExample: `const hero = await floimg
   .generate('openai', {
@@ -239,7 +239,7 @@ export const aiMascot: Template = {
   icon: "sparkles",
   valueProp: "Brand-ready mascot assets in seconds",
   preview: {
-    imageUrl: "/showcase/ai-generation/robot-mascot.png",
+    imageUrl: "https://floimg.com/images/templates/ai-mascot.png",
   },
   codeExample: `const mascot = await floimg
   .generate('openai', {

@@ -58,6 +58,25 @@ export const qrSchema: GeneratorSchema = {
       minimum: 0,
       maximum: 7,
     },
+    color: {
+      type: "object",
+      title: "Colors",
+      description: "QR code colors for dark and light modules",
+      properties: {
+        dark: {
+          type: "string",
+          title: "Dark Color",
+          description: "Color for dark modules (hex format)",
+          default: "#000000",
+        },
+        light: {
+          type: "string",
+          title: "Light Color",
+          description: "Color for light modules (hex format)",
+          default: "#ffffff",
+        },
+      },
+    },
   },
   requiredParameters: ["text"],
 };

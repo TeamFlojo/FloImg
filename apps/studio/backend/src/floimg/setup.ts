@@ -33,6 +33,12 @@ type FloimgClient = ReturnType<typeof createClient>;
  * Collected usage events from AI providers during workflow execution.
  * Call getCollectedUsageEvents() after execution to retrieve events,
  * then clearCollectedUsageEvents() before the next execution.
+ *
+ * CONCURRENCY NOTE: This module-level array assumes sequential workflow execution.
+ * Node.js is single-threaded, and the executor clears events before each execution
+ * and collects them after, so concurrent requests don't mix their events.
+ * If we ever need true parallel execution (e.g., worker threads), this would need
+ * to be refactored to use request-scoped storage (e.g., AsyncLocalStorage).
  */
 let collectedUsageEvents: UsageEvent[] = [];
 
@@ -51,11 +57,15 @@ export function clearCollectedUsageEvents(): void {
 }
 
 /**
- * Usage hooks that collect events into the module-level array
+ * Usage hooks that collect events into the module-level array.
+ * Adds timestamp if not already present.
  */
 const usageHooks = {
   onUsage: async (event: UsageEvent) => {
-    collectedUsageEvents.push(event);
+    collectedUsageEvents.push({
+      ...event,
+      timestamp: event.timestamp ?? Date.now(),
+    });
   },
 };
 

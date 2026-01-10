@@ -850,6 +850,8 @@ export interface UsageEvent {
   /** Quality level (e.g., 'hd', 'standard') */
   quality?: string;
 
+  /** Unix timestamp in milliseconds when the event occurred */
+  timestamp?: number;
   /** Raw metadata from the provider response (for debugging) */
   rawMetadata?: Record<string, unknown>;
 }

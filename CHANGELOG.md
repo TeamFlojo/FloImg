@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### @teamflojo/floimg (0.10.0)
+## [v0.12.0] - 2026-01-09
+
+### @teamflojo/floimg (0.11.0)
 
 - feat: add fan-out, collect, and router pipeline primitives for iterative workflows
   - `fan-out`: distribute input to parallel branches (count mode: N copies, array mode: iterate items)
@@ -16,6 +18,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - feat: add YAML example for iterative workflow pattern (`examples/pipeline-iterative.yaml`)
 - fix: improve error messages for router selection property validation
 - fix: add warnings when fan-out count/array length doesn't match output array length
+
+### @teamflojo/floimg-studio-ui (0.5.0)
+
+- feat: add Fan-Out node for parallel branch execution
+- feat: add Collect node for gathering branch outputs
+- feat: add Router node for AI-driven selection from candidates
+- feat: add iterative workflow support to executor with SDK delegation
+- feat: update node palette with Iterative Workflow section
+
+### @teamflojo/floimg-studio-shared (0.5.0)
+
+- feat: add FanOutNodeData, CollectNodeData, RouterNodeData types
+- feat: add iterative workflow node type definitions
+
+### @teamflojo/floimg-studio-backend (0.3.0)
+
+- feat: add executor support for fan-out, collect, and router steps
+- feat: delegate branching execution to SDK client.run()
 
 ## [v0.11.5] - 2026-01-09
 

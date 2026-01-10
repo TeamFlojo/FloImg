@@ -1,6 +1,11 @@
 import OpenAI, { toFile } from "openai";
 import type { ImagesResponse } from "openai/resources/images";
-import type { TransformProvider, TransformOperationSchema, ImageBlob } from "@teamflojo/floimg";
+import type {
+  TransformProvider,
+  TransformOperationSchema,
+  ImageBlob,
+  UsageHooks,
+} from "@teamflojo/floimg";
 
 /**
  * Schema for the image edit/inpaint operation
@@ -83,6 +88,8 @@ export const variationsSchema: TransformOperationSchema = {
 export interface OpenAITransformConfig {
   /** API key for OpenAI */
   apiKey?: string;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 /**
@@ -200,6 +207,22 @@ export function openaiTransform(config: OpenAITransformConfig = {}): TransformPr
     // Parse dimensions from size parameter
     const [width, height] = size.split("x").map(Number);
 
+    // Emit usage event for cost tracking
+    if (config.hooks?.onUsage) {
+      try {
+        await config.hooks.onUsage({
+          provider: "openai",
+          model: "dall-e-2",
+          operation: "edit",
+          imageWidth: width,
+          imageHeight: height,
+          imageCount: n,
+        });
+      } catch (err) {
+        console.warn("[floimg-openai] Usage hook failed:", err);
+      }
+    }
+
     return {
       bytes,
       mime: "image/png",
@@ -254,6 +277,22 @@ export function openaiTransform(config: OpenAITransformConfig = {}): TransformPr
 
     // Parse dimensions from size parameter
     const [width, height] = size.split("x").map(Number);
+
+    // Emit usage event for cost tracking
+    if (config.hooks?.onUsage) {
+      try {
+        await config.hooks.onUsage({
+          provider: "openai",
+          model: "dall-e-2",
+          operation: "variations",
+          imageWidth: width,
+          imageHeight: height,
+          imageCount: n,
+        });
+      } catch (err) {
+        console.warn("[floimg-openai] Usage hook failed:", err);
+      }
+    }
 
     return {
       bytes,

@@ -8,7 +8,7 @@
  * - Post-processes results for moderation, saving, and callbacks
  */
 
-import { getClient } from "./setup.js";
+import { getClient, clearCollectedUsageEvents, getCollectedUsageEvents } from "./setup.js";
 import type {
   StudioNode,
   StudioEdge,
@@ -24,7 +24,7 @@ import type {
   ExecutionStepResult,
   ImageMetadata,
 } from "@teamflojo/floimg-studio-shared";
-import type { ImageBlob, Pipeline } from "@teamflojo/floimg";
+import type { ImageBlob, Pipeline, UsageEvent } from "@teamflojo/floimg";
 import { isImageBlob, isDataBlob } from "@teamflojo/floimg";
 import { loadUpload } from "../routes/uploads.js";
 import { nanoid } from "nanoid";
@@ -184,6 +184,8 @@ export interface ExecutionResult {
   images: Map<string, Buffer>;
   nodeIdByImageId: Map<string, string>;
   dataOutputs: Map<string, DataOutput>;
+  /** Usage events collected from AI providers during execution */
+  usageEvents: UsageEvent[];
 }
 
 /**
@@ -241,6 +243,9 @@ export async function executeWorkflow(
   }
 
   try {
+    // Clear any previously collected usage events before this execution
+    clearCollectedUsageEvents();
+
     // Step 1: Pre-load all input nodes
     const inputNodes = nodes.filter((n) => n.type === "input");
     const initialVariables: Record<string, ImageBlob> = {};
@@ -1169,7 +1174,10 @@ export async function executeWorkflow(
     }
 
     callbacks?.onComplete?.(imageIds);
-    return { imageIds, images, nodeIdByImageId, dataOutputs };
+    // Collect usage events from all AI operations in this execution
+    const usageEvents = getCollectedUsageEvents();
+
+    return { imageIds, images, nodeIdByImageId, dataOutputs, usageEvents };
   } catch (error) {
     callbacks?.onError?.(error instanceof Error ? error.message : String(error));
     throw error;

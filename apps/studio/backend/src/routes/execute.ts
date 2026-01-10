@@ -145,6 +145,7 @@ export async function executeRoutes(fastify: FastifyInstance) {
         imageUrls,
         previews,
         dataOutputs,
+        usageEvents: result.usageEvents,
       };
     } catch (error) {
       reply.code(500);

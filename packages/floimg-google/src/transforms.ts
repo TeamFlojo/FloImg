@@ -6,6 +6,7 @@ import type {
   ImageGenerator,
   GeneratorSchema,
   MimeType,
+  UsageHooks,
 } from "@teamflojo/floimg";
 import { enhancePrompt as enhancePromptFn } from "./prompt-enhancer.js";
 
@@ -163,6 +164,8 @@ export interface GeminiTransformConfig {
   apiKey?: string;
   /** Default model to use */
   model?: GeminiImageModel;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 /**
@@ -365,6 +368,22 @@ export function geminiTransform(config: GeminiTransformConfig = {}): TransformPr
     // Get dimensions from imageSize and aspectRatio
     const dimensions = getApproximateDimensionsFromSize(imageSize, aspectRatio);
 
+    // Emit usage event for cost tracking
+    if (config.hooks?.onUsage) {
+      try {
+        await config.hooks.onUsage({
+          provider: "google",
+          model,
+          operation: "transform",
+          imageWidth: dimensions.width,
+          imageHeight: dimensions.height,
+          imageCount: 1,
+        });
+      } catch (err) {
+        console.warn("[floimg-google] Usage hook failed:", err);
+      }
+    }
+
     return {
       bytes,
       mime,
@@ -501,6 +520,8 @@ export interface GeminiGenerateConfig {
   apiKey?: string;
   /** Default model to use */
   model?: GeminiImageModel;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 /**
@@ -683,6 +704,22 @@ export function geminiGenerate(config: GeminiGenerateConfig = {}): ImageGenerato
 
       // Get dimensions from imageSize and aspectRatio
       const dimensions = getApproximateDimensionsFromSize(imageSize, aspectRatio);
+
+      // Emit usage event for cost tracking
+      if (config.hooks?.onUsage) {
+        try {
+          await config.hooks.onUsage({
+            provider: "google",
+            model,
+            operation: "generate",
+            imageWidth: dimensions.width,
+            imageHeight: dimensions.height,
+            imageCount: 1,
+          });
+        } catch (err) {
+          console.warn("[floimg-google] Usage hook failed:", err);
+        }
+      }
 
       return {
         bytes,

@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### @teamflojo/floimg
+
+- feat: add `UsageEvent` and `UsageHooks` interfaces for AI cost observability
+  - Enables tracking of API costs across providers for billing/chargebacks
+  - Providers emit events with token counts, image dimensions, and metadata
+
+### @teamflojo/floimg-openai
+
+- feat: add optional `hooks` config for usage event emission
+  - Supports generate, vision, text, edit, and variations operations
+  - Emits events with model, dimensions, quality, and token counts
+
+### @teamflojo/floimg-stability
+
+- feat: add optional `hooks` config for usage event emission
+  - Supports generate and transform operations
+
+### @teamflojo/floimg-google
+
+- feat: add optional `hooks` config for usage event emission
+  - Supports Imagen generate, Gemini vision/text, and Gemini transforms
+  - Emits events with actual token counts from API responses
+
+### @teamflojo/floimg-replicate
+
+- feat: add optional `hooks` config for usage event emission
+  - Supports transform operations (upscale, remove-bg, etc.)
+
+### @teamflojo/floimg-xai
+
+- feat: add optional `hooks` config for usage event emission
+  - Supports Grok text and vision operations
+  - Emits events with actual token counts from API responses
+
+### @teamflojo/floimg-studio-backend
+
+- feat: collect and return usage events from workflow execution
+  - OSS backend now returns `usageEvents` in execution results
+  - Enables cloud platforms to track actual AI costs
+
 ## [v0.13.0] - 2026-01-09
 
 ### @teamflojo/floimg-google (0.5.0)

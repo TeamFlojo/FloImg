@@ -229,17 +229,21 @@ export function geminiText(config: GeminiTextConfig = {}): TextProvider {
         }
       }
 
-      // Emit usage event for cost tracking
+      // Emit usage event for cost tracking (errors logged but don't fail the operation)
       if (config.hooks?.onUsage) {
-        await config.hooks.onUsage({
-          provider: "google",
-          model,
-          operation: "text",
-          // Gemini SDK doesn't expose token counts directly
-          rawMetadata: {
-            temperature,
-          },
-        });
+        try {
+          await config.hooks.onUsage({
+            provider: "google",
+            model,
+            operation: "text",
+            // Gemini SDK doesn't expose token counts directly
+            rawMetadata: {
+              temperature,
+            },
+          });
+        } catch (err) {
+          console.warn("[floimg-google] Usage hook failed:", err);
+        }
       }
 
       return {
@@ -467,14 +471,18 @@ export function geminiVision(config: GeminiVisionConfig = {}): VisionProvider {
         }
       }
 
-      // Emit usage event for cost tracking
+      // Emit usage event for cost tracking (errors logged but don't fail the operation)
       if (config.hooks?.onUsage) {
-        await config.hooks.onUsage({
-          provider: "google",
-          model,
-          operation: "vision",
-          // Gemini SDK doesn't expose token counts directly
-        });
+        try {
+          await config.hooks.onUsage({
+            provider: "google",
+            model,
+            operation: "vision",
+            // Gemini SDK doesn't expose token counts directly
+          });
+        } catch (err) {
+          console.warn("[floimg-google] Usage hook failed:", err);
+        }
       }
 
       return {

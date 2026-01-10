@@ -303,22 +303,26 @@ export default function stability(config: StabilityConfig = {}): ImageGenerator 
       // Convert base64 to Buffer
       const bytes = Buffer.from(artifact.base64, "base64");
 
-      // Emit usage event for cost tracking
+      // Emit usage event for cost tracking (errors logged but don't fail the operation)
       if (config.hooks?.onUsage) {
-        await config.hooks.onUsage({
-          provider: "stability",
-          model,
-          operation: "generate",
-          imageWidth: width,
-          imageHeight: height,
-          imageCount: 1,
-          rawMetadata: {
-            stylePreset,
-            cfgScale,
-            steps,
-            seed: artifact.seed,
-          },
-        });
+        try {
+          await config.hooks.onUsage({
+            provider: "stability",
+            model,
+            operation: "generate",
+            imageWidth: width,
+            imageHeight: height,
+            imageCount: 1,
+            rawMetadata: {
+              stylePreset,
+              cfgScale,
+              steps,
+              seed: artifact.seed,
+            },
+          });
+        } catch (err) {
+          console.warn("[floimg-stability] Usage hook failed:", err);
+        }
       }
 
       return {

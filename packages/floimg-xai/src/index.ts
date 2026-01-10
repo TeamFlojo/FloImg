@@ -217,18 +217,22 @@ export function grokText(config: GrokTextConfig = {}): TextProvider {
         }
       }
 
-      // Emit usage event for cost tracking
+      // Emit usage event for cost tracking (errors logged but don't fail the operation)
       if (config.hooks?.onUsage) {
-        await config.hooks.onUsage({
-          provider: "xai",
-          model,
-          operation: "text",
-          inputTokens: response.usage?.prompt_tokens,
-          outputTokens: response.usage?.completion_tokens,
-          rawMetadata: {
-            usage: response.usage,
-          },
-        });
+        try {
+          await config.hooks.onUsage({
+            provider: "xai",
+            model,
+            operation: "text",
+            inputTokens: response.usage?.prompt_tokens,
+            outputTokens: response.usage?.completion_tokens,
+            rawMetadata: {
+              usage: response.usage,
+            },
+          });
+        } catch (err) {
+          console.warn("[floimg-xai] Usage hook failed:", err);
+        }
       }
 
       return {
@@ -424,18 +428,22 @@ export function grokVision(config: GrokVisionConfig = {}): VisionProvider {
         }
       }
 
-      // Emit usage event for cost tracking
+      // Emit usage event for cost tracking (errors logged but don't fail the operation)
       if (config.hooks?.onUsage) {
-        await config.hooks.onUsage({
-          provider: "xai",
-          model,
-          operation: "vision",
-          inputTokens: response.usage?.prompt_tokens,
-          outputTokens: response.usage?.completion_tokens,
-          rawMetadata: {
-            usage: response.usage,
-          },
-        });
+        try {
+          await config.hooks.onUsage({
+            provider: "xai",
+            model,
+            operation: "vision",
+            inputTokens: response.usage?.prompt_tokens,
+            outputTokens: response.usage?.completion_tokens,
+            rawMetadata: {
+              usage: response.usage,
+            },
+          });
+        } catch (err) {
+          console.warn("[floimg-xai] Usage hook failed:", err);
+        }
       }
 
       return {

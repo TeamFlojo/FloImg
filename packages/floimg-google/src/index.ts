@@ -199,16 +199,20 @@ export default function googleImagen(config: GoogleImagenConfig = {}): ImageGene
       // Get approximate dimensions from aspect ratio
       const dimensions = getApproximateDimensions(aspectRatio);
 
-      // Emit usage event for cost tracking
+      // Emit usage event for cost tracking (errors logged but don't fail the operation)
       if (config.hooks?.onUsage) {
-        await config.hooks.onUsage({
-          provider: "google",
-          model,
-          operation: "generate",
-          imageWidth: dimensions.width,
-          imageHeight: dimensions.height,
-          imageCount: numberOfImages,
-        });
+        try {
+          await config.hooks.onUsage({
+            provider: "google",
+            model,
+            operation: "generate",
+            imageWidth: dimensions.width,
+            imageHeight: dimensions.height,
+            imageCount: numberOfImages,
+          });
+        } catch (err) {
+          console.warn("[floimg-google] Usage hook failed:", err);
+        }
       }
 
       return {

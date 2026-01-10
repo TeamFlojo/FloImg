@@ -466,16 +466,20 @@ export function replicateTransform(config: ReplicateTransformConfig = {}): Trans
       }
       const result = await operation(input, params);
 
-      // Emit usage event for cost tracking
+      // Emit usage event for cost tracking (errors logged but don't fail the operation)
       if (config.hooks?.onUsage) {
-        await config.hooks.onUsage({
-          provider: "replicate",
-          model: "replicate-transform",
-          operation: op,
-          imageWidth: input.width,
-          imageHeight: input.height,
-          imageCount: 1,
-        });
+        try {
+          await config.hooks.onUsage({
+            provider: "replicate",
+            model: "replicate-transform",
+            operation: op,
+            imageWidth: input.width,
+            imageHeight: input.height,
+            imageCount: 1,
+          });
+        } catch (err) {
+          console.warn("[floimg-replicate] Usage hook failed:", err);
+        }
       }
 
       return result;

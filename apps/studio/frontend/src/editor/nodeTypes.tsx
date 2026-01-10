@@ -14,20 +14,12 @@ import type {
 import { useWorkflowStore } from "../stores/workflowStore";
 import { uploadImage, getUploadBlobUrl } from "../api/client";
 
-// Helper to get execution status class for node border
+// Helper to get execution status class for node styling
 function getExecutionClass(nodeStatus: string | undefined): string {
-  if (nodeStatus === "pending") {
-    return "border-gray-400 dark:border-zinc-500";
-  }
-  if (nodeStatus === "running") {
-    return "border-yellow-400 animate-pulse";
-  }
-  if (nodeStatus === "completed") {
-    return "border-green-500";
-  }
-  if (nodeStatus === "error") {
-    return "border-red-500";
-  }
+  if (nodeStatus === "pending") return "floimg-node--pending";
+  if (nodeStatus === "running") return "floimg-node--running";
+  if (nodeStatus === "completed") return "floimg-node--completed";
+  if (nodeStatus === "error") return "floimg-node--error";
   return "";
 }
 
@@ -78,7 +70,6 @@ export const GeneratorNode = memo(function GeneratorNode({
   const previewVisible = useWorkflowStore((s) => s.previewVisible[id] !== false);
 
   const executionClass = getExecutionClass(nodeStatus);
-  const borderClass = executionClass || (selected ? "border-blue-500" : "border-blue-200");
 
   // AI generators get a text input handle for dynamic prompts
   const isAI = data.isAI;
@@ -87,7 +78,7 @@ export const GeneratorNode = memo(function GeneratorNode({
 
   return (
     <div
-      className={`rounded-lg border-2 bg-white dark:bg-zinc-800 shadow-md min-w-[180px] overflow-hidden ${borderClass}`}
+      className={`floimg-node floimg-node--generator relative min-w-[190px] overflow-hidden ${selected ? "selected" : ""} ${executionClass}`}
     >
       {/* Text input handle for AI generators (optional - for dynamic prompts) */}
       {isAI && (
@@ -95,7 +86,7 @@ export const GeneratorNode = memo(function GeneratorNode({
           type="target"
           position={Position.Top}
           id="text"
-          className="w-3 h-3 !bg-pink-500"
+          className="!w-3 !h-3 !bg-pink-500 !border-2 !border-white dark:!border-zinc-800"
           title="Text input (optional prompt from text/vision node)"
         />
       )}
@@ -105,46 +96,58 @@ export const GeneratorNode = memo(function GeneratorNode({
           type="target"
           position={Position.Left}
           id="references"
-          className="w-3 h-3 !bg-violet-500"
+          className="!w-3 !h-3 !bg-violet-500 !border-2 !border-white dark:!border-zinc-800"
           style={{ top: "50%" }}
           title={`Reference images (up to ${data.maxReferenceImages || 14})`}
         />
       )}
       {preview && previewVisible && (
-        <div className="bg-gray-100 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700">
-          <img src={preview} alt="Preview" className="w-full h-24 object-contain" />
+        <div className="floimg-node__preview">
+          <img src={preview} alt="Preview" className="w-full h-20 object-contain rounded-md" />
         </div>
       )}
-      <div className="px-4 py-3">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-3 h-3 rounded-full bg-blue-500" />
-          <span className="font-semibold text-sm text-blue-700 dark:text-blue-400">
-            {data.generatorName}
-          </span>
-          <PreviewToggle nodeId={id} color="text-blue-500 dark:text-blue-400" />
+      <div className="floimg-node__header">
+        <div className="floimg-node__icon bg-blue-500/10">
+          <div className="w-2 h-2 rounded-full bg-blue-500" />
         </div>
+        <span className="floimg-node__title text-blue-600 dark:text-blue-400">
+          {data.generatorName}
+        </span>
+        <PreviewToggle
+          nodeId={id}
+          color="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+        />
+      </div>
+      <div className="floimg-node__content">
         {isAI && (
-          <div className="text-[10px] text-pink-500 dark:text-pink-400 mb-1">
-            ↑ Connect text node for dynamic prompt
+          <div className="text-[10px] text-pink-500/80 dark:text-pink-400/80 mb-1.5 flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-pink-400" />
+            Text input for dynamic prompt
           </div>
         )}
         {acceptsReferences && (
-          <div className="text-[10px] text-violet-500 dark:text-violet-400 mb-1">
-            ← Connect reference images
+          <div className="text-[10px] text-violet-500/80 dark:text-violet-400/80 mb-1.5 flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-violet-400" />
+            Reference images
           </div>
         )}
-        <div className="text-xs text-gray-500 dark:text-zinc-400">
+        <div className="space-y-0.5">
           {Object.entries(data.params)
             .filter(([, value]) => typeof value !== "object" || value === null)
             .slice(0, 2)
             .map(([key, value]) => (
-              <div key={key} className="truncate">
-                {key}: {String(value).slice(0, 20)}
+              <div key={key} className="floimg-node__param truncate">
+                <span className="text-zinc-400 dark:text-zinc-500">{key}:</span>{" "}
+                {String(value).slice(0, 20)}
               </div>
             ))}
         </div>
       </div>
-      <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-blue-500" />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="!w-3 !h-3 !bg-blue-500 !border-2 !border-white dark:!border-zinc-800"
+      />
     </div>
   );
 });
@@ -162,16 +165,17 @@ export const TransformNode = memo(function TransformNode({
   const previewVisible = useWorkflowStore((s) => s.previewVisible[id] !== false);
 
   const executionClass = getExecutionClass(nodeStatus);
-  const borderClass = executionClass || (selected ? "border-teal-500" : "border-teal-200");
 
   // AI transforms get a purple accent to indicate AI-powered
   const isAI = data.isAI;
   // Check if this transform accepts reference images
   const acceptsReferences = data.acceptsReferenceImages;
 
+  const nodeTypeClass = isAI ? "floimg-node--ai-transform" : "floimg-node--transform";
+
   return (
     <div
-      className={`rounded-lg border-2 bg-white dark:bg-zinc-800 shadow-md min-w-[180px] overflow-hidden ${borderClass}`}
+      className={`floimg-node ${nodeTypeClass} relative min-w-[190px] overflow-hidden ${selected ? "selected" : ""} ${executionClass}`}
     >
       {/* Text input handle for AI transforms (optional - for dynamic prompts) */}
       {isAI && (
@@ -179,31 +183,36 @@ export const TransformNode = memo(function TransformNode({
           type="target"
           position={Position.Top}
           id="text"
-          className="w-3 h-3 !bg-pink-500"
+          className="!w-3 !h-3 !bg-pink-500 !border-2 !border-white dark:!border-zinc-800"
           title="Text input (optional prompt from text/vision node)"
         />
       )}
       {/* Image input handle */}
-      <Handle type="target" position={Position.Left} id="image" className="w-3 h-3 !bg-teal-500" />
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="image"
+        className="!w-3 !h-3 !bg-teal-500 !border-2 !border-white dark:!border-zinc-800"
+      />
       {/* Reference images input handle (for AI transforms that accept additional references) */}
       {acceptsReferences && (
         <Handle
           type="target"
           position={Position.Bottom}
           id="references"
-          className="w-3 h-3 !bg-violet-500"
+          className="!w-3 !h-3 !bg-violet-500 !border-2 !border-white dark:!border-zinc-800"
           title={`Reference images (up to ${data.maxReferenceImages || 13})`}
         />
       )}
       {preview && previewVisible && (
-        <div className="bg-gray-100 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700">
-          <img src={preview} alt="Preview" className="w-full h-24 object-contain" />
+        <div className="floimg-node__preview">
+          <img src={preview} alt="Preview" className="w-full h-20 object-contain rounded-md" />
         </div>
       )}
-      <div className="px-4 py-3">
-        <div className="flex items-center gap-2 mb-2">
+      <div className="floimg-node__header">
+        <div className={`floimg-node__icon ${isAI ? "bg-purple-500/10" : "bg-teal-500/10"}`}>
           {isAI ? (
-            <svg className="w-3 h-3 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-2.5 h-2.5 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
               <path d="M13 7H7v6h6V7z" />
               <path
                 fillRule="evenodd"
@@ -212,42 +221,49 @@ export const TransformNode = memo(function TransformNode({
               />
             </svg>
           ) : (
-            <div className="w-3 h-3 rounded-full bg-teal-500" />
+            <div className="w-2 h-2 rounded-full bg-teal-500" />
           )}
-          <span
-            className={`font-semibold text-sm ${isAI ? "text-purple-700 dark:text-purple-400" : "text-teal-700 dark:text-teal-400"}`}
-          >
-            {data.operation}
-          </span>
-          <PreviewToggle
-            nodeId={id}
-            color={
-              isAI ? "text-purple-500 dark:text-purple-400" : "text-teal-500 dark:text-teal-400"
-            }
-          />
         </div>
+        <span
+          className={`floimg-node__title ${isAI ? "text-purple-600 dark:text-purple-400" : "text-teal-600 dark:text-teal-400"}`}
+        >
+          {data.operation}
+        </span>
+        <PreviewToggle
+          nodeId={id}
+          color="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+        />
+      </div>
+      <div className="floimg-node__content">
         {isAI && (
-          <div className="text-[10px] text-pink-500 dark:text-pink-400 mb-1">
-            ↑ Connect text node for dynamic prompt
+          <div className="text-[10px] text-pink-500/80 dark:text-pink-400/80 mb-1.5 flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-pink-400" />
+            Text input for dynamic prompt
           </div>
         )}
         {acceptsReferences && (
-          <div className="text-[10px] text-violet-500 dark:text-violet-400 mb-1">
-            ↓ Connect reference images
+          <div className="text-[10px] text-violet-500/80 dark:text-violet-400/80 mb-1.5 flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-violet-400" />
+            Reference images
           </div>
         )}
-        <div className="text-xs text-gray-500 dark:text-zinc-400">
+        <div className="space-y-0.5">
           {Object.entries(data.params)
             .filter(([, value]) => typeof value !== "object" || value === null)
             .slice(0, 2)
             .map(([key, value]) => (
-              <div key={key} className="truncate">
-                {key}: {String(value).slice(0, 20)}
+              <div key={key} className="floimg-node__param truncate">
+                <span className="text-zinc-400 dark:text-zinc-500">{key}:</span>{" "}
+                {String(value).slice(0, 20)}
               </div>
             ))}
         </div>
       </div>
-      <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-teal-500" />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className={`!w-3 !h-3 ${isAI ? "!bg-purple-500" : "!bg-teal-500"} !border-2 !border-white dark:!border-zinc-800`}
+      />
     </div>
   );
 });
@@ -257,18 +273,32 @@ export const SaveNode = memo(function SaveNode({ id, data, selected }: NodeProps
   const nodeStatus = useWorkflowStore((s) => s.execution.nodeStatus[id]);
 
   const executionClass = getExecutionClass(nodeStatus);
-  const borderClass = executionClass || (selected ? "border-green-500" : "border-green-200");
 
   return (
     <div
-      className={`px-4 py-3 rounded-lg border-2 bg-white dark:bg-zinc-800 shadow-md min-w-[180px] ${borderClass}`}
+      className={`floimg-node floimg-node--save relative min-w-[190px] ${selected ? "selected" : ""} ${executionClass}`}
     >
-      <Handle type="target" position={Position.Left} className="w-3 h-3 !bg-green-500" />
-      <div className="flex items-center gap-2 mb-2">
-        <div className="w-3 h-3 rounded-full bg-green-500" />
-        <span className="font-semibold text-sm text-green-700 dark:text-green-400">Save</span>
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="!w-3 !h-3 !bg-emerald-500 !border-2 !border-white dark:!border-zinc-800"
+      />
+      <div className="floimg-node__header">
+        <div className="floimg-node__icon bg-emerald-500/10">
+          <svg
+            className="w-2.5 h-2.5 text-emerald-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <span className="floimg-node__title text-emerald-600 dark:text-emerald-400">Save</span>
       </div>
-      <div className="text-xs text-gray-500 dark:text-zinc-400 truncate">{data.destination}</div>
+      <div className="floimg-node__content">
+        <div className="floimg-node__param truncate">{data.destination}</div>
+      </div>
     </div>
   );
 });
@@ -282,7 +312,6 @@ export const InputNode = memo(function InputNode({ id, data, selected }: NodePro
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const executionClass = getExecutionClass(nodeStatus);
-  const borderClass = executionClass || (selected ? "border-amber-500" : "border-amber-200");
 
   // Handle file selection
   const handleFileSelect = useCallback(
@@ -335,22 +364,34 @@ export const InputNode = memo(function InputNode({ id, data, selected }: NodePro
 
   return (
     <div
-      className={`rounded-lg border-2 bg-white dark:bg-zinc-800 shadow-md min-w-[180px] overflow-hidden ${borderClass}`}
+      className={`floimg-node floimg-node--input relative min-w-[190px] overflow-hidden ${selected ? "selected" : ""} ${executionClass}`}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >
       {previewUrl && previewVisible ? (
-        <div className="bg-gray-100 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700">
-          <img src={previewUrl} alt="Uploaded" className="w-full h-24 object-contain" />
+        <div className="floimg-node__preview">
+          <img src={previewUrl} alt="Uploaded" className="w-full h-20 object-contain rounded-md" />
         </div>
       ) : !previewUrl ? (
         <div
-          className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-100 dark:border-amber-800 h-24 flex items-center justify-center cursor-pointer hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
+          className="h-20 flex items-center justify-center cursor-pointer bg-amber-50/50 dark:bg-amber-900/20 hover:bg-amber-100/50 dark:hover:bg-amber-900/30 transition-colors border-b border-amber-100/50 dark:border-amber-800/30"
           onClick={() => fileInputRef.current?.click()}
         >
-          <div className="text-center text-amber-600 dark:text-amber-400">
-            <div className="text-2xl mb-1">+</div>
-            <div className="text-xs">Drop image or click</div>
+          <div className="text-center text-amber-500 dark:text-amber-400">
+            <svg
+              className="w-6 h-6 mx-auto mb-1 opacity-60"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            <div className="text-[10px] opacity-70">Drop or click</div>
           </div>
         </div>
       ) : null}
@@ -361,17 +402,36 @@ export const InputNode = memo(function InputNode({ id, data, selected }: NodePro
         className="hidden"
         onChange={handleInputChange}
       />
-      <div className="px-4 py-3">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-3 h-3 rounded-full bg-amber-500" />
-          <span className="font-semibold text-sm text-amber-700 dark:text-amber-400">Input</span>
-          <PreviewToggle nodeId={id} color="text-amber-500 dark:text-amber-400" />
+      <div className="floimg-node__header">
+        <div className="floimg-node__icon bg-amber-500/10">
+          <svg
+            className="w-2.5 h-2.5 text-amber-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
         </div>
-        <div className="text-xs text-gray-500 dark:text-zinc-400 truncate">
-          {data.filename || "No image selected"}
-        </div>
+        <span className="floimg-node__title text-amber-600 dark:text-amber-400">Input</span>
+        <PreviewToggle
+          nodeId={id}
+          color="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+        />
       </div>
-      <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-amber-500" />
+      <div className="floimg-node__content">
+        <div className="floimg-node__param truncate">{data.filename || "No image selected"}</div>
+      </div>
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="!w-3 !h-3 !bg-amber-500 !border-2 !border-white dark:!border-zinc-800"
+      />
     </div>
   );
 });
@@ -388,7 +448,6 @@ export const VisionNode = memo(function VisionNode({
   const openOutputInspector = useWorkflowStore((s) => s.openOutputInspector);
 
   const executionClass = getExecutionClass(nodeStatus);
-  const borderClass = executionClass || (selected ? "border-cyan-500" : "border-cyan-200");
 
   // Get output schema properties for multi-output handles
   const outputProperties = data.outputSchema?.properties
@@ -398,14 +457,14 @@ export const VisionNode = memo(function VisionNode({
 
   return (
     <div
-      className={`rounded-lg border-2 bg-white dark:bg-zinc-800 shadow-md min-w-[180px] overflow-hidden ${borderClass}`}
+      className={`floimg-node floimg-node--vision relative min-w-[190px] overflow-hidden ${selected ? "selected" : ""} ${executionClass}`}
     >
       {/* Text/context input handle (top) - for workflow context */}
       <Handle
         type="target"
         position={Position.Top}
         id="context"
-        className="w-3 h-3 !bg-pink-500"
+        className="!w-3 !h-3 !bg-pink-500 !border-2 !border-white dark:!border-zinc-800"
         title="Context input (optional - from text/vision node for evaluation context)"
       />
       {/* Image input handle (left) - for images to analyze */}
@@ -413,14 +472,14 @@ export const VisionNode = memo(function VisionNode({
         type="target"
         position={Position.Left}
         id="image"
-        className="w-3 h-3 !bg-cyan-500"
+        className="!w-3 !h-3 !bg-cyan-500 !border-2 !border-white dark:!border-zinc-800"
         title="Image input"
       />
       {dataOutput && (
-        <div className="bg-cyan-50 dark:bg-cyan-900/30 border-b border-cyan-100 dark:border-cyan-800 p-2 max-h-24 overflow-auto">
-          <pre className="text-xs text-cyan-800 dark:text-cyan-200 whitespace-pre-wrap">
-            {dataOutput.content?.slice(0, 200)}
-            {(dataOutput.content?.length || 0) > 200 && "..."}
+        <div className="bg-cyan-50/50 dark:bg-cyan-900/20 border-b border-cyan-100/50 dark:border-cyan-800/30 p-2.5 max-h-20 overflow-auto">
+          <pre className="text-[11px] text-cyan-700 dark:text-cyan-300 whitespace-pre-wrap font-mono">
+            {dataOutput.content?.slice(0, 150)}
+            {(dataOutput.content?.length || 0) > 150 && "..."}
           </pre>
           {dataOutput.content && dataOutput.content.length > 100 && (
             <button
@@ -428,16 +487,16 @@ export const VisionNode = memo(function VisionNode({
                 e.stopPropagation();
                 openOutputInspector(id);
               }}
-              className="mt-1 text-xs text-cyan-600 dark:text-cyan-400 hover:text-cyan-800 dark:hover:text-cyan-300 hover:underline"
+              className="mt-1.5 text-[10px] text-cyan-500 dark:text-cyan-400 hover:text-cyan-600 dark:hover:text-cyan-300 font-medium"
             >
               View Full Output
             </button>
           )}
         </div>
       )}
-      <div className="px-4 py-3">
-        <div className="flex items-center gap-2 mb-2">
-          <svg className="w-3 h-3 text-cyan-500" fill="currentColor" viewBox="0 0 20 20">
+      <div className="floimg-node__header">
+        <div className="floimg-node__icon bg-cyan-500/10">
+          <svg className="w-2.5 h-2.5 text-cyan-500" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
             <path
               fillRule="evenodd"
@@ -445,27 +504,29 @@ export const VisionNode = memo(function VisionNode({
               clipRule="evenodd"
             />
           </svg>
-          <span className="font-semibold text-sm text-cyan-700 dark:text-cyan-400">
-            {data.providerLabel || data.providerName}
-          </span>
         </div>
-        <div className="text-xs text-gray-500 dark:text-zinc-400">
-          {data.params.prompt ? (
-            <div className="truncate">{String(data.params.prompt).slice(0, 30)}...</div>
-          ) : null}
-        </div>
+        <span className="floimg-node__title text-cyan-600 dark:text-cyan-400">
+          {data.providerLabel || data.providerName}
+        </span>
+      </div>
+      <div className="floimg-node__content">
+        {data.params.prompt ? (
+          <div className="floimg-node__param truncate">
+            {String(data.params.prompt).slice(0, 30)}...
+          </div>
+        ) : null}
         {/* Show output schema info if defined */}
         {hasMultiOutput && (
-          <div className="mt-2 pt-2 border-t border-cyan-200 dark:border-cyan-800">
+          <div className="mt-2 pt-2 border-t border-zinc-100 dark:border-zinc-700/50">
             <div className="text-[10px] text-cyan-500 dark:text-cyan-400 font-medium mb-1">
               Outputs:
             </div>
             {outputProperties.map(([key]) => (
               <div
                 key={key}
-                className="text-[10px] text-gray-500 dark:text-zinc-400 flex items-center gap-1"
+                className="text-[10px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                <span className="w-1 h-1 rounded-full bg-cyan-400"></span>
                 {key}
               </div>
             ))}
@@ -480,7 +541,7 @@ export const VisionNode = memo(function VisionNode({
             type="source"
             position={Position.Right}
             id="output"
-            className="w-3 h-3 !bg-cyan-500"
+            className="!w-3 !h-3 !bg-cyan-500 !border-2 !border-white dark:!border-zinc-800"
             style={{ top: "50%" }}
             title="Full JSON output"
           />
@@ -491,7 +552,7 @@ export const VisionNode = memo(function VisionNode({
               type="source"
               position={Position.Right}
               id={`output.${key}`}
-              className="w-2.5 h-2.5 !bg-cyan-400"
+              className="!w-2.5 !h-2.5 !bg-cyan-400 !border-2 !border-white dark:!border-zinc-800"
               style={{
                 top: `${70 + index * 14}%`,
               }}
@@ -500,7 +561,11 @@ export const VisionNode = memo(function VisionNode({
           ))}
         </>
       ) : (
-        <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-cyan-500" />
+        <Handle
+          type="source"
+          position={Position.Right}
+          className="!w-3 !h-3 !bg-cyan-500 !border-2 !border-white dark:!border-zinc-800"
+        />
       )}
     </div>
   );
@@ -514,7 +579,6 @@ export const TextNode = memo(function TextNode({ id, data, selected }: NodeProps
   const openOutputInspector = useWorkflowStore((s) => s.openOutputInspector);
 
   const executionClass = getExecutionClass(nodeStatus);
-  const borderClass = executionClass || (selected ? "border-pink-500" : "border-pink-200");
 
   // Get output schema properties for multi-output handles
   const outputProperties = data.outputSchema?.properties
@@ -524,14 +588,18 @@ export const TextNode = memo(function TextNode({ id, data, selected }: NodeProps
 
   return (
     <div
-      className={`rounded-lg border-2 bg-white dark:bg-zinc-800 shadow-md min-w-[180px] overflow-hidden ${borderClass}`}
+      className={`floimg-node floimg-node--text relative min-w-[190px] overflow-hidden ${selected ? "selected" : ""} ${executionClass}`}
     >
-      <Handle type="target" position={Position.Left} className="w-3 h-3 !bg-pink-500" />
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="!w-3 !h-3 !bg-pink-500 !border-2 !border-white dark:!border-zinc-800"
+      />
       {dataOutput && (
-        <div className="bg-pink-50 dark:bg-pink-900/30 border-b border-pink-100 dark:border-pink-800 p-2 max-h-24 overflow-auto">
-          <pre className="text-xs text-pink-800 dark:text-pink-200 whitespace-pre-wrap">
-            {dataOutput.content?.slice(0, 200)}
-            {(dataOutput.content?.length || 0) > 200 && "..."}
+        <div className="bg-pink-50/50 dark:bg-pink-900/20 border-b border-pink-100/50 dark:border-pink-800/30 p-2.5 max-h-20 overflow-auto">
+          <pre className="text-[11px] text-pink-700 dark:text-pink-300 whitespace-pre-wrap font-mono">
+            {dataOutput.content?.slice(0, 150)}
+            {(dataOutput.content?.length || 0) > 150 && "..."}
           </pre>
           {dataOutput.content && dataOutput.content.length > 100 && (
             <button
@@ -539,43 +607,45 @@ export const TextNode = memo(function TextNode({ id, data, selected }: NodeProps
                 e.stopPropagation();
                 openOutputInspector(id);
               }}
-              className="mt-1 text-xs text-pink-600 dark:text-pink-400 hover:text-pink-800 dark:hover:text-pink-300 hover:underline"
+              className="mt-1.5 text-[10px] text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 font-medium"
             >
               View Full Output
             </button>
           )}
         </div>
       )}
-      <div className="px-4 py-3">
-        <div className="flex items-center gap-2 mb-2">
-          <svg className="w-3 h-3 text-pink-500" fill="currentColor" viewBox="0 0 20 20">
+      <div className="floimg-node__header">
+        <div className="floimg-node__icon bg-pink-500/10">
+          <svg className="w-2.5 h-2.5 text-pink-500" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
               d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z"
               clipRule="evenodd"
             />
           </svg>
-          <span className="font-semibold text-sm text-pink-700 dark:text-pink-400">
-            {data.providerLabel || data.providerName}
-          </span>
         </div>
-        <div className="text-xs text-gray-500 dark:text-zinc-400">
-          {data.params.prompt ? (
-            <div className="truncate">{String(data.params.prompt).slice(0, 30)}...</div>
-          ) : null}
-        </div>
+        <span className="floimg-node__title text-pink-600 dark:text-pink-400">
+          {data.providerLabel || data.providerName}
+        </span>
+      </div>
+      <div className="floimg-node__content">
+        {data.params.prompt ? (
+          <div className="floimg-node__param truncate">
+            {String(data.params.prompt).slice(0, 30)}...
+          </div>
+        ) : null}
         {/* Show output schema info if defined */}
         {hasMultiOutput && (
-          <div className="mt-2 pt-2 border-t border-pink-200 dark:border-pink-800">
+          <div className="mt-2 pt-2 border-t border-zinc-100 dark:border-zinc-700/50">
             <div className="text-[10px] text-pink-500 dark:text-pink-400 font-medium mb-1">
               Outputs:
             </div>
             {outputProperties.map(([key]) => (
               <div
                 key={key}
-                className="text-[10px] text-gray-500 dark:text-zinc-400 flex items-center gap-1"
+                className="text-[10px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-pink-400"></span>
+                <span className="w-1 h-1 rounded-full bg-pink-400"></span>
                 {key}
               </div>
             ))}
@@ -590,7 +660,7 @@ export const TextNode = memo(function TextNode({ id, data, selected }: NodeProps
             type="source"
             position={Position.Right}
             id="output"
-            className="w-3 h-3 !bg-pink-500"
+            className="!w-3 !h-3 !bg-pink-500 !border-2 !border-white dark:!border-zinc-800"
             style={{ top: "50%" }}
             title="Full JSON output"
           />
@@ -601,7 +671,7 @@ export const TextNode = memo(function TextNode({ id, data, selected }: NodeProps
               type="source"
               position={Position.Right}
               id={`output.${key}`}
-              className="w-2.5 h-2.5 !bg-pink-400"
+              className="!w-2.5 !h-2.5 !bg-pink-400 !border-2 !border-white dark:!border-zinc-800"
               style={{
                 top: `${70 + index * 14}%`,
               }}
@@ -610,7 +680,11 @@ export const TextNode = memo(function TextNode({ id, data, selected }: NodeProps
           ))}
         </>
       ) : (
-        <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-pink-500" />
+        <Handle
+          type="source"
+          position={Position.Right}
+          className="!w-3 !h-3 !bg-pink-500 !border-2 !border-white dark:!border-zinc-800"
+        />
       )}
     </div>
   );
@@ -629,29 +703,27 @@ export const FanOutNode = memo(function FanOutNode({
   const nodeStatus = useWorkflowStore((s) => s.execution.nodeStatus[id]);
 
   const executionClass = getExecutionClass(nodeStatus);
-  const borderClass = executionClass || (selected ? "border-orange-500" : "border-orange-200");
 
   // Determine output count based on mode
   const outputCount = data.mode === "count" ? data.count || 3 : 3;
 
   return (
     <div
-      className={`rounded-lg border-2 bg-white dark:bg-zinc-800 shadow-md min-w-[160px] overflow-hidden ${borderClass}`}
+      className={`floimg-node floimg-node--iterative relative min-w-[170px] overflow-hidden ${selected ? "selected" : ""} ${executionClass}`}
     >
       {/* Input handle - accepts data/array from upstream */}
       <Handle
         type="target"
         position={Position.Left}
         id="input"
-        className="w-3 h-3 !bg-orange-500"
+        className="!w-3 !h-3 !bg-orange-500 !border-2 !border-white dark:!border-zinc-800"
         style={{ top: "50%" }}
       />
 
-      <div className="px-4 py-3">
-        <div className="flex items-center gap-2 mb-2">
-          {/* Fork/branch icon */}
+      <div className="floimg-node__header">
+        <div className="floimg-node__icon bg-orange-500/10">
           <svg
-            className="w-4 h-4 text-orange-500"
+            className="w-2.5 h-2.5 text-orange-500"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -663,14 +735,14 @@ export const FanOutNode = memo(function FanOutNode({
               d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
             />
           </svg>
-          <span className="font-semibold text-sm text-orange-700 dark:text-orange-400">
-            Fan-Out
-          </span>
-          <span className="ml-auto text-xs bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 px-1.5 py-0.5 rounded">
-            ×{outputCount}
-          </span>
         </div>
-        <div className="text-xs text-gray-500 dark:text-zinc-400">
+        <span className="floimg-node__title text-orange-600 dark:text-orange-400">Fan-Out</span>
+        <span className="ml-auto text-[10px] bg-orange-500/10 text-orange-600 dark:text-orange-400 px-1.5 py-0.5 rounded-full font-medium">
+          ×{outputCount}
+        </span>
+      </div>
+      <div className="floimg-node__content">
+        <div className="floimg-node__param">
           {data.mode === "array" ? (
             <span>Iterate: {data.arrayProperty || "items"}</span>
           ) : (
@@ -686,7 +758,7 @@ export const FanOutNode = memo(function FanOutNode({
           type="source"
           position={Position.Right}
           id={`out[${i}]`}
-          className="w-2.5 h-2.5 !bg-orange-400"
+          className="!w-2.5 !h-2.5 !bg-orange-400 !border-2 !border-white dark:!border-zinc-800"
           style={{
             top: `${((i + 1) / (outputCount + 1)) * 100}%`,
           }}
@@ -706,13 +778,12 @@ export const CollectNode = memo(function CollectNode({
   const nodeStatus = useWorkflowStore((s) => s.execution.nodeStatus[id]);
 
   const executionClass = getExecutionClass(nodeStatus);
-  const borderClass = executionClass || (selected ? "border-orange-500" : "border-orange-200");
 
   const inputCount = data.expectedInputs || 3;
 
   return (
     <div
-      className={`rounded-lg border-2 bg-white dark:bg-zinc-800 shadow-md min-w-[160px] overflow-hidden ${borderClass}`}
+      className={`floimg-node floimg-node--iterative relative min-w-[170px] overflow-hidden ${selected ? "selected" : ""} ${executionClass}`}
     >
       {/* Dynamic input handles */}
       {Array.from({ length: inputCount }).map((_, i) => (
@@ -721,7 +792,7 @@ export const CollectNode = memo(function CollectNode({
           type="target"
           position={Position.Left}
           id={`in[${i}]`}
-          className="w-2.5 h-2.5 !bg-orange-400"
+          className="!w-2.5 !h-2.5 !bg-orange-400 !border-2 !border-white dark:!border-zinc-800"
           style={{
             top: `${((i + 1) / (inputCount + 1)) * 100}%`,
           }}
@@ -729,11 +800,10 @@ export const CollectNode = memo(function CollectNode({
         />
       ))}
 
-      <div className="px-4 py-3">
-        <div className="flex items-center gap-2 mb-2">
-          {/* Merge/collect icon */}
+      <div className="floimg-node__header">
+        <div className="floimg-node__icon bg-orange-500/10">
           <svg
-            className="w-4 h-4 text-orange-500"
+            className="w-2.5 h-2.5 text-orange-500"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -745,14 +815,14 @@ export const CollectNode = memo(function CollectNode({
               d="M4 7h12m0 0l-4-4m4 4l-4 4m8 6H8m0 0l4 4m-4-4l4-4"
             />
           </svg>
-          <span className="font-semibold text-sm text-orange-700 dark:text-orange-400">
-            Collect
-          </span>
-          <span className="ml-auto text-xs bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 px-1.5 py-0.5 rounded">
-            {inputCount}→1
-          </span>
         </div>
-        <div className="text-xs text-gray-500 dark:text-zinc-400">
+        <span className="floimg-node__title text-orange-600 dark:text-orange-400">Collect</span>
+        <span className="ml-auto text-[10px] bg-orange-500/10 text-orange-600 dark:text-orange-400 px-1.5 py-0.5 rounded-full font-medium">
+          {inputCount}→1
+        </span>
+      </div>
+      <div className="floimg-node__content">
+        <div className="floimg-node__param">
           {data.waitMode === "all" ? "Wait for all" : "Use available"}
         </div>
       </div>
@@ -762,7 +832,7 @@ export const CollectNode = memo(function CollectNode({
         type="source"
         position={Position.Right}
         id="output"
-        className="w-3 h-3 !bg-orange-500"
+        className="!w-3 !h-3 !bg-orange-500 !border-2 !border-white dark:!border-zinc-800"
         style={{ top: "50%" }}
       />
     </div>
@@ -778,20 +848,19 @@ export const RouterNode = memo(function RouterNode({
   const nodeStatus = useWorkflowStore((s) => s.execution.nodeStatus[id]);
 
   const executionClass = getExecutionClass(nodeStatus);
-  const borderClass = executionClass || (selected ? "border-amber-500" : "border-amber-200");
 
   const hasContextOutput = !!data.contextProperty;
 
   return (
     <div
-      className={`rounded-lg border-2 bg-white dark:bg-zinc-800 shadow-md min-w-[160px] overflow-hidden ${borderClass}`}
+      className={`floimg-node floimg-node--iterative relative min-w-[170px] overflow-hidden ${selected ? "selected" : ""} ${executionClass}`}
     >
       {/* Candidates input - array of options */}
       <Handle
         type="target"
         position={Position.Left}
         id="candidates"
-        className="w-3 h-3 !bg-amber-500"
+        className="!w-3 !h-3 !bg-amber-500 !border-2 !border-white dark:!border-zinc-800"
         style={{ top: "35%" }}
         title="Candidates (array)"
       />
@@ -800,16 +869,15 @@ export const RouterNode = memo(function RouterNode({
         type="target"
         position={Position.Left}
         id="selection"
-        className="w-3 h-3 !bg-cyan-500"
+        className="!w-3 !h-3 !bg-cyan-500 !border-2 !border-white dark:!border-zinc-800"
         style={{ top: "65%" }}
         title="Selection (from vision/text)"
       />
 
-      <div className="px-4 py-3">
-        <div className="flex items-center gap-2 mb-2">
-          {/* Router/switch icon */}
+      <div className="floimg-node__header">
+        <div className="floimg-node__icon bg-amber-500/10">
           <svg
-            className="w-4 h-4 text-amber-500"
+            className="w-2.5 h-2.5 text-amber-500"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -821,21 +889,23 @@ export const RouterNode = memo(function RouterNode({
               d="M13 5l7 7-7 7M5 5l7 7-7 7"
             />
           </svg>
-          <span className="font-semibold text-sm text-amber-700 dark:text-amber-400">Router</span>
         </div>
-        <div className="text-xs text-gray-500 dark:text-zinc-400 space-y-0.5">
-          <div className="flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+        <span className="floimg-node__title text-amber-600 dark:text-amber-400">Router</span>
+      </div>
+      <div className="floimg-node__content">
+        <div className="space-y-1">
+          <div className="floimg-node__param flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-amber-400"></span>
             candidates
           </div>
-          <div className="flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+          <div className="floimg-node__param flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-cyan-400"></span>
             selection.{data.selectionProperty || "winner"}
           </div>
         </div>
         {hasContextOutput && (
-          <div className="mt-2 pt-2 border-t border-amber-200 dark:border-amber-800">
-            <div className="text-[10px] text-amber-500 dark:text-amber-400">
+          <div className="mt-2 pt-2 border-t border-zinc-100 dark:border-zinc-700/50">
+            <div className="text-[10px] text-amber-500/80 dark:text-amber-400/80">
               + context: {data.contextProperty}
             </div>
           </div>
@@ -847,7 +917,7 @@ export const RouterNode = memo(function RouterNode({
         type="source"
         position={Position.Right}
         id="winner"
-        className="w-3 h-3 !bg-amber-500"
+        className="!w-3 !h-3 !bg-amber-500 !border-2 !border-white dark:!border-zinc-800"
         style={{ top: hasContextOutput ? "35%" : "50%" }}
         title="Selected item"
       />
@@ -857,7 +927,7 @@ export const RouterNode = memo(function RouterNode({
           type="source"
           position={Position.Right}
           id="context"
-          className="w-3 h-3 !bg-pink-500"
+          className="!w-3 !h-3 !bg-pink-500 !border-2 !border-white dark:!border-zinc-800"
           style={{ top: "65%" }}
           title={`Context: ${data.contextProperty}`}
         />

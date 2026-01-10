@@ -229,14 +229,14 @@ export function NodePalette() {
   );
 
   return (
-    <div className="w-64 bg-gray-50 dark:bg-zinc-800 border-r border-gray-200 dark:border-zinc-700 overflow-y-auto">
+    <div className="floimg-sidebar w-64 border-r border-gray-200 dark:border-zinc-700 overflow-y-auto">
       <div className="p-4">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Nodes</h2>
+        <h2 className="floimg-sidebar__header text-lg !normal-case !tracking-normal">Nodes</h2>
 
         {/* Input */}
-        <div className="mb-6">
+        <div className="floimg-sidebar__section">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wide">
+            <h3 className="floimg-sidebar__header !text-amber-600 dark:!text-amber-400 !mb-0">
               Input
             </h3>
             <button
@@ -250,12 +250,10 @@ export function NodePalette() {
             draggable
             onDragStart={(e) => handleDragStart(e, inputDefinition)}
             onDoubleClick={() => handleDoubleClick(inputDefinition)}
-            className="px-3 py-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded cursor-grab active:cursor-grabbing hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
+            className="floimg-palette-item floimg-palette-item--amber"
           >
-            <div className="text-sm font-medium text-amber-700 dark:text-amber-300">
-              Upload Image
-            </div>
-            <div className="text-xs text-gray-500 dark:text-zinc-400">Start with your image</div>
+            <div className="floimg-palette-item__title">Upload Image</div>
+            <div className="floimg-palette-item__desc">Start with your image</div>
           </div>
           {showUploads && (
             <div className="mt-2 border border-amber-200 dark:border-amber-700 rounded bg-white dark:bg-zinc-900 max-h-64 overflow-y-auto">
@@ -265,28 +263,22 @@ export function NodePalette() {
         </div>
 
         {/* Generators */}
-        <div className="mb-6">
-          <h3 className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-2">
-            Generators
-          </h3>
+        <div className="floimg-sidebar__section">
+          <h3 className="floimg-sidebar__header !text-blue-600 dark:!text-blue-400">Generators</h3>
           {Object.entries(generatorsByCategory).map(([category, nodes]) => (
             <div key={category} className="mb-3">
-              <div className="text-xs text-gray-500 dark:text-zinc-400 mb-1">{category}</div>
+              <div className="floimg-sidebar__category">{category}</div>
               {nodes.map((def) => (
                 <div
                   key={def.id}
                   draggable
                   onDragStart={(e) => handleDragStart(e, def)}
                   onDoubleClick={() => handleDoubleClick(def)}
-                  className="px-3 py-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded mb-1 cursor-grab active:cursor-grabbing hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                  className="floimg-palette-item floimg-palette-item--blue"
                 >
-                  <div className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                    {def.label}
-                  </div>
+                  <div className="floimg-palette-item__title">{def.label}</div>
                   {def.description && (
-                    <div className="text-xs text-gray-500 dark:text-zinc-400 truncate">
-                      {def.description}
-                    </div>
+                    <div className="floimg-palette-item__desc">{def.description}</div>
                   )}
                 </div>
               ))}
@@ -295,28 +287,22 @@ export function NodePalette() {
         </div>
 
         {/* Transforms */}
-        <div className="mb-6">
-          <h3 className="text-sm font-medium text-teal-600 dark:text-teal-400 uppercase tracking-wide mb-2">
-            Transforms
-          </h3>
+        <div className="floimg-sidebar__section">
+          <h3 className="floimg-sidebar__header !text-teal-600 dark:!text-teal-400">Transforms</h3>
           {Object.entries(transformsByCategory).map(([category, nodes]) => (
             <div key={category} className="mb-3">
-              <div className="text-xs text-gray-500 dark:text-zinc-400 mb-1">{category}</div>
+              <div className="floimg-sidebar__category">{category}</div>
               {nodes.map((def) => (
                 <div
                   key={def.id}
                   draggable
                   onDragStart={(e) => handleDragStart(e, def)}
                   onDoubleClick={() => handleDoubleClick(def)}
-                  className="px-3 py-2 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-700 rounded mb-1 cursor-grab active:cursor-grabbing hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors"
+                  className="floimg-palette-item floimg-palette-item--teal"
                 >
-                  <div className="text-sm font-medium text-teal-700 dark:text-teal-300">
-                    {def.label}
-                  </div>
+                  <div className="floimg-palette-item__title">{def.label}</div>
                   {def.description && (
-                    <div className="text-xs text-gray-500 dark:text-zinc-400 truncate">
-                      {def.description}
-                    </div>
+                    <div className="floimg-palette-item__desc">{def.description}</div>
                   )}
                 </div>
               ))}
@@ -326,25 +312,19 @@ export function NodePalette() {
 
         {/* AI Text */}
         {textProviders.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-sm font-medium text-pink-600 dark:text-pink-400 uppercase tracking-wide mb-2">
-              AI Text
-            </h3>
+          <div className="floimg-sidebar__section">
+            <h3 className="floimg-sidebar__header !text-pink-600 dark:!text-pink-400">AI Text</h3>
             {textProviders.map((def) => (
               <div
                 key={def.id}
                 draggable
                 onDragStart={(e) => handleDragStart(e, def)}
                 onDoubleClick={() => handleDoubleClick(def)}
-                className="px-3 py-2 bg-pink-50 dark:bg-pink-900/30 border border-pink-200 dark:border-pink-700 rounded mb-1 cursor-grab active:cursor-grabbing hover:bg-pink-100 dark:hover:bg-pink-900/50 transition-colors"
+                className="floimg-palette-item floimg-palette-item--pink"
               >
-                <div className="text-sm font-medium text-pink-700 dark:text-pink-300">
-                  {def.label}
-                </div>
+                <div className="floimg-palette-item__title">{def.label}</div>
                 {def.description && (
-                  <div className="text-xs text-gray-500 dark:text-zinc-400 truncate">
-                    {def.description}
-                  </div>
+                  <div className="floimg-palette-item__desc">{def.description}</div>
                 )}
               </div>
             ))}
@@ -353,25 +333,19 @@ export function NodePalette() {
 
         {/* AI Vision */}
         {visionProviders.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-sm font-medium text-cyan-600 dark:text-cyan-400 uppercase tracking-wide mb-2">
-              AI Vision
-            </h3>
+          <div className="floimg-sidebar__section">
+            <h3 className="floimg-sidebar__header !text-cyan-600 dark:!text-cyan-400">AI Vision</h3>
             {visionProviders.map((def) => (
               <div
                 key={def.id}
                 draggable
                 onDragStart={(e) => handleDragStart(e, def)}
                 onDoubleClick={() => handleDoubleClick(def)}
-                className="px-3 py-2 bg-cyan-50 dark:bg-cyan-900/30 border border-cyan-200 dark:border-cyan-700 rounded mb-1 cursor-grab active:cursor-grabbing hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors"
+                className="floimg-palette-item floimg-palette-item--cyan"
               >
-                <div className="text-sm font-medium text-cyan-700 dark:text-cyan-300">
-                  {def.label}
-                </div>
+                <div className="floimg-palette-item__title">{def.label}</div>
                 {def.description && (
-                  <div className="text-xs text-gray-500 dark:text-zinc-400 truncate">
-                    {def.description}
-                  </div>
+                  <div className="floimg-palette-item__desc">{def.description}</div>
                 )}
               </div>
             ))}
@@ -379,56 +353,52 @@ export function NodePalette() {
         )}
 
         {/* Flow Control */}
-        <div className="mb-6">
-          <h3 className="text-sm font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wide mb-2">
+        <div className="floimg-sidebar__section">
+          <h3 className="floimg-sidebar__header !text-orange-600 dark:!text-orange-400">
             Flow Control
           </h3>
           <div
             draggable
             onDragStart={(e) => handleDragStart(e, fanOutDefinition)}
             onDoubleClick={() => handleDoubleClick(fanOutDefinition)}
-            className="px-3 py-2 bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700 rounded mb-1 cursor-grab active:cursor-grabbing hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-colors"
+            className="floimg-palette-item floimg-palette-item--orange"
           >
-            <div className="text-sm font-medium text-orange-700 dark:text-orange-300">Fan-Out</div>
-            <div className="text-xs text-gray-500 dark:text-zinc-400">
-              Distribute to parallel branches
-            </div>
+            <div className="floimg-palette-item__title">Fan-Out</div>
+            <div className="floimg-palette-item__desc">Distribute to parallel branches</div>
           </div>
           <div
             draggable
             onDragStart={(e) => handleDragStart(e, collectDefinition)}
             onDoubleClick={() => handleDoubleClick(collectDefinition)}
-            className="px-3 py-2 bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700 rounded mb-1 cursor-grab active:cursor-grabbing hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-colors"
+            className="floimg-palette-item floimg-palette-item--orange"
           >
-            <div className="text-sm font-medium text-orange-700 dark:text-orange-300">Collect</div>
-            <div className="text-xs text-gray-500 dark:text-zinc-400">Gather parallel outputs</div>
+            <div className="floimg-palette-item__title">Collect</div>
+            <div className="floimg-palette-item__desc">Gather parallel outputs</div>
           </div>
           <div
             draggable
             onDragStart={(e) => handleDragStart(e, routerDefinition)}
             onDoubleClick={() => handleDoubleClick(routerDefinition)}
-            className="px-3 py-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded cursor-grab active:cursor-grabbing hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
+            className="floimg-palette-item floimg-palette-item--amber"
           >
-            <div className="text-sm font-medium text-amber-700 dark:text-amber-300">Router</div>
-            <div className="text-xs text-gray-500 dark:text-zinc-400">
-              Route based on AI selection
-            </div>
+            <div className="floimg-palette-item__title">Router</div>
+            <div className="floimg-palette-item__desc">Route based on AI selection</div>
           </div>
         </div>
 
         {/* Output */}
-        <div className="mb-6">
-          <h3 className="text-sm font-medium text-green-600 dark:text-green-400 uppercase tracking-wide mb-2">
+        <div className="floimg-sidebar__section">
+          <h3 className="floimg-sidebar__header !text-emerald-600 dark:!text-emerald-400">
             Output
           </h3>
           <div
             draggable
             onDragStart={(e) => handleDragStart(e, saveDefinition)}
             onDoubleClick={() => handleDoubleClick(saveDefinition)}
-            className="px-3 py-2 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded cursor-grab active:cursor-grabbing hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors"
+            className="floimg-palette-item floimg-palette-item--emerald"
           >
-            <div className="text-sm font-medium text-green-700 dark:text-green-300">Save</div>
-            <div className="text-xs text-gray-500 dark:text-zinc-400">Save to file</div>
+            <div className="floimg-palette-item__title">Save</div>
+            <div className="floimg-palette-item__desc">Save to file</div>
           </div>
         </div>
       </div>

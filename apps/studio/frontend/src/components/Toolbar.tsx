@@ -143,15 +143,11 @@ export function Toolbar({
 
   return (
     <>
-      <div className="h-14 bg-white dark:bg-zinc-800 border-b border-gray-200 dark:border-zinc-700 flex items-center justify-between px-4">
+      <div className="floimg-toolbar h-14 flex items-center justify-between px-4">
         <div className="flex items-center gap-4">
           {/* My Workflows button - can be hidden when custom workflow management is provided */}
           {!hideWorkflowLibrary && (
-            <button
-              onClick={toggleLibrary}
-              className="p-2 text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-md"
-              title="My Workflows"
-            >
+            <button onClick={toggleLibrary} className="floimg-toolbar__btn" title="My Workflows">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
@@ -164,7 +160,7 @@ export function Toolbar({
           )}
 
           <div className="flex items-baseline gap-2">
-            <h1 className="text-xl font-bold text-gray-800 dark:text-white">FloImg Studio</h1>
+            <h1 className="floimg-toolbar__title">FloImg Studio</h1>
             {brandingSlot}
             {!hideAttribution && (
               <a
@@ -220,11 +216,7 @@ export function Toolbar({
 
         <div className="flex items-center gap-3">
           {beforeActionsSlot}
-          <button
-            onClick={openSettings}
-            className="p-2 text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-md"
-            title="AI Settings"
-          >
+          <button onClick={openSettings} className="floimg-toolbar__btn" title="AI Settings">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
@@ -245,7 +237,7 @@ export function Toolbar({
           <button
             onClick={handleSave}
             disabled={nodes.length === 0}
-            className="p-2 text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="floimg-toolbar__btn disabled:opacity-50 disabled:cursor-not-allowed"
             title="Save Workflow (Cmd+S)"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -258,17 +250,14 @@ export function Toolbar({
             </svg>
           </button>
 
-          <button
-            onClick={() => setShowImport(true)}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-zinc-200 bg-white dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-md hover:bg-gray-50 dark:hover:bg-zinc-600"
-          >
+          <button onClick={() => setShowImport(true)} className="floimg-toolbar__btn-secondary">
             Import
           </button>
 
           <button
             onClick={handleExport}
             disabled={nodes.length === 0}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-zinc-200 bg-white dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-md hover:bg-gray-50 dark:hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="floimg-toolbar__btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Export
           </button>
@@ -276,7 +265,7 @@ export function Toolbar({
           {execution.status === "running" ? (
             <button
               onClick={cancelExecution}
-              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 flex items-center gap-2"
+              className="floimg-toolbar__btn-primary !bg-red-500 hover:!bg-red-600 flex items-center gap-2"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -292,7 +281,7 @@ export function Toolbar({
             <button
               onClick={handleExecute}
               disabled={nodes.length === 0}
-              className="px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="floimg-toolbar__btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path

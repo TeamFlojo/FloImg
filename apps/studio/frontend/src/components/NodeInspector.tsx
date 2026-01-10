@@ -26,14 +26,9 @@ export function NodeInspector() {
 
   const selectedNode = nodes.find((n) => n.id === selectedNodeId);
 
+  // Don't render if no node selected (parent handles visibility)
   if (!selectedNode) {
-    return (
-      <div className="w-80 bg-gray-50 dark:bg-zinc-800 border-l border-gray-200 dark:border-zinc-700 p-4">
-        <div className="text-gray-500 dark:text-zinc-400 text-sm">
-          Select a node to edit its properties
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // Get schema for the selected node
@@ -240,14 +235,11 @@ export function NodeInspector() {
   };
 
   return (
-    <div className="w-80 bg-gray-50 dark:bg-zinc-800 border-l border-gray-200 dark:border-zinc-700 overflow-y-auto">
+    <div className="floimg-inspector w-80 border-l border-gray-200 dark:border-zinc-700 overflow-y-auto">
       <div className="p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white">{nodeLabel}</h2>
-          <button
-            onClick={() => deleteNode(selectedNode.id)}
-            className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm"
-          >
+        <div className="floimg-inspector__header">
+          <h2 className="floimg-inspector__title">{nodeLabel}</h2>
+          <button onClick={() => deleteNode(selectedNode.id)} className="floimg-inspector__delete">
             Delete
           </button>
         </div>
@@ -289,20 +281,16 @@ interface FieldEditorProps {
 
 function FieldEditor({ name, field, value, onChange }: FieldEditorProps) {
   const label = field.title || name;
-  const inputClasses =
-    "w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100";
 
   // Enum -> select dropdown
   if (field.enum) {
     return (
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-          {label}
-        </label>
+      <div className="floimg-field">
+        <label className="floimg-field__label">{label}</label>
         <select
           value={String(value || "")}
           onChange={(e) => onChange(e.target.value)}
-          className={inputClasses}
+          className="floimg-field__input"
         >
           <option value="">Select...</option>
           {field.enum.map((opt) => (
@@ -311,9 +299,7 @@ function FieldEditor({ name, field, value, onChange }: FieldEditorProps) {
             </option>
           ))}
         </select>
-        {field.description && (
-          <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">{field.description}</p>
-        )}
+        {field.description && <p className="floimg-field__hint">{field.description}</p>}
       </div>
     );
   }
@@ -321,21 +307,17 @@ function FieldEditor({ name, field, value, onChange }: FieldEditorProps) {
   // Number input
   if (field.type === "number") {
     return (
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-          {label}
-        </label>
+      <div className="floimg-field">
+        <label className="floimg-field__label">{label}</label>
         <input
           type="number"
           value={value !== undefined ? Number(value) : ""}
           onChange={(e) => onChange(Number(e.target.value))}
           min={field.minimum}
           max={field.maximum}
-          className={inputClasses}
+          className="floimg-field__input"
         />
-        {field.description && (
-          <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">{field.description}</p>
-        )}
+        {field.description && <p className="floimg-field__hint">{field.description}</p>}
       </div>
     );
   }
@@ -343,14 +325,14 @@ function FieldEditor({ name, field, value, onChange }: FieldEditorProps) {
   // Boolean -> checkbox
   if (field.type === "boolean") {
     return (
-      <div className="flex items-center gap-2">
+      <div className="floimg-field flex items-center gap-2">
         <input
           type="checkbox"
           checked={Boolean(value)}
           onChange={(e) => onChange(e.target.checked)}
           className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-900"
         />
-        <label className="text-sm font-medium text-gray-700 dark:text-zinc-300">{label}</label>
+        <label className="floimg-field__label !mb-0">{label}</label>
       </div>
     );
   }
@@ -358,22 +340,20 @@ function FieldEditor({ name, field, value, onChange }: FieldEditorProps) {
   // Color picker for color-related fields
   if (name.toLowerCase().includes("color") && typeof value === "string" && value.startsWith("#")) {
     return (
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-          {label}
-        </label>
+      <div className="floimg-field">
+        <label className="floimg-field__label">{label}</label>
         <div className="flex gap-2">
           <input
             type="color"
             value={String(value || "#000000")}
             onChange={(e) => onChange(e.target.value)}
-            className="h-10 w-14 p-1 border border-gray-300 dark:border-zinc-600 rounded"
+            className="h-10 w-14 p-1 border border-gray-300 dark:border-zinc-600 rounded-lg"
           />
           <input
             type="text"
             value={String(value || "")}
             onChange={(e) => onChange(e.target.value)}
-            className={inputClasses + " flex-1"}
+            className="floimg-field__input flex-1"
           />
         </div>
       </div>
@@ -383,10 +363,8 @@ function FieldEditor({ name, field, value, onChange }: FieldEditorProps) {
   // Default: text input (also for objects as JSON)
   if (field.type === "object") {
     return (
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-          {label}
-        </label>
+      <div className="floimg-field">
+        <label className="floimg-field__label">{label}</label>
         <textarea
           value={value ? JSON.stringify(value, null, 2) : "{}"}
           onChange={(e) => {
@@ -397,39 +375,33 @@ function FieldEditor({ name, field, value, onChange }: FieldEditorProps) {
             }
           }}
           rows={4}
-          className={inputClasses + " font-mono text-xs"}
+          className="floimg-field__input font-mono text-xs"
         />
-        {field.description && (
-          <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">{field.description}</p>
-        )}
+        {field.description && <p className="floimg-field__hint">{field.description}</p>}
       </div>
     );
   }
 
   // String input (default)
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-        {label}
-      </label>
+    <div className="floimg-field">
+      <label className="floimg-field__label">{label}</label>
       {name === "prompt" || name === "code" || name === "text" ? (
         <textarea
           value={String(value || "")}
           onChange={(e) => onChange(e.target.value)}
           rows={3}
-          className={inputClasses}
+          className="floimg-field__input"
         />
       ) : (
         <input
           type="text"
           value={String(value || "")}
           onChange={(e) => onChange(e.target.value)}
-          className={inputClasses}
+          className="floimg-field__input"
         />
       )}
-      {field.description && (
-        <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">{field.description}</p>
-      )}
+      {field.description && <p className="floimg-field__hint">{field.description}</p>}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import ReactFlow, {
   Background,
+  BackgroundVariant,
   Controls,
   MiniMap,
   MarkerType,
@@ -13,24 +14,25 @@ import ReactFlow, {
   applyEdgeChanges,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import "./reactflow-dark.css";
+import "./studio-theme.css";
 import type { GeneratorNodeData } from "@teamflojo/floimg-studio-shared";
 import { useWorkflowStore } from "../stores/workflowStore";
 import { nodeTypes } from "./nodeTypes";
 
-// Default edge styling with arrows to show direction
+// Premium edge styling with refined colors
 const defaultEdgeOptions: DefaultEdgeOptions = {
   type: "smoothstep",
   animated: false,
   markerEnd: {
     type: MarkerType.ArrowClosed,
-    color: "#64748b",
-    width: 20,
-    height: 20,
+    color: "#71717a",
+    width: 18,
+    height: 18,
   },
   style: {
-    stroke: "#64748b",
+    stroke: "#71717a",
     strokeWidth: 2,
+    strokeLinecap: "round",
   },
   // Make edges easier to select
   interactionWidth: 20,
@@ -179,9 +181,15 @@ export function WorkflowEditor() {
         snapToGrid
         snapGrid={[15, 15]}
       >
-        <Background />
-        <Controls />
-        <MiniMap nodeStrokeWidth={3} zoomable pannable />
+        <Background variant={BackgroundVariant.Dots} gap={20} size={1.5} />
+        <Controls showInteractive={false} />
+        <MiniMap
+          nodeStrokeWidth={2}
+          nodeColor="#71717a"
+          maskColor="rgba(0, 0, 0, 0.1)"
+          zoomable
+          pannable
+        />
       </ReactFlow>
     </div>
   );

@@ -70,6 +70,7 @@ function App() {
   const executionDataOutputs = useWorkflowStore((s) => s.execution.dataOutputs);
   const closeOutputInspector = useWorkflowStore((s) => s.closeOutputInspector);
   const nodes = useWorkflowStore((s) => s.nodes);
+  const selectedNodeId = useWorkflowStore((s) => s.selectedNodeId);
 
   // Get inspected node info
   const inspectedNode = inspectedNodeId ? nodes.find((n) => n.id === inspectedNodeId) : null;
@@ -153,50 +154,35 @@ function App() {
       {/* Workflow Library slide-out panel */}
       <WorkflowLibrary />
 
-      <div className="h-screen flex flex-col bg-gray-100 dark:bg-zinc-900">
+      <div className="floimg-studio h-screen flex flex-col bg-gray-100 dark:bg-zinc-900">
         <Toolbar />
 
         {/* Tab navigation */}
-        <div className="bg-white dark:bg-zinc-800 border-b border-gray-200 dark:border-zinc-700">
+        <div className="floimg-tabs">
           <div className="flex items-center justify-between">
             <div className="flex">
               <button
                 onClick={() => setActiveTab("editor")}
-                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === "editor"
-                    ? "border-teal-500 text-teal-600 dark:text-teal-400"
-                    : "border-transparent text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200"
-                }`}
+                className={`floimg-tab ${activeTab === "editor" ? "floimg-tab--active" : ""}`}
               >
                 Editor
               </button>
               <button
                 onClick={() => setActiveTab("gallery")}
-                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === "gallery"
-                    ? "border-teal-500 text-teal-600 dark:text-teal-400"
-                    : "border-transparent text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200"
-                }`}
+                className={`floimg-tab ${activeTab === "gallery" ? "floimg-tab--active" : ""}`}
               >
                 Images
               </button>
               <button
                 onClick={() => setActiveTab("templates")}
-                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === "templates"
-                    ? "border-teal-500 text-teal-600 dark:text-teal-400"
-                    : "border-transparent text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200"
-                }`}
+                className={`floimg-tab ${activeTab === "templates" ? "floimg-tab--active" : ""}`}
               >
                 Templates
               </button>
             </div>
 
             {/* AI Generate button */}
-            <button
-              onClick={() => setShowAIChat(true)}
-              className="mr-4 px-4 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 rounded-full flex items-center gap-2 transition-all shadow-sm hover:shadow"
-            >
+            <button onClick={() => setShowAIChat(true)} className="floimg-ai-btn mr-4">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
@@ -216,7 +202,7 @@ function App() {
             <>
               <NodePalette />
               <EditorDropZone />
-              <NodeInspector />
+              {selectedNodeId && <NodeInspector />}
             </>
           )}
           {activeTab === "gallery" && (

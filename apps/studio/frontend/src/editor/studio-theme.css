@@ -1,0 +1,946 @@
+/* FloImg Studio Premium Theme
+ * Custom styling for React Flow canvas, nodes, and connections
+ * Creates a distinctive, polished visual identity
+ *
+ * Design principles: Welcoming, cozy, boutique - not distracting or over the top
+ */
+
+/* ===== GLOBAL STUDIO SHELL ===== */
+
+.floimg-studio {
+  --studio-surface: #fafafa;
+  --studio-surface-elevated: #ffffff;
+  --studio-border: rgba(0, 0, 0, 0.06);
+  --studio-border-subtle: rgba(0, 0, 0, 0.04);
+  --studio-text: #18181b;
+  --studio-text-muted: #71717a;
+  --studio-text-subtle: #a1a1aa;
+  --studio-accent: #0d9488;
+  --studio-accent-soft: rgba(13, 148, 136, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-studio {
+    --studio-surface: #18181b;
+    --studio-surface-elevated: #27272a;
+    --studio-border: rgba(255, 255, 255, 0.06);
+    --studio-border-subtle: rgba(255, 255, 255, 0.03);
+    --studio-text: #fafafa;
+    --studio-text-muted: #a1a1aa;
+    --studio-text-subtle: #71717a;
+    --studio-accent: #14b8a6;
+    --studio-accent-soft: rgba(20, 184, 166, 0.15);
+  }
+}
+
+/* ===== TOOLBAR ===== */
+
+.floimg-toolbar {
+  background: linear-gradient(
+    180deg,
+    var(--studio-surface-elevated) 0%,
+    var(--studio-surface) 100%
+  );
+  border-bottom: 1px solid var(--studio-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-toolbar {
+    background: linear-gradient(180deg, #27272a 0%, #1f1f23 100%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.floimg-toolbar__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #18181b 0%, #3f3f46 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-toolbar__title {
+    background: linear-gradient(135deg, #fafafa 0%, #d4d4d8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.floimg-toolbar__btn {
+  padding: 0.5rem;
+  border-radius: 8px;
+  color: var(--studio-text-muted);
+  transition: all 0.15s ease;
+}
+
+.floimg-toolbar__btn:hover {
+  background: var(--studio-accent-soft);
+  color: var(--studio-accent);
+}
+
+.floimg-toolbar__btn-primary {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+  color: white;
+  box-shadow:
+    0 1px 2px rgba(13, 148, 136, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.15s ease;
+}
+
+.floimg-toolbar__btn-primary:hover {
+  box-shadow:
+    0 2px 8px rgba(13, 148, 136, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.floimg-toolbar__btn-primary:active {
+  transform: translateY(0);
+}
+
+.floimg-toolbar__btn-secondary {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  background: var(--studio-surface-elevated);
+  border: 1px solid var(--studio-border);
+  color: var(--studio-text-muted);
+  transition: all 0.15s ease;
+}
+
+.floimg-toolbar__btn-secondary:hover {
+  background: var(--studio-surface);
+  border-color: var(--studio-text-subtle);
+  color: var(--studio-text);
+}
+
+/* ===== TAB NAVIGATION ===== */
+
+.floimg-tabs {
+  background: var(--studio-surface-elevated);
+  border-bottom: 1px solid var(--studio-border);
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-tabs {
+    background: linear-gradient(180deg, #27272a 0%, #1f1f23 100%);
+  }
+}
+
+.floimg-tab {
+  position: relative;
+  padding: 0.875rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--studio-text-muted);
+  transition: all 0.15s ease;
+}
+
+.floimg-tab::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+  right: 1rem;
+  height: 2px;
+  background: transparent;
+  border-radius: 1px 1px 0 0;
+  transition: all 0.15s ease;
+}
+
+.floimg-tab:hover {
+  color: var(--studio-text);
+}
+
+.floimg-tab--active {
+  color: var(--studio-accent);
+}
+
+.floimg-tab--active::after {
+  background: var(--studio-accent);
+}
+
+/* ===== SIDEBAR ===== */
+
+.floimg-sidebar {
+  background: linear-gradient(
+    180deg,
+    var(--studio-surface) 0%,
+    var(--studio-surface-elevated) 100%
+  );
+  border-color: var(--studio-border);
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-sidebar {
+    background: linear-gradient(180deg, #1a1a1d 0%, #18181b 100%);
+  }
+}
+
+.floimg-sidebar__header {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--studio-text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.floimg-sidebar__section {
+  margin-bottom: 1.5rem;
+}
+
+.floimg-sidebar__category {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--studio-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+/* ===== PALETTE ITEMS ===== */
+
+.floimg-palette-item {
+  padding: 0.625rem 0.875rem;
+  border-radius: 10px;
+  background: var(--studio-surface-elevated);
+  border: 1px solid var(--studio-border);
+  margin-bottom: 0.375rem;
+  cursor: grab;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.floimg-palette-item:hover {
+  border-color: var(--studio-text-subtle);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+.floimg-palette-item:active {
+  cursor: grabbing;
+  transform: scale(0.98);
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-palette-item {
+    background: rgba(255, 255, 255, 0.02);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .floimg-palette-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.floimg-palette-item__title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 0.125rem;
+}
+
+.floimg-palette-item__desc {
+  font-size: 0.6875rem;
+  color: var(--studio-text-subtle);
+  line-height: 1.3;
+}
+
+/* Color variants for palette items */
+.floimg-palette-item--blue {
+  --item-color: #3b82f6;
+}
+.floimg-palette-item--teal {
+  --item-color: #14b8a6;
+}
+.floimg-palette-item--pink {
+  --item-color: #ec4899;
+}
+.floimg-palette-item--cyan {
+  --item-color: #06b6d4;
+}
+.floimg-palette-item--orange {
+  --item-color: #f97316;
+}
+.floimg-palette-item--amber {
+  --item-color: #f59e0b;
+}
+.floimg-palette-item--emerald {
+  --item-color: #10b981;
+}
+.floimg-palette-item--purple {
+  --item-color: #8b5cf6;
+}
+
+.floimg-palette-item[class*="--"] {
+  border-left: 3px solid var(--item-color);
+}
+
+.floimg-palette-item[class*="--"] .floimg-palette-item__title {
+  color: var(--item-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-palette-item--blue {
+    --item-color: #60a5fa;
+  }
+  .floimg-palette-item--teal {
+    --item-color: #2dd4bf;
+  }
+  .floimg-palette-item--pink {
+    --item-color: #f472b6;
+  }
+  .floimg-palette-item--cyan {
+    --item-color: #22d3ee;
+  }
+  .floimg-palette-item--orange {
+    --item-color: #fb923c;
+  }
+  .floimg-palette-item--amber {
+    --item-color: #fbbf24;
+  }
+  .floimg-palette-item--emerald {
+    --item-color: #34d399;
+  }
+  .floimg-palette-item--purple {
+    --item-color: #a78bfa;
+  }
+}
+
+/* ===== INSPECTOR ===== */
+
+.floimg-inspector {
+  background: linear-gradient(
+    180deg,
+    var(--studio-surface) 0%,
+    var(--studio-surface-elevated) 100%
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-inspector {
+    background: linear-gradient(180deg, #1a1a1d 0%, #18181b 100%);
+  }
+}
+
+.floimg-inspector__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--studio-border);
+  margin-bottom: 1rem;
+}
+
+.floimg-inspector__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--studio-text);
+}
+
+.floimg-inspector__delete {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #ef4444;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.floimg-inspector__delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* ===== FORM FIELDS ===== */
+
+.floimg-field {
+  margin-bottom: 1rem;
+}
+
+.floimg-field__label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--studio-text-muted);
+  margin-bottom: 0.375rem;
+  letter-spacing: 0.01em;
+}
+
+.floimg-field__input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  border: 1px solid var(--studio-border);
+  background: var(--studio-surface-elevated);
+  color: var(--studio-text);
+  transition: all 0.15s ease;
+}
+
+.floimg-field__input:focus {
+  outline: none;
+  border-color: var(--studio-accent);
+  box-shadow: 0 0 0 3px var(--studio-accent-soft);
+}
+
+.floimg-field__input::placeholder {
+  color: var(--studio-text-subtle);
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-field__input {
+    background: rgba(0, 0, 0, 0.2);
+  }
+}
+
+.floimg-field__hint {
+  font-size: 0.6875rem;
+  color: var(--studio-text-subtle);
+  margin-top: 0.25rem;
+  line-height: 1.4;
+}
+
+/* ===== AI GENERATE BUTTON ===== */
+
+.floimg-ai-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #0d9488 0%, #0891b2 50%, #6366f1 100%);
+  background-size: 200% 200%;
+  border-radius: 999px;
+  box-shadow:
+    0 2px 8px rgba(13, 148, 136, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+}
+
+.floimg-ai-btn:hover {
+  background-position: 100% 100%;
+  box-shadow:
+    0 4px 16px rgba(13, 148, 136, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+/* ===== EMPTY STATE ===== */
+
+.floimg-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: var(--studio-text-subtle);
+}
+
+.floimg-empty__text {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* ===== CANVAS BACKGROUND ===== */
+
+/* Light mode - warm cream canvas with subtle texture */
+.react-flow__background {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(13, 148, 136, 0.03) 0%, transparent 50%),
+    linear-gradient(180deg, #f8f8f6 0%, #f4f4f2 100%);
+}
+
+/* Custom dot pattern - softer, warmer dots */
+.react-flow__background pattern circle {
+  fill: rgba(0, 0, 0, 0.06);
+}
+
+/* Dark mode - deep charcoal with subtle teal glow */
+@media (prefers-color-scheme: dark) {
+  .react-flow__background {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(20, 184, 166, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(13, 148, 136, 0.04) 0%, transparent 50%),
+      linear-gradient(180deg, #0f0f11 0%, #0a0a0c 100%);
+  }
+
+  .react-flow__background pattern circle {
+    fill: rgba(255, 255, 255, 0.04);
+  }
+}
+
+/* Canvas pane styling for additional depth */
+.react-flow__pane {
+  cursor: grab;
+}
+
+.react-flow__pane:active {
+  cursor: grabbing;
+}
+
+/* ===== NODE STYLING ===== */
+
+/* Base node container - premium look */
+.floimg-node {
+  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  border-radius: 12px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floimg-node:hover {
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
+}
+
+/* Dark mode nodes */
+@media (prefers-color-scheme: dark) {
+  .floimg-node {
+    background: linear-gradient(180deg, #27272a 0%, #1f1f23 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.3),
+      0 4px 12px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .floimg-node:hover {
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.4),
+      0 8px 24px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* Selected state - brand teal accent */
+.floimg-node.selected {
+  border-color: #0d9488;
+  box-shadow:
+    0 0 0 2px rgba(13, 148, 136, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-node.selected {
+    border-color: #14b8a6;
+    box-shadow:
+      0 0 0 2px rgba(20, 184, 166, 0.25),
+      0 2px 8px rgba(0, 0, 0, 0.4),
+      0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ===== NODE TYPE ACCENTS ===== */
+
+/* Generator nodes - blue accent line */
+.floimg-node--generator::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 12px 12px 0 0;
+}
+
+/* Transform nodes - teal accent line */
+.floimg-node--transform::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #0d9488, #14b8a6);
+  border-radius: 12px 12px 0 0;
+}
+
+/* AI transform nodes - purple accent line */
+.floimg-node--ai-transform::before {
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+}
+
+/* Save nodes - green accent line */
+.floimg-node--save::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  border-radius: 12px 12px 0 0;
+}
+
+/* Input nodes - amber accent line */
+.floimg-node--input::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 12px 12px 0 0;
+}
+
+/* Vision nodes - cyan accent line */
+.floimg-node--vision::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #06b6d4, #22d3ee);
+  border-radius: 12px 12px 0 0;
+}
+
+/* Text nodes - pink accent line */
+.floimg-node--text::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ec4899, #f472b6);
+  border-radius: 12px 12px 0 0;
+}
+
+/* Fan-out/Collect/Router - orange accent line */
+.floimg-node--iterative::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #f97316, #fb923c);
+  border-radius: 12px 12px 0 0;
+}
+
+/* ===== EXECUTION STATUS ===== */
+
+.floimg-node--pending {
+  opacity: 0.8;
+}
+
+.floimg-node--running {
+  animation: node-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.floimg-node--running::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+.floimg-node--completed::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 14px;
+  border: 2px solid #22c55e;
+  opacity: 0.5;
+  z-index: -1;
+}
+
+.floimg-node--error::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 14px;
+  border: 2px solid #ef4444;
+  opacity: 0.7;
+  z-index: -1;
+}
+
+@keyframes node-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ===== HANDLES (Connection Points) ===== */
+
+.react-flow__handle {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  transition: all 0.15s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .react-flow__handle {
+    border-color: #27272a;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.react-flow__handle:hover {
+  transform: scale(1.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Handle connecting state */
+.react-flow__handle.connecting {
+  animation: handle-pulse 0.6s ease infinite;
+}
+
+@keyframes handle-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+/* ===== EDGES (Connection Lines) ===== */
+
+.react-flow__edge-path {
+  stroke-width: 2.5;
+  transition: stroke-width 0.15s ease;
+}
+
+.react-flow__edge:hover .react-flow__edge-path,
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke-width: 3.5;
+}
+
+/* Animated edge for data flow visualization */
+.react-flow__edge.animated .react-flow__edge-path {
+  stroke-dasharray: 5;
+  animation: edge-flow 0.5s linear infinite;
+}
+
+@keyframes edge-flow {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+/* ===== CONTROLS ===== */
+
+.react-flow__controls {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.react-flow__controls-button {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none;
+}
+
+.react-flow__controls-button:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.react-flow__controls-button svg {
+  fill: #52525b;
+  max-width: 14px;
+  max-height: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .react-flow__controls {
+    background: rgba(39, 39, 42, 0.9);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .react-flow__controls-button {
+    border-bottom-color: rgba(255, 255, 255, 0.04);
+  }
+
+  .react-flow__controls-button:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .react-flow__controls-button svg {
+    fill: #a1a1aa;
+  }
+}
+
+/* ===== MINIMAP ===== */
+
+.react-flow__minimap {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.react-flow__minimap-mask {
+  fill: rgba(250, 250, 250, 0.8);
+}
+
+@media (prefers-color-scheme: dark) {
+  .react-flow__minimap {
+    background: rgba(39, 39, 42, 0.9);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .react-flow__minimap-mask {
+    fill: rgba(12, 12, 14, 0.8);
+  }
+}
+
+/* ===== SELECTION BOX ===== */
+
+.react-flow__selection {
+  background: rgba(13, 148, 136, 0.08);
+  border: 1px dashed rgba(13, 148, 136, 0.5);
+  border-radius: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .react-flow__selection {
+    background: rgba(20, 184, 166, 0.1);
+    border-color: rgba(20, 184, 166, 0.5);
+  }
+}
+
+/* ===== NODE HEADER ===== */
+
+.floimg-node__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-node__header {
+    border-bottom-color: rgba(255, 255, 255, 0.04);
+  }
+}
+
+.floimg-node__icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floimg-node__title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #18181b;
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-node__title {
+    color: #fafafa;
+  }
+}
+
+/* ===== NODE CONTENT ===== */
+
+.floimg-node__content {
+  padding: 10px 14px;
+}
+
+.floimg-node__param {
+  font-size: 11px;
+  color: #71717a;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-node__param {
+    color: #a1a1aa;
+  }
+}
+
+/* ===== NODE PREVIEW ===== */
+
+.floimg-node__preview {
+  background: #f4f4f5;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  padding: 8px;
+}
+
+.floimg-node__preview img {
+  width: 100%;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-node__preview {
+    background: #18181b;
+    border-bottom-color: rgba(255, 255, 255, 0.04);
+  }
+}

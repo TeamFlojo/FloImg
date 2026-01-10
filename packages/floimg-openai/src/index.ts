@@ -175,20 +175,24 @@ export default function openai(config: OpenAIConfig = {}): ImageGenerator {
       // Parse dimensions from size parameter
       const [width, height] = size.split("x").map(Number);
 
-      // Emit usage event for cost tracking
+      // Emit usage event for cost tracking (errors logged but don't fail the operation)
       if (config.hooks?.onUsage) {
-        await config.hooks.onUsage({
-          provider: "openai",
-          model,
-          operation: "generate",
-          imageWidth: width,
-          imageHeight: height,
-          imageCount: n,
-          quality,
-          rawMetadata: {
-            revisedPrompt: response.data[0].revised_prompt,
-          },
-        });
+        try {
+          await config.hooks.onUsage({
+            provider: "openai",
+            model,
+            operation: "generate",
+            imageWidth: width,
+            imageHeight: height,
+            imageCount: n,
+            quality,
+            rawMetadata: {
+              revisedPrompt: response.data[0].revised_prompt,
+            },
+          });
+        } catch (err) {
+          console.warn("[floimg-openai] Usage hook failed:", err);
+        }
       }
 
       return {
@@ -327,18 +331,22 @@ export function openaiVision(config: OpenAIVisionConfig = {}): VisionProvider {
         }
       }
 
-      // Emit usage event for cost tracking
+      // Emit usage event for cost tracking (errors logged but don't fail the operation)
       if (config.hooks?.onUsage) {
-        await config.hooks.onUsage({
-          provider: "openai",
-          model,
-          operation: "vision",
-          inputTokens: response.usage?.prompt_tokens,
-          outputTokens: response.usage?.completion_tokens,
-          rawMetadata: {
-            usage: response.usage,
-          },
-        });
+        try {
+          await config.hooks.onUsage({
+            provider: "openai",
+            model,
+            operation: "vision",
+            inputTokens: response.usage?.prompt_tokens,
+            outputTokens: response.usage?.completion_tokens,
+            rawMetadata: {
+              usage: response.usage,
+            },
+          });
+        } catch (err) {
+          console.warn("[floimg-openai] Usage hook failed:", err);
+        }
       }
 
       return {
@@ -493,18 +501,22 @@ export function openaiText(config: OpenAITextConfig = {}): TextProvider {
         }
       }
 
-      // Emit usage event for cost tracking
+      // Emit usage event for cost tracking (errors logged but don't fail the operation)
       if (config.hooks?.onUsage) {
-        await config.hooks.onUsage({
-          provider: "openai",
-          model,
-          operation: "text",
-          inputTokens: response.usage?.prompt_tokens,
-          outputTokens: response.usage?.completion_tokens,
-          rawMetadata: {
-            usage: response.usage,
-          },
-        });
+        try {
+          await config.hooks.onUsage({
+            provider: "openai",
+            model,
+            operation: "text",
+            inputTokens: response.usage?.prompt_tokens,
+            outputTokens: response.usage?.completion_tokens,
+            rawMetadata: {
+              usage: response.usage,
+            },
+          });
+        } catch (err) {
+          console.warn("[floimg-openai] Usage hook failed:", err);
+        }
       }
 
       return {

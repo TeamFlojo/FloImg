@@ -1,6 +1,6 @@
 # PROJECT STATUS
 
-**Last Updated**: 2026-01-07
+**Last Updated**: 2026-01-09
 
 ## Current Focus
 
@@ -15,6 +15,7 @@ Separate shape type from fill type to fix conceptual confusion. Branch: `feat/T-
 
 ## Next Up
 
+- **T-2026-009**: Add prompt enhancement toggle to Gemini generate/edit nodes
 - **T-2025-006**: Add node duplication in FloImg Studio
 - Additional FloImg Studio UX improvements
 

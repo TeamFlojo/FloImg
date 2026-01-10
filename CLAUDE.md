@@ -124,6 +124,33 @@ vault/
 3. **Evergreen docs have no temporal language** - No "will", "recently", "soon"
 4. **Link GitHub Issues to vault tasks** - Vault is source of truth, GH is public interface
 5. **No backwards compatibility (pre-1.0)** - Delete, don't deprecate. Remove old code entirely rather than keeping legacy paths. See [[No-Backwards-Compatibility]]
+6. **Self-documenting code** - No PM artifact references in source code (see below)
+
+## PM Artifacts in Code (CRITICAL)
+
+**Source code should never reference PM artifacts.** Code must be self-documenting.
+
+| Location                  | Task/Bug IDs (T-/BUG-) | Epics | ADRs  |
+| ------------------------- | ---------------------- | ----- | ----- |
+| Source code (_.ts, _.tsx) | Never                  | Never | Never |
+| Vault docs                | OK (local tasks only)  | Never | Never |
+| Commits / PRs             | OK                     | OK    | OK    |
+
+**Why?** This is a public repo. External contributors can't see ecosystem-level EPICs or ADRs (they exist elsewhere). Even local task references in code require looking up the PM system to understand the code.
+
+```typescript
+// BAD - requires PM system lookup
+// Implements T-2026-001 iterative node types
+
+// GOOD - self-documenting
+// Creates a fan-out node that splits workflow execution into parallel branches
+```
+
+**Where PM artifacts belong:**
+
+- Commit messages: `feat(studio): add fan-out node (T-2026-001)`
+- PR descriptions: "Implements T-2026-001"
+- Vault docs: `Related: [[T-2025-007]]`
 
 ## Releases
 

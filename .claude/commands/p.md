@@ -108,6 +108,26 @@ Otherwise, use the arguments as the work description and proceed with planning.
 - **Commit immediately** after creation
 - **Suggest /s** to start work
 
+## PM Artifacts Policy (OSS)
+
+Task IDs belong in these places:
+
+- Vault docs (task files, context docs)
+- Commit messages: `feat: add export button (T-2025-001)`
+- PR descriptions
+
+**NEVER put task IDs in source code** - even in comments:
+
+```typescript
+// BAD
+// Implements T-2025-001 export feature
+
+// GOOD
+// Exports workflow to YAML format for sharing
+```
+
+Code should be self-documenting. External contributors can't see ecosystem-level PM docs.
+
 ## Subtask Rules
 
 - Subtask IDs use dot notation: `T-2025-001.1`, `T-2025-001.2`

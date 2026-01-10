@@ -40,6 +40,9 @@ export type {
   // Save provider types
   SaveProvider,
   SaveResult,
+  // Usage tracking (for cloud cost attribution)
+  UsageEvent,
+  UsageHooks,
   // Legacy aliases
   SvgProvider,
   AiProvider,

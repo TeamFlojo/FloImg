@@ -13,6 +13,7 @@ import type {
   TextProviderSchema,
   VisionProvider,
   VisionProviderSchema,
+  UsageHooks,
 } from "@teamflojo/floimg";
 
 // ============================================================================
@@ -35,6 +36,8 @@ export interface GeminiTextConfig {
   maxTokens?: number;
   /** Temperature for response creativity (0-2) */
   temperature?: number;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 export interface GeminiTextParams {
@@ -226,6 +229,19 @@ export function geminiText(config: GeminiTextConfig = {}): TextProvider {
         }
       }
 
+      // Emit usage event for cost tracking
+      if (config.hooks?.onUsage) {
+        await config.hooks.onUsage({
+          provider: "google",
+          model,
+          operation: "text",
+          // Gemini SDK doesn't expose token counts directly
+          rawMetadata: {
+            temperature,
+          },
+        });
+      }
+
       return {
         type: parsed ? "json" : "text",
         content,
@@ -259,6 +275,8 @@ export interface GeminiVisionConfig {
   model?: GeminiVisionModel;
   /** Maximum tokens in response */
   maxTokens?: number;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 export interface GeminiVisionParams {
@@ -447,6 +465,16 @@ export function geminiVision(config: GeminiVisionConfig = {}): VisionProvider {
         } catch {
           // If JSON parsing fails, treat as text
         }
+      }
+
+      // Emit usage event for cost tracking
+      if (config.hooks?.onUsage) {
+        await config.hooks.onUsage({
+          provider: "google",
+          model,
+          operation: "vision",
+          // Gemini SDK doesn't expose token counts directly
+        });
       }
 
       return {

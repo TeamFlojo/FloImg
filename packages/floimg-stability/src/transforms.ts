@@ -1,4 +1,9 @@
-import type { TransformProvider, TransformOperationSchema, ImageBlob } from "@teamflojo/floimg";
+import type {
+  TransformProvider,
+  TransformOperationSchema,
+  ImageBlob,
+  UsageHooks,
+} from "@teamflojo/floimg";
 
 /**
  * Stability AI Edit API response types
@@ -152,6 +157,8 @@ const outpaintSchema: TransformOperationSchema = {
 export interface StabilityTransformConfig {
   /** API key for Stability AI */
   apiKey?: string;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 /**
@@ -443,7 +450,21 @@ export function stabilityTransform(config: StabilityTransformConfig = {}): Trans
           `Unknown operation: ${op}. Supported: ${Object.keys(operations).join(", ")}`
         );
       }
-      return operation(input, params);
+      const result = await operation(input, params);
+
+      // Emit usage event for cost tracking
+      if (config.hooks?.onUsage) {
+        await config.hooks.onUsage({
+          provider: "stability",
+          model: "stability-transform",
+          operation: op,
+          imageWidth: input.width,
+          imageHeight: input.height,
+          imageCount: 1,
+        });
+      }
+
+      return result;
     },
 
     // Required by interface but we don't support format conversion

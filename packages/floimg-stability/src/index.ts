@@ -1,4 +1,4 @@
-import type { ImageGenerator, ImageBlob, GeneratorSchema } from "@teamflojo/floimg";
+import type { ImageGenerator, ImageBlob, GeneratorSchema, UsageHooks } from "@teamflojo/floimg";
 
 /**
  * Stability AI API response types
@@ -138,6 +138,8 @@ export interface StabilityConfig {
   cfgScale?: number;
   /** Default number of steps */
   steps?: number;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 /**
@@ -300,6 +302,24 @@ export default function stability(config: StabilityConfig = {}): ImageGenerator 
 
       // Convert base64 to Buffer
       const bytes = Buffer.from(artifact.base64, "base64");
+
+      // Emit usage event for cost tracking
+      if (config.hooks?.onUsage) {
+        await config.hooks.onUsage({
+          provider: "stability",
+          model,
+          operation: "generate",
+          imageWidth: width,
+          imageHeight: height,
+          imageCount: 1,
+          rawMetadata: {
+            stylePreset,
+            cfgScale,
+            steps,
+            seed: artifact.seed,
+          },
+        });
+      }
 
       return {
         bytes,

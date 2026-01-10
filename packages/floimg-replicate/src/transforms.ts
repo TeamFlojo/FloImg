@@ -4,6 +4,7 @@ import type {
   TransformOperationSchema,
   ImageBlob,
   MimeType,
+  UsageHooks,
 } from "@teamflojo/floimg";
 
 /**
@@ -166,6 +167,8 @@ export const fluxEditSchema: TransformOperationSchema = {
 export interface ReplicateTransformConfig {
   /** API token for Replicate */
   apiToken?: string;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 /**
@@ -461,7 +464,21 @@ export function replicateTransform(config: ReplicateTransformConfig = {}): Trans
           `Unknown operation: ${op}. Supported: ${Object.keys(operations).join(", ")}`
         );
       }
-      return operation(input, params);
+      const result = await operation(input, params);
+
+      // Emit usage event for cost tracking
+      if (config.hooks?.onUsage) {
+        await config.hooks.onUsage({
+          provider: "replicate",
+          model: "replicate-transform",
+          operation: op,
+          imageWidth: input.width,
+          imageHeight: input.height,
+          imageCount: 1,
+        });
+      }
+
+      return result;
     },
 
     // Required by interface but we don't support format conversion

@@ -13,6 +13,7 @@ import type {
   TextProviderSchema,
   VisionProvider,
   VisionProviderSchema,
+  UsageHooks,
 } from "@teamflojo/floimg";
 
 // ============================================================================
@@ -28,6 +29,8 @@ export interface GrokTextConfig {
   maxTokens?: number;
   /** Temperature for response creativity (0-2) */
   temperature?: number;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 export interface GrokTextParams {
@@ -214,6 +217,20 @@ export function grokText(config: GrokTextConfig = {}): TextProvider {
         }
       }
 
+      // Emit usage event for cost tracking
+      if (config.hooks?.onUsage) {
+        await config.hooks.onUsage({
+          provider: "xai",
+          model,
+          operation: "text",
+          inputTokens: response.usage?.prompt_tokens,
+          outputTokens: response.usage?.completion_tokens,
+          rawMetadata: {
+            usage: response.usage,
+          },
+        });
+      }
+
       return {
         type: parsed ? "json" : "text",
         content,
@@ -241,6 +258,8 @@ export interface GrokVisionConfig {
   model?: "grok-2-vision" | "grok-2-vision-1212";
   /** Maximum tokens in response */
   maxTokens?: number;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 export interface GrokVisionParams {
@@ -403,6 +422,20 @@ export function grokVision(config: GrokVisionConfig = {}): VisionProvider {
         } catch {
           // If JSON parsing fails, treat as text
         }
+      }
+
+      // Emit usage event for cost tracking
+      if (config.hooks?.onUsage) {
+        await config.hooks.onUsage({
+          provider: "xai",
+          model,
+          operation: "vision",
+          inputTokens: response.usage?.prompt_tokens,
+          outputTokens: response.usage?.completion_tokens,
+          rawMetadata: {
+            usage: response.usage,
+          },
+        });
       }
 
       return {

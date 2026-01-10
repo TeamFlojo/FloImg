@@ -808,3 +808,92 @@ export interface PipelineResult {
   /** Result value (ImageBlob, DataBlob, or SaveResult) */
   value: ImageBlob | DataBlob | SaveResult;
 }
+
+// =============================================================================
+// Usage Tracking (for cost attribution and observability)
+// =============================================================================
+
+/**
+ * Usage event emitted by AI providers for cost tracking and observability.
+ *
+ * Use cases:
+ * - Track API costs across providers for internal billing/chargebacks
+ * - Log usage patterns for debugging and performance optimization
+ * - Monitor provider API reliability via rawMetadata
+ * - Implement custom rate limiting or quota management
+ * - Multi-tenant platforms: attribute costs to users/projects
+ *
+ * All fields are optional except provider, model, and operation.
+ * Providers include as much detail as possible to enable accurate cost calculation.
+ */
+export interface UsageEvent {
+  /** AI provider identifier (e.g., 'openai', 'stability', 'google', 'replicate', 'xai') */
+  provider: string;
+  /** Model name used (e.g., 'dall-e-3', 'gpt-4o', 'sdxl', 'imagen-3') */
+  model: string;
+  /** Operation type (e.g., 'generate', 'edit', 'vision', 'text', 'transform') */
+  operation: string;
+
+  // Token-based usage (for LLM operations)
+  /** Number of input tokens (for text/vision operations) */
+  inputTokens?: number;
+  /** Number of output tokens (for text operations) */
+  outputTokens?: number;
+
+  // Image-based usage (for image generation/transform)
+  /** Image width in pixels */
+  imageWidth?: number;
+  /** Image height in pixels */
+  imageHeight?: number;
+  /** Number of images generated/processed */
+  imageCount?: number;
+  /** Quality level (e.g., 'hd', 'standard') */
+  quality?: string;
+
+  /** Raw metadata from the provider response (for debugging) */
+  rawMetadata?: Record<string, unknown>;
+}
+
+/**
+ * Hooks for capturing usage events from AI providers.
+ *
+ * Use cases:
+ * - Track API costs across providers for internal billing/chargebacks
+ * - Log usage patterns for debugging and performance optimization
+ * - Monitor provider API reliability and response metadata
+ * - Implement custom rate limiting or quota management
+ *
+ * @example Track costs to your own database
+ * ```typescript
+ * const hooks: UsageHooks = {
+ *   onUsage: async (event) => {
+ *     await db.insert('ai_usage').values({
+ *       timestamp: new Date(),
+ *       provider: event.provider,
+ *       model: event.model,
+ *       operation: event.operation,
+ *       tokens: (event.inputTokens || 0) + (event.outputTokens || 0),
+ *       estimatedCost: calculateCost(event), // Your pricing logic
+ *     });
+ *   },
+ * };
+ *
+ * client.registerGenerator(openai({ apiKey, hooks }));
+ * ```
+ *
+ * @example Simple logging
+ * ```typescript
+ * const hooks: UsageHooks = {
+ *   onUsage: (event) => {
+ *     console.log(`[AI Usage] ${event.provider}/${event.model}:`, event);
+ *   },
+ * };
+ * ```
+ */
+export interface UsageHooks {
+  /**
+   * Called after an AI operation completes successfully.
+   * Failed operations should not emit usage events (providers don't charge for errors).
+   */
+  onUsage?: (event: UsageEvent) => void | Promise<void>;
+}

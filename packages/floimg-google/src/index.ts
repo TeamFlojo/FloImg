@@ -1,5 +1,5 @@
 import { GoogleGenAI, type GenerateImagesConfig } from "@google/genai";
-import type { ImageGenerator, ImageBlob, GeneratorSchema } from "@teamflojo/floimg";
+import type { ImageGenerator, ImageBlob, GeneratorSchema, UsageHooks } from "@teamflojo/floimg";
 
 /**
  * Supported Imagen models
@@ -73,6 +73,8 @@ export interface GoogleImagenConfig {
   model?: ImagenModel;
   /** Default aspect ratio */
   aspectRatio?: AspectRatio;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 /**
@@ -196,6 +198,18 @@ export default function googleImagen(config: GoogleImagenConfig = {}): ImageGene
 
       // Get approximate dimensions from aspect ratio
       const dimensions = getApproximateDimensions(aspectRatio);
+
+      // Emit usage event for cost tracking
+      if (config.hooks?.onUsage) {
+        await config.hooks.onUsage({
+          provider: "google",
+          model,
+          operation: "generate",
+          imageWidth: dimensions.width,
+          imageHeight: dimensions.height,
+          imageCount: numberOfImages,
+        });
+      }
 
       return {
         bytes,

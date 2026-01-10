@@ -8,6 +8,7 @@ import type {
   VisionProviderSchema,
   TextProvider,
   TextProviderSchema,
+  UsageHooks,
 } from "@teamflojo/floimg";
 
 // ============================================================================
@@ -19,6 +20,8 @@ export interface OpenAIConfig {
   model?: "dall-e-2" | "dall-e-3";
   quality?: "standard" | "hd";
   style?: "vivid" | "natural";
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 export interface OpenAIGenerateParams {
@@ -172,6 +175,22 @@ export default function openai(config: OpenAIConfig = {}): ImageGenerator {
       // Parse dimensions from size parameter
       const [width, height] = size.split("x").map(Number);
 
+      // Emit usage event for cost tracking
+      if (config.hooks?.onUsage) {
+        await config.hooks.onUsage({
+          provider: "openai",
+          model,
+          operation: "generate",
+          imageWidth: width,
+          imageHeight: height,
+          imageCount: n,
+          quality,
+          rawMetadata: {
+            revisedPrompt: response.data[0].revised_prompt,
+          },
+        });
+      }
+
       return {
         bytes,
         mime: "image/png",
@@ -198,6 +217,8 @@ export interface OpenAIVisionConfig {
   apiKey?: string;
   model?: "gpt-4o" | "gpt-4o-mini" | "gpt-4-turbo";
   maxTokens?: number;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 export interface OpenAIVisionParams {
@@ -306,6 +327,20 @@ export function openaiVision(config: OpenAIVisionConfig = {}): VisionProvider {
         }
       }
 
+      // Emit usage event for cost tracking
+      if (config.hooks?.onUsage) {
+        await config.hooks.onUsage({
+          provider: "openai",
+          model,
+          operation: "vision",
+          inputTokens: response.usage?.prompt_tokens,
+          outputTokens: response.usage?.completion_tokens,
+          rawMetadata: {
+            usage: response.usage,
+          },
+        });
+      }
+
       return {
         type: parsed ? "json" : "text",
         content,
@@ -330,6 +365,8 @@ export interface OpenAITextConfig {
   model?: "gpt-4o" | "gpt-4o-mini" | "gpt-4-turbo" | "gpt-3.5-turbo";
   maxTokens?: number;
   temperature?: number;
+  /** Optional usage tracking hooks for cost attribution */
+  hooks?: UsageHooks;
 }
 
 export interface OpenAITextParams {
@@ -454,6 +491,20 @@ export function openaiText(config: OpenAITextConfig = {}): TextProvider {
         } catch {
           // If JSON parsing fails, treat as text
         }
+      }
+
+      // Emit usage event for cost tracking
+      if (config.hooks?.onUsage) {
+        await config.hooks.onUsage({
+          provider: "openai",
+          model,
+          operation: "text",
+          inputTokens: response.usage?.prompt_tokens,
+          outputTokens: response.usage?.completion_tokens,
+          rawMetadata: {
+            usage: response.usage,
+          },
+        });
       }
 
       return {

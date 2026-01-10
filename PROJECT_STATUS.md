@@ -15,6 +15,7 @@ Separate shape type from fill type to fix conceptual confusion. Branch: `feat/T-
 
 ## Next Up
 
+- **T-2026-010**: Enhance FloImg Studio visual identity (canvas + node styling)
 - **T-2025-006**: Add node duplication in FloImg Studio
 - Additional FloImg Studio UX improvements
 

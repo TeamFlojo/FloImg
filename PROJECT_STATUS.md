@@ -4,11 +4,10 @@
 
 ## Current Focus
 
-No active tasks. See "Next Up" for prioritized backlog.
+**T-2026-013**: NodePalette UX Redesign (dark mode fixes, visual simplification)
 
 ## Next Up
 
-- **T-2026-013**: NodePalette UX Redesign (dark mode fixes, visual simplification)
 - **T-2025-008**: Shape Generator UX Overhaul
 - Undo/Redo (requires zundo middleware)
 - Additional FloImg Studio UX improvements

@@ -3,7 +3,7 @@
 ---
 
 tags: [task, studio-ui, ux, dark-mode]
-status: backlog
+status: in-progress
 priority: p1
 created: 2026-01-11
 updated: 2026-01-11

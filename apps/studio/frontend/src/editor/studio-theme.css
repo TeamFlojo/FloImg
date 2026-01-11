@@ -318,6 +318,46 @@
   }
 }
 
+/* Palette item header (for items with badges) */
+.floimg-palette-item__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Disabled state - for unavailable nodes */
+.floimg-palette-item--disabled {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.floimg-palette-item--disabled:hover {
+  transform: none;
+  opacity: 0.8;
+}
+
+.floimg-palette-item--disabled:active {
+  cursor: pointer;
+  transform: none;
+}
+
+.floimg-palette-item--disabled .floimg-palette-item__title {
+  color: var(--studio-text-subtle);
+}
+
+/* Alternate message shown when node is disabled */
+.floimg-palette-item__alternate-message {
+  font-size: 0.6875rem;
+  color: #f59e0b;
+  margin-top: 0.125rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .floimg-palette-item__alternate-message {
+    color: #fbbf24;
+  }
+}
+
 /* ===== INSPECTOR ===== */
 
 .floimg-inspector {

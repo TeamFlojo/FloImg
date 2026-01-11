@@ -4,6 +4,7 @@ import type { NodeDefinition } from "@teamflojo/floimg-studio-shared";
 import { getGenerators, getTransforms, getTextProviders, getVisionProviders } from "../api/client";
 import { useWorkflowStore } from "../stores/workflowStore";
 import { UploadGallery } from "./UploadGallery";
+import { NodePaletteItem } from "./NodePaletteItem";
 
 export function NodePalette() {
   const setGenerators = useWorkflowStore((s) => s.setGenerators);
@@ -246,15 +247,12 @@ export function NodePalette() {
               {showUploads ? "Hide" : "Browse"} Uploads
             </button>
           </div>
-          <div
-            draggable
-            onDragStart={(e) => handleDragStart(e, inputDefinition)}
-            onDoubleClick={() => handleDoubleClick(inputDefinition)}
-            className="floimg-palette-item floimg-palette-item--amber"
-          >
-            <div className="floimg-palette-item__title">Upload Image</div>
-            <div className="floimg-palette-item__desc">Start with your image</div>
-          </div>
+          <NodePaletteItem
+            definition={inputDefinition}
+            colorVariant="amber"
+            onDragStart={handleDragStart}
+            onDoubleClick={handleDoubleClick}
+          />
           {showUploads && (
             <div className="mt-2 border border-amber-200 dark:border-amber-700 rounded bg-white dark:bg-zinc-900 max-h-64 overflow-y-auto">
               <UploadGallery />
@@ -269,18 +267,13 @@ export function NodePalette() {
             <div key={category} className="mb-3">
               <div className="floimg-sidebar__category">{category}</div>
               {nodes.map((def) => (
-                <div
+                <NodePaletteItem
                   key={def.id}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, def)}
-                  onDoubleClick={() => handleDoubleClick(def)}
-                  className="floimg-palette-item floimg-palette-item--blue"
-                >
-                  <div className="floimg-palette-item__title">{def.label}</div>
-                  {def.description && (
-                    <div className="floimg-palette-item__desc">{def.description}</div>
-                  )}
-                </div>
+                  definition={def}
+                  colorVariant="blue"
+                  onDragStart={handleDragStart}
+                  onDoubleClick={handleDoubleClick}
+                />
               ))}
             </div>
           ))}
@@ -293,18 +286,13 @@ export function NodePalette() {
             <div key={category} className="mb-3">
               <div className="floimg-sidebar__category">{category}</div>
               {nodes.map((def) => (
-                <div
+                <NodePaletteItem
                   key={def.id}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, def)}
-                  onDoubleClick={() => handleDoubleClick(def)}
-                  className="floimg-palette-item floimg-palette-item--teal"
-                >
-                  <div className="floimg-palette-item__title">{def.label}</div>
-                  {def.description && (
-                    <div className="floimg-palette-item__desc">{def.description}</div>
-                  )}
-                </div>
+                  definition={def}
+                  colorVariant="teal"
+                  onDragStart={handleDragStart}
+                  onDoubleClick={handleDoubleClick}
+                />
               ))}
             </div>
           ))}
@@ -315,18 +303,13 @@ export function NodePalette() {
           <div className="floimg-sidebar__section">
             <h3 className="floimg-sidebar__header !text-pink-600 dark:!text-pink-400">AI Text</h3>
             {textProviders.map((def) => (
-              <div
+              <NodePaletteItem
                 key={def.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, def)}
-                onDoubleClick={() => handleDoubleClick(def)}
-                className="floimg-palette-item floimg-palette-item--pink"
-              >
-                <div className="floimg-palette-item__title">{def.label}</div>
-                {def.description && (
-                  <div className="floimg-palette-item__desc">{def.description}</div>
-                )}
-              </div>
+                definition={def}
+                colorVariant="pink"
+                onDragStart={handleDragStart}
+                onDoubleClick={handleDoubleClick}
+              />
             ))}
           </div>
         )}
@@ -336,18 +319,13 @@ export function NodePalette() {
           <div className="floimg-sidebar__section">
             <h3 className="floimg-sidebar__header !text-cyan-600 dark:!text-cyan-400">AI Vision</h3>
             {visionProviders.map((def) => (
-              <div
+              <NodePaletteItem
                 key={def.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, def)}
-                onDoubleClick={() => handleDoubleClick(def)}
-                className="floimg-palette-item floimg-palette-item--cyan"
-              >
-                <div className="floimg-palette-item__title">{def.label}</div>
-                {def.description && (
-                  <div className="floimg-palette-item__desc">{def.description}</div>
-                )}
-              </div>
+                definition={def}
+                colorVariant="cyan"
+                onDragStart={handleDragStart}
+                onDoubleClick={handleDoubleClick}
+              />
             ))}
           </div>
         )}
@@ -357,33 +335,24 @@ export function NodePalette() {
           <h3 className="floimg-sidebar__header !text-orange-600 dark:!text-orange-400">
             Flow Control
           </h3>
-          <div
-            draggable
-            onDragStart={(e) => handleDragStart(e, fanOutDefinition)}
-            onDoubleClick={() => handleDoubleClick(fanOutDefinition)}
-            className="floimg-palette-item floimg-palette-item--orange"
-          >
-            <div className="floimg-palette-item__title">Fan-Out</div>
-            <div className="floimg-palette-item__desc">Distribute to parallel branches</div>
-          </div>
-          <div
-            draggable
-            onDragStart={(e) => handleDragStart(e, collectDefinition)}
-            onDoubleClick={() => handleDoubleClick(collectDefinition)}
-            className="floimg-palette-item floimg-palette-item--orange"
-          >
-            <div className="floimg-palette-item__title">Collect</div>
-            <div className="floimg-palette-item__desc">Gather parallel outputs</div>
-          </div>
-          <div
-            draggable
-            onDragStart={(e) => handleDragStart(e, routerDefinition)}
-            onDoubleClick={() => handleDoubleClick(routerDefinition)}
-            className="floimg-palette-item floimg-palette-item--amber"
-          >
-            <div className="floimg-palette-item__title">Router</div>
-            <div className="floimg-palette-item__desc">Route based on AI selection</div>
-          </div>
+          <NodePaletteItem
+            definition={fanOutDefinition}
+            colorVariant="orange"
+            onDragStart={handleDragStart}
+            onDoubleClick={handleDoubleClick}
+          />
+          <NodePaletteItem
+            definition={collectDefinition}
+            colorVariant="orange"
+            onDragStart={handleDragStart}
+            onDoubleClick={handleDoubleClick}
+          />
+          <NodePaletteItem
+            definition={routerDefinition}
+            colorVariant="amber"
+            onDragStart={handleDragStart}
+            onDoubleClick={handleDoubleClick}
+          />
         </div>
 
         {/* Output */}
@@ -391,15 +360,12 @@ export function NodePalette() {
           <h3 className="floimg-sidebar__header !text-emerald-600 dark:!text-emerald-400">
             Output
           </h3>
-          <div
-            draggable
-            onDragStart={(e) => handleDragStart(e, saveDefinition)}
-            onDoubleClick={() => handleDoubleClick(saveDefinition)}
-            className="floimg-palette-item floimg-palette-item--emerald"
-          >
-            <div className="floimg-palette-item__title">Save</div>
-            <div className="floimg-palette-item__desc">Save to file</div>
-          </div>
+          <NodePaletteItem
+            definition={saveDefinition}
+            colorVariant="emerald"
+            onDragStart={handleDragStart}
+            onDoubleClick={handleDoubleClick}
+          />
         </div>
       </div>
     </div>

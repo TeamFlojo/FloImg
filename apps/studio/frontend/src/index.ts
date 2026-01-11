@@ -16,6 +16,11 @@ export { default as App } from "./App";
 // Individual components (for custom compositions)
 export { WorkflowEditor } from "./editor/WorkflowEditor";
 export { NodePalette } from "./components/NodePalette";
+export {
+  NodePaletteItem,
+  type NodePaletteItemProps,
+  type NodePaletteColorVariant,
+} from "./components/NodePaletteItem";
 export { NodeInspector } from "./components/NodeInspector";
 export { Toolbar, type ToolbarProps } from "./components/Toolbar";
 export { Gallery } from "./components/Gallery";

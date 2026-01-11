@@ -56,16 +56,24 @@ import { NodePaletteItem } from "@teamflojo/floimg-studio-ui";
 
 ## Key Decisions
 
--
+- Chose Option C (Export NodePaletteItem) as it's the most flexible
+- NodePaletteItem is the building block; NodePalette internally uses it
+- Cloud provides locked state, badges, and handlers via props
 
 ## Implementation Notes
 
--
+- Created `NodePaletteItem.tsx` with extension props (locked, badge, upgradeMessage)
+- Added CSS: `.floimg-palette-item--locked`, `.floimg-palette-item--purple`, `.floimg-palette-item__header`, `.floimg-palette-item__upgrade-message`
+- Refactored `NodePalette.tsx` to use `NodePaletteItem` internally
+- Updated `CloudNodePalette.tsx` to use library component (582 → 390 lines)
+- Typecheck passes in floimg; floimg-cloud needs npm release
 
 ## Next Steps
 
-1. Review NodePalette.tsx structure
-2. Choose extension approach
-3. Add exports to library
-4. Update CloudNodePalette to use library component
-5. Verify visual parity
+1. ~~Review NodePalette.tsx structure~~ ✓
+2. ~~Choose extension approach~~ ✓ (NodePaletteItem)
+3. ~~Add exports to library~~ ✓
+4. ~~Update CloudNodePalette~~ ✓ (code ready, awaits release)
+5. Create PR for floimg → merge → release
+6. Update floimg-cloud pnpm-lock → create PR
+7. Verify visual parity after FSC deployment

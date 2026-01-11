@@ -3,7 +3,7 @@
 ---
 
 tags: [task, studio-ui, architecture]
-status: backlog
+status: in-progress
 priority: p1
 created: 2026-01-10
 updated: 2026-01-10
@@ -26,17 +26,20 @@ Currently, CloudNodePalette reimplements all styling with inline Tailwind classe
 
 ## Acceptance Criteria
 
-- [ ] NodePalette exported from floimg-studio-ui index.ts
-- [ ] NodePalette accepts render props or callbacks for:
-  - `onNodeLocked?: (node: NodeDefinition) => void` - called when locked node clicked
-  - `isNodeLocked?: (node: NodeDefinition) => boolean` - determines if node shows locked state
-  - `renderLockedBadge?: (node: NodeDefinition) => ReactNode` - custom locked indicator
-- [ ] NodePalette uses `floimg-palette-item` CSS classes (consistent theming)
-- [ ] CloudNodePalette updated to wrap NodePalette, only providing cloud-specific logic
+- [x] NodePaletteItem exported from floimg-studio-ui index.ts
+- [x] NodePaletteItem accepts extension props:
+  - `locked?: boolean` - determines if node shows locked state
+  - `onLockedClick?: (node: NodeDefinition) => void` - called when locked node clicked
+  - `badge?: ReactNode` - custom badge (lock icon, "Cloud" tag, etc.)
+  - `upgradeMessage?: string` - message shown for locked nodes
+- [x] NodePaletteItem uses `floimg-palette-item` CSS classes (consistent theming)
+- [x] CSS updated with locked state, purple variant, and header styles
+- [ ] CloudNodePalette updated to use NodePaletteItem (pending floimg release)
 - [ ] Visual parity between OSS and FSC node palettes confirmed
 
 ## Implementation Notes
 
-- Keep backwards compatible - existing OSS usage should work unchanged
+- Implemented granular NodePaletteItem (more flexible than modifying NodePalette)
+- NodePalette refactored to use NodePaletteItem internally
 - Cloud-specific features are opt-in via props
-- Consider exporting `NodePaletteItem` component separately for more granular customization
+- Reduced CloudNodePalette from 582 lines to 390 lines

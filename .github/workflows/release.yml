@@ -60,6 +60,9 @@ jobs:
           pnpm --filter @teamflojo/floimg-replicate publish --no-git-checks --access public
           pnpm --filter @teamflojo/floimg-xai publish --no-git-checks --access public
 
+          # Publish MCP server package
+          pnpm --filter @teamflojo/floimg-mcp publish --no-git-checks --access public
+
           # Publish Claude Code plugin
           pnpm --filter @teamflojo/floimg-claude publish --no-git-checks --access public
 

@@ -3,7 +3,7 @@
 ---
 
 tags: [task, studio-ui, architecture]
-status: in-progress
+status: complete
 priority: p1
 created: 2026-01-10
 updated: 2026-01-11
@@ -35,7 +35,7 @@ Currently, CloudNodePalette reimplements all styling with inline Tailwind classe
 - [x] NodePaletteItem uses `floimg-palette-item` CSS classes (consistent theming)
 - [x] CSS updated with disabled state and header styles
 - [x] CloudNodePalette updated to use NodePaletteItem (floimg-cloud PR #4)
-- [ ] Visual parity between OSS and FSC node palettes confirmed (pending FSC deployment)
+- [x] Visual parity between OSS and FSC node palettes confirmed
 
 ## Implementation Notes
 

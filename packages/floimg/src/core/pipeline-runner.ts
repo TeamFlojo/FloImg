@@ -7,6 +7,7 @@
  */
 
 import type { PipelineStep } from "./types.js";
+import { PipelineError } from "./errors.js";
 
 /**
  * Represents a step with its dependency information
@@ -131,9 +132,10 @@ export function computeExecutionWaves(
         step: n.step.kind,
         needs: [...n.dependencies].filter((d) => !completed.has(d)),
       }));
-      throw new Error(
+      throw new PipelineError(
         `Circular dependency or missing input detected in pipeline. ` +
-          `Unsatisfied steps: ${JSON.stringify(unsatisfied)}`
+          `Unsatisfied steps: ${JSON.stringify(unsatisfied)}`,
+        { operation: "computeExecutionWaves" }
       );
     }
 

@@ -31,6 +31,7 @@ import type {
   MimeType,
 } from "./types.js";
 import { isImageBlob } from "./types.js";
+import { PipelineError, NetworkError } from "./errors.js";
 
 /** Source for a fluent pipeline - file path, URL, or ImageBlob */
 export type FluentSource = string | ImageBlob;
@@ -198,7 +199,9 @@ export class FluentBuilder {
     const lastResult = results[results.length - 1];
 
     if (!lastResult || !lastResult.value) {
-      throw new Error("Pipeline produced no output");
+      throw new PipelineError("Pipeline produced no output", {
+        operation: "to",
+      });
     }
 
     return lastResult.value as SaveResult;
@@ -219,13 +222,16 @@ export class FluentBuilder {
     const lastResult = results[results.length - 1];
 
     if (!lastResult || !lastResult.value) {
-      throw new Error("Pipeline produced no output");
+      throw new PipelineError("Pipeline produced no output", {
+        operation: "toBlob",
+      });
     }
 
     if (!isImageBlob(lastResult.value)) {
-      throw new Error(
+      throw new PipelineError(
         `Expected ImageBlob but got ${typeof lastResult.value}. ` +
-          `The last step must produce an image (use transform, not analyze/text).`
+          `The last step must produce an image (use transform, not analyze/text).`,
+        { operation: "toBlob" }
       );
     }
 
@@ -245,7 +251,10 @@ export class FluentBuilder {
         // URL - fetch it
         const response = await fetch(source);
         if (!response.ok) {
-          throw new Error(`Failed to fetch ${source}: ${response.statusText}`);
+          throw new NetworkError(`Failed to fetch ${source}: ${response.statusText}`, {
+            operation: "fetch",
+            retryable: response.status >= 500, // Server errors are retryable
+          });
         }
         const buffer = Buffer.from(await response.arrayBuffer());
         const contentType = response.headers.get("content-type") || "image/png";

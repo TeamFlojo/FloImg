@@ -51,15 +51,27 @@ export type {
 // Export type guards
 export { isImageBlob, isDataBlob } from "./core/types.js";
 
-// Export errors
+// Export errors and error utilities
 export {
+  // Error classes
   FloimgError,
   ProviderNotFoundError,
   ConfigurationError,
   TransformError,
   UploadError,
   GenerationError,
+  ValidationError,
+  NetworkError,
+  ProviderError,
+  PipelineError,
+  // Utility functions
+  isRetryable,
+  getErrorCategory,
+  wrapError,
 } from "./core/errors.js";
+
+// Export error types
+export type { ErrorCategory, FloimgErrorOptions } from "./core/errors.js";
 
 // Export generators and providers
 export { ShapesProvider } from "./providers/svg/index.js";

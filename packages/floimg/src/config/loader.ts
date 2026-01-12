@@ -2,6 +2,7 @@ import { readFile, access } from "fs/promises";
 import { join } from "path";
 import { homedir } from "os";
 import type { FloimgConfig } from "../core/types.js";
+import { ConfigurationError } from "../core/errors.js";
 
 /**
  * Configuration search paths (in order of priority)
@@ -26,9 +27,7 @@ const CONFIG_SEARCH_PATHS = [
  * 3. Global config file in ~/.floimg/
  * 4. Environment variables
  */
-export async function loadConfig(
-  explicitPath?: string
-): Promise<FloimgConfig> {
+export async function loadConfig(explicitPath?: string): Promise<FloimgConfig> {
   const config: FloimgConfig = {};
 
   // Step 1: Try explicit path if provided
@@ -37,8 +36,9 @@ export async function loadConfig(
       const loadedConfig = await loadConfigFile(explicitPath);
       Object.assign(config, loadedConfig);
     } catch (error) {
-      throw new Error(
-        `Failed to load config from ${explicitPath}: ${error instanceof Error ? error.message : String(error)}`
+      throw new ConfigurationError(
+        `Failed to load config from ${explicitPath}: ${error instanceof Error ? error.message : String(error)}`,
+        { cause: error instanceof Error ? error : undefined }
       );
     }
   } else {
@@ -75,11 +75,11 @@ export async function loadConfig(
  * Load config from a specific file
  */
 async function loadConfigFile(path: string): Promise<FloimgConfig> {
-  if (path.endsWith('.json')) {
+  if (path.endsWith(".json")) {
     // JSON config
-    const content = await readFile(path, 'utf-8');
+    const content = await readFile(path, "utf-8");
     return JSON.parse(content);
-  } else if (path.endsWith('.ts') || path.endsWith('.js') || path.endsWith('.mjs')) {
+  } else if (path.endsWith(".ts") || path.endsWith(".js") || path.endsWith(".mjs")) {
     // TypeScript/JavaScript config - convert to absolute file:// URL for import()
     const { resolve } = await import("path");
     const absolutePath = resolve(process.cwd(), path);
@@ -89,7 +89,7 @@ async function loadConfigFile(path: string): Promise<FloimgConfig> {
   } else {
     // Try as JSON first
     try {
-      const content = await readFile(path, 'utf-8');
+      const content = await readFile(path, "utf-8");
       return JSON.parse(content);
     } catch {
       // Try as module - convert to absolute file:// URL
@@ -119,24 +119,27 @@ function loadEnvConfig(): FloimgConfig {
 
   if (hasS3Config) {
     const bucket = process.env.TIGRIS_BUCKET_NAME || process.env.S3_BUCKET;
-    const region = process.env.TIGRIS_REGION || process.env.AWS_REGION || 'auto';
+    const region = process.env.TIGRIS_REGION || process.env.AWS_REGION || "auto";
     const accessKeyId = process.env.TIGRIS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
-    const secretAccessKey = process.env.TIGRIS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
-    const endpoint = process.env.S3_ENDPOINT ||
-                    (process.env.TIGRIS_BUCKET_NAME ? 'https://fly.storage.tigris.dev' : undefined);
+    const secretAccessKey =
+      process.env.TIGRIS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
+    const endpoint =
+      process.env.S3_ENDPOINT ||
+      (process.env.TIGRIS_BUCKET_NAME ? "https://fly.storage.tigris.dev" : undefined);
 
     config.save = {
-      default: 's3',
+      default: "s3",
       s3: {
         bucket,
         region,
         ...(endpoint && { endpoint }),
-        ...(accessKeyId && secretAccessKey && {
-          credentials: {
-            accessKeyId,
-            secretAccessKey,
-          },
-        }),
+        ...(accessKeyId &&
+          secretAccessKey && {
+            credentials: {
+              accessKeyId,
+              secretAccessKey,
+            },
+          }),
       },
     };
   }
@@ -144,7 +147,7 @@ function loadEnvConfig(): FloimgConfig {
   // AI configuration
   if (process.env.OPENAI_API_KEY) {
     config.ai = {
-      default: 'openai',
+      default: "openai",
       openai: {
         apiKey: process.env.OPENAI_API_KEY,
       },

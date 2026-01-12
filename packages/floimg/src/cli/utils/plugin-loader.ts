@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
 import { createInterface } from "readline";
+import { ConfigurationError } from "../../core/errors.js";
 
 /**
  * Plugin metadata for auto-installation
@@ -117,7 +118,9 @@ async function tryImportPackage(packageName: string): Promise<unknown> {
     }
   }
 
-  throw new Error(`Cannot find package '${packageName}'`);
+  throw new ConfigurationError(`Cannot find package '${packageName}'`, {
+    operation: "loadPlugin",
+  });
 }
 
 /**

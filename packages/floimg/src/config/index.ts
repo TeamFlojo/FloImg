@@ -1,4 +1,5 @@
 import type { FloimgConfig } from "../core/types.js";
+import { ConfigurationError } from "../core/errors.js";
 
 /**
  * Helper to define floimg configuration with TypeScript support
@@ -10,16 +11,10 @@ export function defineConfig(config: FloimgConfig): FloimgConfig {
 /**
  * Load configuration from a file or object
  */
-export async function loadConfig(
-  configPath?: string
-): Promise<FloimgConfig | undefined> {
+export async function loadConfig(configPath?: string): Promise<FloimgConfig | undefined> {
   if (!configPath) {
     // Try to find config in common locations
-    const possiblePaths = [
-      "./floimg.config.ts",
-      "./floimg.config.js",
-      "./floimg.config.mjs",
-    ];
+    const possiblePaths = ["./floimg.config.ts", "./floimg.config.js", "./floimg.config.mjs"];
 
     for (const path of possiblePaths) {
       try {
@@ -38,8 +33,9 @@ export async function loadConfig(
     const module = await import(configPath);
     return module.default || module;
   } catch (error) {
-    throw new Error(
-      `Failed to load config from ${configPath}: ${error instanceof Error ? error.message : String(error)}`
+    throw new ConfigurationError(
+      `Failed to load config from ${configPath}: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error instanceof Error ? error : undefined }
     );
   }
 }

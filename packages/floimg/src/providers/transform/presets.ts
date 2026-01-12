@@ -1,13 +1,12 @@
 import sharp from "sharp";
 import type { ImageBlob } from "../../core/types.js";
-import { TransformError } from "../../core/errors.js";
+import { TransformError, ValidationError } from "../../core/errors.js";
 
 /**
  * Preset filters built using Sharp's primitives
  * These methods directly use Sharp to avoid circular dependencies
  */
 export class FilterPresets {
-
   /**
    * Apply vintage/retro filter
    */
@@ -63,10 +62,7 @@ export class FilterPresets {
    */
   static async blackAndWhite(input: ImageBlob): Promise<ImageBlob> {
     try {
-      const result = await sharp(input.bytes)
-        .grayscale()
-        .normalize()
-        .toBuffer();
+      const result = await sharp(input.bytes).grayscale().normalize().toBuffer();
 
       const metadata = await sharp(result).metadata();
       return {
@@ -113,10 +109,7 @@ export class FilterPresets {
    */
   static async soft(input: ImageBlob): Promise<ImageBlob> {
     try {
-      const result = await sharp(input.bytes)
-        .blur(1)
-        .modulate({ brightness: 1.1 })
-        .toBuffer();
+      const result = await sharp(input.bytes).blur(1).modulate({ brightness: 1.1 }).toBuffer();
 
       const metadata = await sharp(result).metadata();
       return {
@@ -138,9 +131,7 @@ export class FilterPresets {
    */
   static async cool(input: ImageBlob): Promise<ImageBlob> {
     try {
-      const result = await sharp(input.bytes)
-        .tint({ r: 200, g: 220, b: 255 })
-        .toBuffer();
+      const result = await sharp(input.bytes).tint({ r: 200, g: 220, b: 255 }).toBuffer();
 
       const metadata = await sharp(result).metadata();
       return {
@@ -162,9 +153,7 @@ export class FilterPresets {
    */
   static async warm(input: ImageBlob): Promise<ImageBlob> {
     try {
-      const result = await sharp(input.bytes)
-        .tint({ r: 255, g: 220, b: 180 })
-        .toBuffer();
+      const result = await sharp(input.bytes).tint({ r: 255, g: 220, b: 180 }).toBuffer();
 
       const metadata = await sharp(result).metadata();
       return {
@@ -186,11 +175,7 @@ export class FilterPresets {
    */
   static async highContrast(input: ImageBlob): Promise<ImageBlob> {
     try {
-      const result = await sharp(input.bytes)
-        .grayscale()
-        .normalize()
-        .sharpen()
-        .toBuffer();
+      const result = await sharp(input.bytes).grayscale().normalize().sharpen().toBuffer();
 
       const metadata = await sharp(result).metadata();
       return {
@@ -225,8 +210,9 @@ export class FilterPresets {
 
     const preset = presets[presetName];
     if (!preset) {
-      throw new Error(
-        `Unknown preset: ${presetName}. Available: ${Object.keys(presets).join(", ")}`
+      throw new ValidationError(
+        `Unknown preset: ${presetName}. Available: ${Object.keys(presets).join(", ")}`,
+        { operation: "applyPreset" }
       );
     }
 

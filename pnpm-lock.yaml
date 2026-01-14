@@ -8,6 +8,7 @@ overrides:
   openai: ^6.0.0
   '@modelcontextprotocol/sdk': '>=1.25.2'
   qs: '>=6.14.1'
+  hono: '>=4.11.4'
 
 importers:
 
@@ -16,6 +17,9 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.958.0
         version: 3.958.0
+      hono:
+        specifier: 4.11.4
+        version: 4.11.4
     devDependencies:
       '@eslint/js':
         specifier: ^9.39.2
@@ -262,7 +266,7 @@ importers:
     dependencies:
       '@teamflojo/floimg':
         specifier: ^0.8.0
-        version: 0.8.0(ws@8.18.3)(zod@4.2.1)
+        version: 0.8.0(hono@4.11.4)(ws@8.18.3)(zod@4.2.1)
 
   packages/floimg-d3:
     dependencies:
@@ -315,7 +319,7 @@ importers:
     dependencies:
       '@modelcontextprotocol/sdk':
         specifier: '>=1.25.2'
-        version: 1.25.2(hono@4.11.1)(zod@4.2.1)
+        version: 1.25.2(hono@4.11.4)(zod@4.2.1)
     devDependencies:
       '@teamflojo/floimg':
         specifier: workspace:*
@@ -1284,7 +1288,7 @@ packages:
     resolution: {integrity: sha512-vUcD0uauS7EU2caukW8z5lJKtoGMokxNbJtBiwHgpqxEXokaHCBkQUmCHhjFB1VUTWdqj25QoMkMKzgjq+uhrw==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
-      hono: ^4
+      hono: '>=4.11.4'
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -3733,8 +3737,8 @@ packages:
   highlight.js@10.7.3:
     resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
 
-  hono@4.11.1:
-    resolution: {integrity: sha512-KsFcH0xxHes0J4zaQgWbYwmz3UPOOskdqZmItstUG93+Wk1ePBLkLGwbP9zlmh1BFUiL8Qp+Xfu9P7feJWpGNg==}
+  hono@4.11.4:
+    resolution: {integrity: sha512-U7tt8JsyrxSRKspfhtLET79pU8K+tInj5QZXs1jSugO1Vq5dFj3kmZsRldo29mTBfcjDRVRXrEZ6LS63Cog9ZA==}
     engines: {node: '>=16.9.0'}
 
   html-encoding-sniffer@4.0.0:
@@ -6752,9 +6756,9 @@ snapshots:
     dependencies:
       tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
 
-  '@hono/node-server@1.19.7(hono@4.11.1)':
+  '@hono/node-server@1.19.7(hono@4.11.4)':
     dependencies:
-      hono: 4.11.1
+      hono: 4.11.4
 
   '@humanfs/core@0.19.1': {}
 
@@ -6956,9 +6960,9 @@ snapshots:
 
   '@microsoft/tsdoc@0.14.2': {}
 
-  '@modelcontextprotocol/sdk@1.25.2(hono@4.11.1)(zod@4.2.1)':
+  '@modelcontextprotocol/sdk@1.25.2(hono@4.11.4)(zod@4.2.1)':
     dependencies:
-      '@hono/node-server': 1.19.7(hono@4.11.1)
+      '@hono/node-server': 1.19.7(hono@4.11.4)
       ajv: 8.17.1
       ajv-formats: 3.0.1(ajv@8.17.1)
       content-type: 1.0.5
@@ -7700,11 +7704,11 @@ snapshots:
 
   '@tanstack/virtual-core@3.13.13': {}
 
-  '@teamflojo/floimg@0.8.0(ws@8.18.3)(zod@4.2.1)':
+  '@teamflojo/floimg@0.8.0(hono@4.11.4)(ws@8.18.3)(zod@4.2.1)':
     dependencies:
       '@aws-sdk/client-s3': 3.957.0
       '@aws-sdk/s3-request-presigner': 3.958.0
-      '@modelcontextprotocol/sdk': 1.25.2(hono@4.11.1)(zod@4.2.1)
+      '@modelcontextprotocol/sdk': 1.25.2(hono@4.11.4)(zod@4.2.1)
       '@napi-rs/canvas': 0.1.86
       '@resvg/resvg-js': 2.6.2
       commander: 12.1.0
@@ -9715,7 +9719,7 @@ snapshots:
 
   highlight.js@10.7.3: {}
 
-  hono@4.11.1: {}
+  hono@4.11.4: {}
 
   html-encoding-sniffer@4.0.0:
     dependencies:

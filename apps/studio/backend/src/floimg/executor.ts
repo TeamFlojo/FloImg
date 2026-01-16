@@ -24,7 +24,7 @@ import type {
   ExecutionStepResult,
   ImageMetadata,
 } from "@teamflojo/floimg-studio-shared";
-import type { ImageBlob, Pipeline, UsageEvent } from "@teamflojo/floimg";
+import type { ImageBlob, DataBlob, Pipeline, UsageEvent } from "@teamflojo/floimg";
 import { isImageBlob, isDataBlob } from "@teamflojo/floimg";
 import { loadUpload } from "../routes/uploads.js";
 import { nanoid } from "nanoid";
@@ -206,6 +206,8 @@ export interface PipelineExecutionResult {
 export interface PipelineExecutionCallbacks {
   /** Called when a step starts or completes */
   onStep?: (result: ExecutionStepResult) => void;
+  /** Called when execution fails. id is the step identifier when the error occurred. */
+  onError?: (error: string, id?: string) => void;
 }
 
 /**
@@ -236,142 +238,163 @@ export async function executePipeline(
   options?: PipelineExecutionOptions
 ): Promise<PipelineExecutionResult> {
   const { cloudConfig, callbacks } = options || {};
-  const imageIds: string[] = [];
-  const images = new Map<string, Buffer>();
-  const dataOutputs = new Map<
-    string,
-    { dataType: "text" | "json"; content: string; parsed?: unknown }
-  >();
+  let currentStepId: string | undefined;
 
-  // Get the shared floimg client
-  const client = getClient();
+  try {
+    const imageIds: string[] = [];
+    const images = new Map<string, Buffer>();
+    const dataOutputs = new Map<
+      string,
+      { dataType: "text" | "json"; content: string; parsed?: unknown }
+    >();
 
-  // Dynamically register CloudSaveProvider when running in cloud context
-  if (cloudConfig?.enabled) {
-    const { CloudSaveProvider } = await import("./providers/CloudSaveProvider.js");
-    const provider = new CloudSaveProvider(
-      cloudConfig.userId,
-      cloudConfig.apiBaseUrl,
-      cloudConfig.authToken
-    );
-    client.registerSaveProvider(provider);
-  }
+    // Get the shared floimg client
+    const client = getClient();
 
-  // Clear any previously collected usage events before this execution
-  clearCollectedUsageEvents();
-
-  // Build intermediate variable storage for step-by-step execution
-  // This can hold both ImageBlob and DataBlob values during execution
-  const stepVariables: Record<string, ImageBlob | unknown> = { ...pipeline.initialVariables };
-
-  // Execute steps one-by-one to provide real-time progress
-  for (let i = 0; i < pipeline.steps.length; i++) {
-    const step = pipeline.steps[i];
-    // Get step identifier (the 'out' variable name)
-    const stepId = getStepId(step);
-
-    // Notify step is starting
-    if (stepId && callbacks?.onStep) {
-      callbacks.onStep({
-        stepIndex: i,
-        id: stepId,
-        status: "running",
-      });
+    // Dynamically register CloudSaveProvider when running in cloud context
+    if (cloudConfig?.enabled) {
+      const { CloudSaveProvider } = await import("./providers/CloudSaveProvider.js");
+      const provider = new CloudSaveProvider(
+        cloudConfig.userId,
+        cloudConfig.apiBaseUrl,
+        cloudConfig.authToken
+      );
+      client.registerSaveProvider(provider);
     }
 
-    // Create a single-step pipeline with current variables
-    // Filter to only ImageBlob values for the pipeline (client.run expects ImageBlob only)
-    const imageVariables: Record<string, ImageBlob> = {};
-    for (const [key, value] of Object.entries(stepVariables)) {
-      if (isImageBlob(value)) {
-        imageVariables[key] = value;
-      }
-    }
-    const singlePipeline: Pipeline = {
-      name: "Single Step",
-      steps: [step],
-      initialVariables: imageVariables,
-    };
+    // Clear any previously collected usage events before this execution
+    clearCollectedUsageEvents();
 
-    // Execute the single step
-    const stepResults = await client.run(singlePipeline);
+    // Build intermediate variable storage for step-by-step execution
+    // Store both ImageBlob and DataBlob values during execution
+    const stepVariables: Record<string, ImageBlob | DataBlob> = { ...pipeline.initialVariables };
 
-    // Process step results
-    for (const result of stepResults) {
-      if (isImageBlob(result.value)) {
-        // Store for dependent steps
-        if (result.out) {
-          stepVariables[result.out] = result.value;
-        }
+    // Execute steps one-by-one to provide real-time progress
+    for (let i = 0; i < pipeline.steps.length; i++) {
+      const step = pipeline.steps[i];
+      // Get step identifier (the 'out' variable name)
+      const stepId = getStepId(step);
+      currentStepId = stepId;
 
-        const imageId = nanoid();
-        const buffer = Buffer.from(result.value.bytes);
-        imageIds.push(imageId);
-        images.set(imageId, buffer);
-
-        // Save image to disk
-        const ext = MIME_TO_EXT[result.value.mime] || "png";
-        const filename = `${imageId}.${ext}`;
-        const filepath = join(OUTPUT_DIR, filename);
-        await mkdir(dirname(filepath), { recursive: true });
-        await writeFile(filepath, buffer);
-
-        // Notify step completed with image preview
-        if (stepId && callbacks?.onStep) {
-          const previewMime = result.value.mime || "image/png";
-          const preview = `data:${previewMime};base64,${buffer.toString("base64")}`;
-          callbacks.onStep({
-            stepIndex: i,
-            id: stepId,
-            status: "completed",
-            imageId,
-            preview,
-          });
-        }
-      } else if (isDataBlob(result.value)) {
-        // Store for dependent steps (text/vision output)
-        if (result.out) {
-          stepVariables[result.out] = result.value as unknown as ImageBlob;
-        }
-
-        // Store data outputs
-        dataOutputs.set(result.out, {
-          dataType: result.value.type,
-          content: result.value.content,
-          parsed: result.value.parsed,
-        });
-
-        // Notify step completed with data output
-        if (stepId && callbacks?.onStep) {
-          callbacks.onStep({
-            stepIndex: i,
-            id: stepId,
-            status: "completed",
-            dataType: result.value.type,
-            content: result.value.content,
-            parsed: result.value.parsed,
-          });
-        }
-      } else if (stepId && callbacks?.onStep) {
-        // Step completed without specific output (e.g., save step)
+      // Notify step is starting
+      if (stepId && callbacks?.onStep) {
         callbacks.onStep({
           stepIndex: i,
           id: stepId,
-          status: "completed",
+          status: "running",
         });
       }
+
+      // Create a single-step pipeline with current variables
+      // Include both ImageBlob and DataBlob for dependent steps
+      const pipelineVariables: Record<string, ImageBlob | DataBlob> = {};
+      for (const [key, value] of Object.entries(stepVariables)) {
+        if (isImageBlob(value) || isDataBlob(value)) {
+          pipelineVariables[key] = value;
+        }
+      }
+      const singlePipeline: Pipeline = {
+        name: "Single Step",
+        steps: [step],
+        initialVariables: pipelineVariables,
+      };
+
+      try {
+        // Execute the single step
+        const stepResults = await client.run(singlePipeline);
+
+        // Process step results
+        for (const result of stepResults) {
+          if (isImageBlob(result.value)) {
+            // Store for dependent steps
+            if (result.out) {
+              stepVariables[result.out] = result.value;
+            }
+
+            const imageId = nanoid();
+            const buffer = Buffer.from(result.value.bytes);
+            imageIds.push(imageId);
+            images.set(imageId, buffer);
+
+            // Save image to disk
+            const ext = MIME_TO_EXT[result.value.mime] || "png";
+            const filename = `${imageId}.${ext}`;
+            const filepath = join(OUTPUT_DIR, filename);
+            await mkdir(dirname(filepath), { recursive: true });
+            await writeFile(filepath, buffer);
+
+            // Notify step completed with image preview
+            if (stepId && callbacks?.onStep) {
+              const previewMime = result.value.mime || "image/png";
+              const preview = `data:${previewMime};base64,${buffer.toString("base64")}`;
+              callbacks.onStep({
+                stepIndex: i,
+                id: stepId,
+                status: "completed",
+                imageId,
+                preview,
+              });
+            }
+          } else if (isDataBlob(result.value)) {
+            // Store for dependent steps (text/vision output)
+            if (result.out) {
+              stepVariables[result.out] = result.value;
+            }
+
+            // Store data outputs
+            dataOutputs.set(result.out, {
+              dataType: result.value.type,
+              content: result.value.content,
+              parsed: result.value.parsed,
+            });
+
+            // Notify step completed with data output
+            if (stepId && callbacks?.onStep) {
+              callbacks.onStep({
+                stepIndex: i,
+                id: stepId,
+                status: "completed",
+                dataType: result.value.type,
+                content: result.value.content,
+                parsed: result.value.parsed,
+              });
+            }
+          } else if (stepId && callbacks?.onStep) {
+            // Step completed without specific output (e.g., save step)
+            callbacks.onStep({
+              stepIndex: i,
+              id: stepId,
+              status: "completed",
+            });
+          }
+        }
+      } catch (stepError) {
+        // Fire error callback for this specific step
+        if (stepId && callbacks?.onStep) {
+          callbacks.onStep({
+            stepIndex: i,
+            id: stepId,
+            status: "error",
+            error: stepError instanceof Error ? stepError.message : String(stepError),
+          });
+        }
+        throw stepError; // Re-throw for outer catch
+      }
     }
+
+    // Get usage events collected during execution
+    const usageEvents = getCollectedUsageEvents();
+
+    return {
+      imageIds,
+      images,
+      dataOutputs,
+      usageEvents,
+    };
+  } catch (error) {
+    callbacks?.onError?.(error instanceof Error ? error.message : String(error), currentStepId);
+    throw error;
   }
-
-  // Get usage events collected during execution
-  const usageEvents = getCollectedUsageEvents();
-
-  return {
-    imageIds,
-    images,
-    dataOutputs,
-    usageEvents,
-  };
 }
 
 /**

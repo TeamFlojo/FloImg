@@ -95,6 +95,21 @@ The production build serves everything from a single container:
 └──────────────────────────────┘
 ```
 
+## Platform Support
+
+The pre-built Docker image is currently **x86 (amd64) only**.
+
+**Apple Silicon (M1/M2/M3) users**: Build from source instead of using the pre-built image:
+
+```bash
+git clone https://github.com/FlojoInc/floimg.git
+cd floimg
+docker build -f apps/studio/Dockerfile -t floimg-studio .
+docker run -d -p 5100:5100 -e OPENAI_API_KEY=sk-... floimg-studio
+```
+
+Multi-arch builds (amd64 + arm64) are planned for a future release.
+
 ## Health Check
 
 ```bash

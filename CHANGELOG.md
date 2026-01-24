@@ -5,6 +5,20 @@ All notable changes to FloImg will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.17.0] - 2026-01-24
+
+### @teamflojo/floimg-studio-ui (0.6.0)
+
+- feat: add `parentWorkflowId` state tracking for remix attribution chains
+- feat: add `loadRemixImage(imageUrl)` store method for creating Input nodes from remote URLs
+- feat: add `loadFromWorkflowJson(json, metadata)` store method for loading forked workflows with ID remapping
+- feat: handle `?remixImage=<url>` URL parameter for external remix links
+- feat: add `remixInfoSlot` prop to Toolbar for injecting attribution banners
+
+### @teamflojo/floimg-studio-shared (0.8.0)
+
+- feat: add `imageUrl` field to `InputNodeData` for remote image URLs in remix flows
+
 ## [v0.16.0] - 2026-01-17
 
 ### @teamflojo/floimg (0.15.0)

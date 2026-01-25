@@ -65,7 +65,7 @@ OSS Studio bundles templates in `apps/studio/frontend/src/data/seed-templates.js
 - `architecture-diagram` - Mermaid diagram
 - `screenshot-annotate` - Screenshot with annotations
 
-These work fully offline without API access. They're exported from the cloud database via `floimg-cloud/scripts/export-templates.ts`.
+These work fully offline without API access.
 
 ## Cloud Templates
 
@@ -96,7 +96,7 @@ Templates are organized by use case:
 | `GET /api/templates/:id` | No   | Get single template          |
 | `POST /api/templates`    | Yes  | Promote workflow to template |
 
-See floimg-cloud `vault/architecture/API-Reference.md` for full documentation.
+See `api.floimg.com` for the public API.
 
 ## Related Docs
 
